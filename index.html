@@ -1,0 +1,6292 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Consulta DDD Brasil - Acolhível</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+<style>
+#localizacao {
+  color: white;
+}
+body {
+  font-family: 'Poppins', sans-serif;
+  background-color: #000;
+  color: #fff;
+  padding: 40px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+h1 {
+  font-weight: 600;
+  font-size: 2.5rem;
+  margin-bottom: 30px;
+  color: #00ffe0;
+  
+  text-align: center;
+}
+
+.controls {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  width: 100%;
+  max-width: 700px;
+  margin-bottom: 30px;
+}
+
+select, input {
+  padding: 15px 20px;
+  border-radius: 10px;
+  border: 2px solid #333;
+  background: #111;
+  color: #fff;
+  font-size: 16px;
+  outline: none;
+  transition: 0.3s;
+}
+
+select:focus, input:focus {
+
+
+}
+
+.states-container {
+  width: 100%;
+  max-width: 700px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.state-card {
+  background: #111;
+  border-radius: 20px;
+  overflow: hidden;
+  border-left: 6px solid #00ffe0;
+  transition: 0.3s;
+}
+
+.state-card h2 {
+  margin: 0;
+  padding: 15px 20px;
+  cursor: pointer;
+  user-select: none;
+  color: #00ffe0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #111;
+  transition: background 0.3s;
+}
+
+.state-card h2:hover {
+  background: #1a1a1a;
+}
+
+.state-card h2 .arrow {
+  transition: transform 0.3s ease;
+}
+
+.state-card.expanded h2 .arrow {
+  transform: rotate(90deg);
+}
+
+/* Cities improvements */
+.cities {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease, padding 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 0 20px;
+}
+
+.state-card.expanded .cities {
+  padding-bottom: 5px;
+}
+
+.cities p {
+ 
+  padding: 10px 10px;
+  background: #1a1a1a;
+  border-radius: 15px;
+  margin: 5px;
+  cursor: pointer;
+  transition: 0.3s, transform 0.2s;
+  
+}
+
+.cities p:hover {
+  background: #222;
+
+  transform: translateX(3px);
+}
+
+.hidden {
+  display: none !important;
+}
+  mark {
+  background: #00ffe0;
+  color: #000;
+  font-weight: bold;
+  padding: 0 2px;
+  border-radius: 3px;
+}
+body.light-mode {
+  background-color: #ffffff;
+  color: #000;
+}
+
+body.light-mode h1 {
+  color: black;
+  
+}
+
+body.light-mode select,
+body.light-mode input {
+  background: #f5f5f5;
+  color: #000;
+  border: 2px solid #ccc;
+}
+
+body.light-mode .state-card {
+  background: #ffffff;
+  border-left: 6px solid #0132e5;
+}
+
+body.light-mode .state-card h2 {
+  background: #f5f5f5;
+  color: #0132e5;
+}
+
+body.light-mode .cities p {
+  background: #eee;
+  
+}
+
+body.light-mode .cities p:hover {
+  background: #ddd;
+
+}
+
+body.light-mode mark {
+  background: #0132e5;
+  color: #fff;
+}
+#touggleTheme {
+  color: blue;
+}
+
+body.light-mode #totalCities {
+  color: #0132e5; /* Azul mais suave que combina no fundo branco */
+  #toggleTheme {
+  padding: 10px 20px;
+  border-radius: 12px;
+  border: 2px solid;
+  font-size: 16px;
+  cursor: pointer;
+  transition: 0.3s;
+  background-color: #111; /* fundo dark padrão */
+  color: #00ffe0;         /* texto neon padrão */
+}
+body.light-mode #toggleTheme {
+  background-color: #f5f5f5; /* fundo claro */
+  color: #007777;             /* texto adaptado ao tema */
+  border-color: #007777;
+}
+    #dddBanner {
+      margin: 20px auto;
+      padding: 12px 20px;
+      max-width: 900px;
+      text-align: center;
+      font-size: 1.1rem;
+      font-weight: 600;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #00ffe0, #0077ff);
+      color: #000;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    }
+</style>
+
+</head>
+<body>
+   <h5 id="dddBanner">Detectando sua localização...</h5>
+<button id="toggleTheme" style="
+    background-color: #007BFF;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 16px;
+">Mudar Tema</button>
+<br>
+<button id="randomCityBtn" style="
+    background-color: #007BFF;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 16px;
+">Cidade Aleatória</button>
+<h1>Consulta DDD Brasil</h1>
+<h2 id="totalCities">
+  Total de 0 cidades Brasileiras
+</h2>
+
+<div class="controls">
+  <input type="text" id="searchInput" placeholder="Digite a cidade ou DDD...">
+  <select id="stateSelect">
+    <option value="">Todos os estados</option>
+    <option value="AC">Acre</option>
+    <option value="AL">Alagoas</option>
+    <option value="AP">Amapá</option>
+    <option value="AM">Amazonas</option>
+    <option value="BA">Bahia</option>
+    <option value="CE">Ceará</option>
+    <option value="DF">Distrito Federal</option>
+    <option value="ES">Espírito Santo</option>
+    <option value="GO">Goiás</option>
+    <option value="MA">Maranhão</option>
+    <option value="MT">Mato Grosso</option>
+    <option value="MS">Mato Grosso do Sul</option>
+    <option value="MG">Minas Gerais</option>
+    <option value="PA">Pará</option>
+    <option value="PB">Paraíba</option>
+    <option value="PR">Paraná</option>
+    <option value="PE">Pernambuco</option>
+    <option value="PI">Piauí</option>
+    <option value="RJ">Rio de Janeiro</option>
+    <option value="RN">Rio Grande do Norte</option>
+    <option value="RS">Rio Grande do Sul</option>
+    <option value="RO">Rondônia</option>
+    <option value="RR">Roraima</option>
+    <option value="SC">Santa Catarina</option>
+    <option value="SP">São Paulo</option>
+    <option value="SE">Sergipe</option>
+    <option value="TO">Tocantins</option>
+  </select>
+</div>
+<p id="resultCount"></p>
+<div class="states-container">
+  <!-- Modelo de card de estado -->
+  <div class="state-card" data-state="AC">
+    <h2>Acre <span class="arrow">▶</span></h2>
+    <div class="cities">
+  <p>Acrelândia (68)</p>
+<p>Assis Brasil (68)</p>
+<p>Brasileia (68)</p>
+<p>Bujari (68)</p>
+<p>Capixaba (68)</p>
+<p>Cruzeiro do Sul (68)</p>
+<p>Epitaciolândia (68)</p>
+<p>Feijó (68)</p>
+<p>Jordão (68)</p>
+<p>Mâncio Lima (68)</p>
+<p>Manoel Urbano (68)</p>
+<p>Marechal Thaumaturgo (68)</p>
+<p>Plácido de Castro (68)</p>
+<p>Porto Acre (68)</p>
+<p>Porto Walter (68)</p>
+<p>Rio Branco (68) - Capital</p>
+<p>Rodrigues Alves (68)</p>
+<p>Santa Rosa do Purus (68)</p>
+<p>Sena Madureira (68)</p>
+<p>Senador Guiomard (68)</p>
+<p>Tarauacá (68)</p>
+<p>Xapuri (68)</p>
+    </div>
+  </div>
+  <div class="state-card" data-state="AL">
+    <h2>Alagoas <span class="arrow">▶</span></h2>
+    <div class="cities">
+      <p>Água Branca (82)</p>
+<p>Anadia (82)</p>
+<p>Arapiraca (82)</p>
+<p>Atalaia (82)</p>
+<p>Barra de Santo Antônio (82)</p>
+<p>Barra de São Miguel (82)</p>
+<p>Batalha (82)</p>
+<p>Belém (82)</p>
+<p>Belo Monte (82)</p>
+<p>Boca da Mata (82)</p>
+<p>Branquinha (82)</p>
+<p>Cacimbinhas (82)</p>
+<p>Cajueiro (82)</p>
+<p>Campestre (82)</p>
+<p>Campo Alegre (82)</p>
+<p>Campo Grande (82)</p>
+<p>Canapi (82)</p>
+<p>Capela (82)</p>
+<p>Carneiros (82)</p>
+<p>Chã Preta (82)</p>
+<p>Coité do Nóia (82)</p>
+<p>Colônia Leopoldina (82)</p>
+<p>Coqueiro Seco (82)</p>
+<p>Coruripe (82)</p>
+<p>Craíbas (82)</p>
+<p>Delmiro Gouveia (82)</p>
+<p>Dois Riachos (82)</p>
+<p>Estrela de Alagoas (82)</p>
+<p>Feira Grande (82)</p>
+<p>Feliz Deserto (82)</p>
+<p>Flexeiras (82)</p>
+<p>Girau do Ponciano (82)</p>
+<p>Ibateguara (82)</p>
+<p>Igaci (82)</p>
+<p>Igreja Nova (82)</p>
+<p>Inhapi (82)</p>
+<p>Jacaré dos Homens (82)</p>
+<p>Jacuípe (82)</p>
+<p>Japaratinga (82)</p>
+<p>Jaramataia (82)</p>
+<p>Jequiá da Praia (82)</p>
+<p>Joaquim Gomes (82)</p>
+<p>Jundiá (82)</p>
+<p>Junqueiro (82)</p>
+<p>Lagoa da Canoa (82)</p>
+<p>Lagoa do Açú (82)</p>
+<p>Lagoa do Canto (82)</p>
+<p>Lagoa do Rancho (82)</p>
+<p>Lagoa Grande (82)</p>
+<p>Limoeiro de Anadia (82)</p>
+<p>Maceió (82) - Capital</p>
+<p>Major Isidoro (82)</p>
+<p>Maragogi (82)</p>
+<p>Maravilha (82)</p>
+<p>Marechal Deodoro (82)</p>
+<p>Maribondo (82)</p>
+<p>Mata Grande (82)</p>
+<p>Matriz de Camaragibe (82)</p>
+<p>Messias (82)</p>
+<p>Minador do Negrão (82)</p>
+<p>Monteirópolis (82)</p>
+<p>Murici (82)</p>
+<p>Novo Lino (82)</p>
+<p>Olho d’Água das Flores (82)</p>
+<p>Olho d’Água do Casado (82)</p>
+<p>Olho d’Água Grande (82)</p>
+<p>Olivença (82)</p>
+<p>Ouro Branco (82)</p>
+<p>Palestina (82)</p>
+<p>Palmeira dos Índios (82)</p>
+<p>Pão de Açúcar (82)</p>
+<p>Pariconha (82)</p>
+<p>Paripueira (82)</p>
+<p>Passo de Camaragibe (82)</p>
+<p>Paulo Jacinto (82)</p>
+<p>Penedo (82)</p>
+<p>Piaçabuçu (82)</p>
+<p>Pilar (82)</p>
+<p>Piranhas (82)</p>
+<p>Poço das Trincheiras (82)</p>
+<p>Porto Calvo (82)</p>
+<p>Porto de Pedras (82)</p>
+<p>Porto Real do Colégio (82)</p>
+<p>Quebrangulo (82)</p>
+<p>Rio Largo (82)</p>
+<p>Roteiro (82)</p>
+<p>Santa Luzia do Norte (82)</p>
+<p>Santana do Ipanema (82)</p>
+<p>Santana do Mundaú (82)</p>
+<p>São Brás (82)</p>
+<p>São José da Laje (82)</p>
+<p>São José da Tapera (82)</p>
+<p>São Luís do Quitunde (82)</p>
+<p>São Miguel dos Campos (82)</p>
+<p>São Miguel dos Milagres (82)</p>
+<p>São Sebastião (82)</p>
+<p>Satuba (82)</p>
+<p>Senador Rui Palmeira (82)</p>
+<p>Tanque d’Arca (82)</p>
+<p>Taquarana (82)</p>
+<p>Teotônio Vilela (82)</p>
+<p>Traipu (82)</p>
+<p>União dos Palmares (82)</p>
+<p>Viçosa (82)</p>
+    </div>
+  </div>
+  <div class="state-card" data-state="AP">
+    <h2>Amapá <span class="arrow">▶</span></h2>
+    <div class="cities">
+      <p>Amapá (96)</p>
+<p>Calçoene (96)</p>
+<p>Cutias (96)</p>
+<p>Ferreira Gomes (96)</p>
+<p>Itaubal (96)</p>
+<p>Laranjal do Jari (96)</p>
+<p>Macapá (96) - Capital</p>
+<p>Mazagão (96)</p>
+<p>Oiapoque (96)</p>
+<p>Pedra Branca do Amapari (96)</p>
+<p>Porto Grande (96)</p>
+<p>Pracuúba (96)</p>
+<p>Santana (96)</p>
+<p>Serra do Navio (96)</p>
+<p>Tartarugalzinho (96)</p>
+<p>Vitória do Jari (96)</p>
+    </div>
+  </div>
+  <div class="state-card" data-state="AM">
+    <h2>Amazonas <span class="arrow">▶</span></h2>
+    <div class="cities">
+      <p>Alvarães (92)</p>
+<p>Amaturá (97)</p>
+<p>Anamã (92)</p>
+<p>Anori (92)</p>
+<p>Apuí (97)</p>
+<p>Atalaia do Norte (97)</p>
+<p>Autazes (92)</p>
+<p>Barcelos (97)</p>
+<p>Barreirinha (92)</p>
+<p>Benjamin Constant (97)</p>
+<p>Beruri (97)</p>
+<p>Boa Vista do Ramos (92)</p>
+<p>Boca do Acre (97)</p>
+<p>Borba (92)</p>
+<p>Caapiranga (92)</p>
+<p>Canutama (97)</p>
+<p>Carauari (97)</p>
+<p>Careiro (92)</p>
+<p>Careiro da Várzea (92)</p>
+<p>Coari (97)</p>
+<p>Codajás (92)</p>
+<p>Eirunepé (97)</p>
+<p>Envira (97)</p>
+<p>Fonte Boa (97)</p>
+<p>Guajará (92)</p>
+<p>Humaitá (97)</p>
+<p>Ipixuna (97)</p>
+<p>Iranduba (92)</p>
+<p>Itacoatiara (92)</p>
+<p>Itamarati (97)</p>
+<p>Itapiranga (92)</p>
+<p>Japurá (97)</p>
+<p>Juruá (97)</p>
+<p>Jutaí (97)</p>
+<p>Lábrea (97)</p>
+<p>Manacapuru (92)</p>
+<p>Manaquiri (92)</p>
+<p>Manaus (92) - Capital</p>
+<p>Manicoré (97)</p>
+<p>Maraã (97)</p>
+<p>Maués (92)</p>
+<p>Nhamundá (92)</p>
+<p>Nova Olinda do Norte (92)</p>
+<p>Novo Airão (92)</p>
+<p>Novo Aripuanã (97)</p>
+<p>Parintins (92)</p>
+<p>Pauini (97)</p>
+<p>Presidente Figueiredo (92)</p>
+<p>Rio Preto da Eva (92)</p>
+<p>Santa Isabel do Rio Negro (97)</p>
+<p>Santo Antônio do Içá (97)</p>
+<p>São Gabriel da Cachoeira (97)</p>
+<p>São Paulo de Olivença (97)</p>
+<p>São Sebastião do Uatumã (92)</p>
+<p>Silves (92)</p>
+<p>Tabatinga (97)</p>
+<p>Tapauá (97)</p>
+<p>Tefé (97)</p>
+<p>Tonantins (97)</p>
+<p>Uarini (97)</p>
+<p>Urucará (92)</p>
+<p>Urucurituba (92)</p>
+    </div>
+  </div>
+  <div class="state-card" data-state="BA">
+    <h2>Bahia <span class="arrow">▶</span></h2>
+    <div class="cities">
+<p>Abaíra (77)</p>
+<p>Abaré (75)</p>
+<p>Acajutiba (75)</p>
+<p>Adustina (75)</p>
+<p>Água Fria (75)</p>
+<p>Aiquara (73)</p>
+<p>Alagoinhas (75)</p>
+<p>Alcobaça (73)</p>
+<p>Almadina (73)</p>
+<p>Amargosa (75)</p>
+<p>Amélia Rodrigues (75)</p>
+<p>América Dourada (74)</p>
+<p>Anagé (77)</p>
+<p>Andaraí (75)</p>
+<p>Andorinha (74)</p>
+<p>Angical (77)</p>
+<p>Anguera (75)</p>
+<p>Antas (75)</p>
+<p>Antônio Cardoso (75)</p>
+<p>Antônio Gonçalves (74)</p>
+<p>Aporá (75)</p>
+<p>Apuarema (73)</p>
+<p>Araçás (75)</p>
+<p>Aracatu (77)</p>
+<p>Araci (75)</p>
+<p>Aramari (75)</p>
+<p>Arataca (73)</p>
+<p>Aratuípe (75)</p>
+<p>Aurelino Leal (73)</p>
+<p>Baianópolis (77)</p>
+<p>Baixa Grande (74)</p>
+<p>Banzaê (75)</p>
+<p>Barra (74)</p>
+<p>Barra da Estiva (77)</p>
+<p>Barra do Choça (77)</p>
+<p>Barra do Mendes (74)</p>
+<p>Barra do Rocha (73)</p>
+<p>Barreiras (77)</p>
+<p>Barro Alto (74)</p>
+<p>Barro Preto (73)</p>
+<p>Barrocas (75)</p>
+<p>Belmonte (73)</p>
+<p>Belo Campo (77)</p>
+<p>Biritinga (75)</p>
+<p>Boa Nova (77)</p>
+<p>Boa Vista do Tupim (75)</p>
+<p>Bom Jesus da Lapa (77)</p>
+<p>Bom Jesus da Serra (77)</p>
+<p>Boninal (75)</p>
+<p>Bonito (75)</p>
+<p>Boquira (77)</p>
+<p>Botuporã (77)</p>
+<p>Brejões (75)</p>
+<p>Brejolândia (77)</p>
+<p>Brotas de Macaúbas (77)</p>
+<p>Brumado (77)</p>
+<p>Buerarema (73)</p>
+<p>Buritirama (77)</p>
+<p>Caatiba (77)</p>
+<p>Cabaceiras do Paraguaçu (75)</p>
+<p>Cachoeira (75)</p>
+<p>Caculé (77)</p>
+<p>Caém (74)</p>
+<p>Caetanos (77)</p>
+<p>Caetité (77)</p>
+<p>Cafarnaum (74)</p>
+<p>Cairu (75)</p>
+<p>Caldeirão Grande (74)</p>
+<p>Camacan (73)</p>
+<p>Camaçari (71)</p>
+<p>Camamu (73)</p>
+<p>Campo Alegre de Lourdes (74)</p>
+<p>Campo Formoso (74)</p>
+<p>Canápolis (77)</p>
+<p>Canarana (74)</p>
+<p>Canavieiras (73)</p>
+<p>Candeal (75)</p>
+<p>Candeias (71)</p>
+<p>Candiba (77)</p>
+<p>Cândido Sales (77)</p>
+<p>Cansanção (75)</p>
+<p>Canudos (75)</p>
+<p>Capela do Alto Alegre (75)</p>
+<p>Capim Grosso (74)</p>
+<p>Caraíbas (77)</p>
+<p>Caravelas (73)</p>
+<p>Cardeal da Silva (75)</p>
+<p>Carinhanha (77)</p>
+<p>Casa Nova (74)</p>
+<p>Castro Alves (75)</p>
+<p>Catolândia (77)</p>
+<p>Catu (71)</p>
+<p>Caturama (77)</p>
+<p>Central (74)</p>
+<p>Chorrochó (75)</p>
+<p>Cícero Dantas (75)</p>
+<p>Cipó (75)</p>
+<p>Coaraci (73)</p>
+<p>Cocos (77)</p>
+<p>Conceição da Feira (75)</p>
+<p>Conceição do Almeida (75)</p>
+<p>Conceição do Coité (75)</p>
+<p>Conceição do Jacuípe (75)</p>
+<p>Conde (75)</p>
+<p>Condeúba (77)</p>
+<p>Contendas do Sincorá (77)</p>
+<p>Coração de Maria (75)</p>
+<p>Cordeiros (77)</p>
+<p>Coribe (77)</p>
+<p>Coronel João Sá (75)</p>
+<p>Correntina (77)</p>
+<p>Cotegipe (77)</p>
+<p>Cravolândia (75)</p>
+<p>Crisópolis (75)</p>
+<p>Cristópolis (77)</p>
+<p>Cruz das Almas (75)</p>
+<p>Curaçá (74)</p>
+<p>Dário Meira (73)</p>
+<p>Dias d'Ávila (71)</p>
+<p>Dom Basílio (77)</p>
+<p>Dom Macedo Costa (75)</p>
+<p>Elísio Medrado (75)</p>
+<p>Encruzilhada (77)</p>
+<p>Entre Rios (75)</p>
+<p>Érico Cardoso (77)</p>
+<p>Esplanada (75)</p>
+<p>Euclides da Cunha (75)</p>
+<p>Eunápolis (73)</p>
+<p>Fátima (75)</p>
+<p>Feira da Mata (77)</p>
+<p>Feira de Santana (75)</p>
+<p>Filadélfia (74)</p>
+<p>Firmino Alves (73)</p>
+<p>Floresta Azul (73)</p>
+<p>Formosa do Rio Preto (77)</p>
+<p>Gandu (73)</p>
+<p>Gavião (75)</p>
+<p>Gentio do Ouro (74)</p>
+<p>Glória (75)</p>
+<p>Gongogi (73)</p>
+<p>Governador Mangabeira (75)</p>
+<p>Guajeru (77)</p>
+<p>Guanambi (77)</p>
+<p>Guaratinga (73)</p>
+<p>Heliópolis (75)</p>
+<p>Iaçu (75)</p>
+<p>Ibiassucê (77)</p>
+<p>Ibicaraí (73)</p>
+<p>Ibicoara (77)</p>
+<p>Ibicuí (73)</p>
+<p>Ibipeba (74)</p>
+<p>Ibipitanga (77)</p>
+<p>Ibiquera (75)</p>
+<p>Ibirapitanga (73)</p>
+<p>Ibirapuã (73)</p>
+<p>Ibirataia (73)</p>
+<p>Ibitiara (77)</p>
+<p>Ibititá (74)</p>
+<p>Ibotirama (77)</p>
+<p>Ichu (75)</p>
+<p>Igaporã (77)</p>
+<p>Igrapiúna (73)</p>
+<p>Iguaí (73)</p>
+<p>Ilhéus (73)</p>
+<p>Inhambupe (75)</p>
+<p>Ipecaetá (75)</p>
+<p>Ipiaú (73)</p>
+<p>Ipirá (75)</p>
+<p>Ipupiara (77)</p>
+<p>Irajuba (75)</p>
+<p>Iramaia (77)</p>
+<p>Iraquara (75)</p>
+<p>Irará (75)</p>
+<p>Irecê (74)</p>
+<p>Itabela (73)</p>
+<p>Itaberaba (75)</p>
+<p>Itabuna (73)</p>
+<p>Itacaré (73)</p>
+<p>Itaeté (75)</p>
+<p>Itagi (73)</p>
+<p>Itagibá (73)</p>
+<p>Itagimirim (73)</p>
+<p>Itaguaçu da Bahia (74)</p>
+<p>Itaju do Colônia (73)</p>
+<p>Itajuípe (73)</p>
+<p>Itamaraju (73)</p>
+<p>Itamari (73)</p>
+<p>Itambé (77)</p>
+<p>Itanagra (75)</p>
+<p>Itanhém (73)</p>
+<p>Itaparica (71)</p>
+<p>Itapê (73)</p>
+<p>Itapebi (73)</p>
+<p>Itapetinga (77)</p>
+<p>Itapicuru (75)</p>
+<p>Itapitanga (73)</p>
+<p>Itaquara (75)</p>
+<p>Itarantim (73)</p>
+<p>Itatim (75)</p>
+<p>Itiúba (74)</p>
+<p>Itororó (73)</p>
+<p>Ituaçu (77)</p>
+<p>Ituberá (73)</p>
+<p>Iuiu (77)</p>
+<p>Jaborandi (77)</p>
+<p>Jacaraci (77)</p>
+<p>Jacobina (74)</p>
+<p>Jaguaquara (73)</p>
+<p>Jaguarari (74)</p>
+<p>Jaguaripe (75)</p>
+<p>Jandaíra (75)</p>
+<p>Jequié (73)</p>
+<p>Jeremoabo (75)</p>
+<p>Jiquiriçá (75)</p>
+<p>Jitaúna (73)</p>
+<p>João Dourado (74)</p>
+<p>Juazeiro (74)</p>
+<p>Jucuruçu (73)</p>
+<p>Jussara (77)</p>
+<p>Jussari (73)</p>
+<p>Jussiape (77)</p>
+<p>Lafaiete Coutinho (73)</p>
+<p>Lagoa Real (77)</p>
+<p>Laje (75)</p>
+<p>Lajedão (73)</p>
+<p>Lajedinho (75)</p>
+<p>Lajedo do Tabocal (73)</p>
+<p>Lamarão (75)</p>
+<p>Lapão (74)</p>
+<p>Lauro de Freitas (71)</p>
+<p>Lençóis (75)</p>
+<p>Licínio de Almeida (77)</p>
+<p>Livramento de Nossa Senhora (77)</p>
+<p>Luís Eduardo Magalhães (77)</p>
+<p>Macajuba (74)</p>
+<p>Macarani (77)</p>
+<p>Macaúbas (77)</p>
+<p>Macururé (75)</p>
+<p>Madre de Deus (71)</p>
+<p>Maetinga (77)</p>
+<p>Maiquinique (77)</p>
+<p>Mairi (74)</p>
+<p>Malhada (77)</p>
+<p>Malhada de Pedras (77)</p>
+<p>Manoel Vitorino (73)</p>
+<p>Mansidão (77)</p>
+<p>Maracás (73)</p>
+<p>Maragogipe (75)</p>
+<p>Maraú (73)</p>
+<p>Marcionílio Souza (75)</p>
+<p>Mascote (73)</p>
+<p>Mata de São João (71)</p>
+<p>Matina (77)</p>
+<p>Medeiros Neto (73)</p>
+<p>Miguel Calmon (74)</p>
+<p>Milagres (75)</p>
+<p>Mirangaba (74)</p>
+<p>Mirante (77)</p>
+<p>Monte Santo (75)</p>
+<p>Morpará (77)</p>
+<p>Morro do Chapéu (74)</p>
+<p>Mortugaba (77)</p>
+<p>Mucugê (75)</p>
+<p>Mucuri (73)</p>
+<p>Mulungu do Morro (74)</p>
+<p>Mundo Novo (74)</p>
+<p>Muniz Ferreira (75)</p>
+<p>Muquém do São Francisco (77)</p>
+<p>Muritiba (75)</p>
+<p>Mutuípe (75)</p>
+<p>Nazaré (75)</p>
+<p>Nilo Peçanha (73)</p>
+<p>Nordestina (75)</p>
+<p>Nova Canaã (73)</p>
+<p>Nova Fátima (75)</p>
+<p>Nova Ibiá (73)</p>
+<p>Nova Itarana (75)</p>
+<p>Nova Redenção (75)</p>
+<p>Nova Soure (75)</p>
+<p>Nova Viçosa (73)</p>
+<p>Novo Horizonte (77)</p>
+<p>Novo Triunfo (75)</p>
+<p>Olindina (75)</p>
+<p>Oliveira dos Brejinhos (77)</p>
+<p>Ouriçangas (75)</p>
+<p>Ourolândia (74)</p>
+<p>Palmas de Monte Alto (77)</p>
+<p>Palmeiras (75)</p>
+<p>Paramirim (77)</p>
+<p>Paratinga (77)</p>
+<p>Paripiranga (75)</p>
+<p>Pau Brasil (73)</p>
+<p>Paulo Afonso (75)</p>
+<p>Pé de Serra (75)</p>
+<p>Pedrão (75)</p>
+<p>Pedro Alexandre (75)</p>
+<p>Piatã (77)</p>
+<p>Pilão Arcado (74)</p>
+<p>Pindaí (77)</p>
+<p>Pindobaçu (74)</p>
+<p>Pintadas (75)</p>
+<p>Piraí do Norte (73)</p>
+<p>Piripá (77)</p>
+<p>Piritiba (74)</p>
+<p>Planaltino (75)</p>
+<p>Planalto (77)</p>
+<p>Poções (77)</p>
+<p>Pojuca (71)</p>
+<p>Ponto Novo (74)</p>
+<p>Porto Seguro (73)</p>
+<p>Potiraguá (73)</p>
+<p>Prado (73)</p>
+<p>Presidente Dutra (75)</p>
+<p>Presidente Jânio Quadros (77)</p>
+<p>Presidente Tancredo Neves (73)</p>
+<p>Queimadas (75)</p>
+<p>Quijingue (75)</p>
+<p>Quixabeira (74)</p>
+<p>Rafael Jambeiro (75)</p>
+<p>Remanso (74)</p>
+<p>Retirolândia (75)</p>
+<p>Riachão das Neves (77)</p>
+<p>Riachão do Jacuípe (75)</p>
+<p>Riacho de Santana (77)</p>
+<p>Ribeira do Amparo (75)</p>
+<p>Ribeira do Pombal (75)</p>
+<p>Ribeirão do Largo (77)</p>
+<p>Rio de Contas (77)</p>
+<p>Rio do Antônio (77)</p>
+<p>Rio do Pires (77)</p>
+<p>Rio Real (75)</p>
+<p>Rodelas (75)</p>
+<p>Ruy Barbosa (75)</p>
+<p>Salinas da Margarida (75)</p>
+<p>Salvador (71) - Capital</p>
+<p>Santa Bárbara (75)</p>
+<p>Santa Brígida (75)</p>
+<p>Santa Cruz Cabrália (73)</p>
+<p>Santa Cruz da Vitória (73)</p>
+<p>Santa Inês (75)</p>
+<p>Santa Luzia (73)</p>
+<p>Santa Maria da Vitória (77)</p>
+<p>Santa Rita de Cássia (77)</p>
+<p>Santa Teresinha (75)</p>
+<p>Santaluz (75)</p>
+<p>Santana (77)</p>
+<p>Santanópolis (75)</p>
+<p>Santo Amaro (75)</p>
+<p>Santo Antônio de Jesus (75)</p>
+<p>Santo Estêvão (75)</p>
+<p>São Desidério (77)</p>
+<p>São Domingos (75)</p>
+<p>São Felipe (75)</p>
+<p>São Félix (75)</p>
+<p>São Félix do Coribe (77)</p>
+<p>São Francisco do Conde (71)</p>
+<p>São Gabriel (74)</p>
+<p>São Gonçalo dos Campos (75)</p>
+<p>São José da Vitória (73)</p>
+<p>São José do Jacuípe (74)</p>
+<p>São Miguel das Matas (75)</p>
+<p>São Sebastião do Passé (71)</p>
+<p>Sapeaçu (75)</p>
+<p>Sátiro Dias (75)</p>
+<p>Saubara (71)</p>
+<p>Saúde (74)</p>
+<p>Seabra (75)</p>
+<p>Sebastião Laranjeiras (77)</p>
+<p>Senhor do Bonfim (74)</p>
+<p>Sento Sé (74)</p>
+<p>Serra do Ramalho (77)</p>
+<p>Serra Dourada (77)</p>
+<p>Serra Preta (75)</p>
+<p>Serrinha (75)</p>
+<p>Serrolândia (74)</p>
+<p>Simões Filho (71)</p>
+<p>Sítio do Mato (77)</p>
+<p>Sítio do Quinto (75)</p>
+<p>Sobradinho (74)</p>
+<p>Souto Soares (74)</p>
+<p>Tabocas do Brejo Velho (77)</p>
+<p>Tanhaçu (77)</p>
+<p>Tanque Novo (77)</p>
+<p>Tanquinho (75)</p>
+<p>Taperoá (75)</p>
+<p>Tapiramutá (74)</p>
+<p>Teixeira de Freitas (73)</p>
+<p>Teodoro Sampaio (75)</p>
+<p>Teofilândia (75)</p>
+<p>Teolândia (73)</p>
+<p>Terra Nova (75)</p>
+<p>Tremedal (77)</p>
+<p>Tucano (75)</p>
+<p>Uauá (74)</p>
+<p>Ubaíra (75)</p>
+<p>Ubaitaba (73)</p>
+<p>Ubatã (73)</p>
+<p>Ubiraitinga (73)</p>
+<p>Uibaí (74)</p>
+<p>Umburanas (74)</p>
+<p>Una (73)</p>
+<p>Urandi (77)</p>
+<p>Uruçuca (73)</p>
+<p>Utinga (75)</p>
+<p>Valença (75)</p>
+<p>Valente (75)</p>
+<p>Várzea da Roça (74)</p>
+<p>Várzea do Poço (74)</p>
+<p>Várzea Nova (74)</p>
+<p>Varzedo (75)</p>
+<p>Vera Cruz (71)</p>
+<p>Vereda (73)</p>
+<p>Vitória da Conquista (77)</p>
+<p>Wagner (75)</p>
+<p>Wanderley (77)</p>
+<p>Wenceslau Guimarães (73)</p>
+<p>Xique-Xique (74)</p>
+    </div>
+  </div>
+  <div class="state-card" data-state="CE">
+    <h2>Ceará <span class="arrow">▶</span></h2>
+    <div class="cities">
+      <p>Abaiara (88)</p>
+<p>Acarape (85)</p>
+<p>Acaraú (88)</p>
+<p>Acopiara (88)</p>
+<p>Aiuaba (88)</p>
+<p>Alcântaras (88)</p>
+<p>Altaneira (88)</p>
+<p>Alto Santo (88)</p>
+<p>Amontada (88)</p>
+<p>Antonina do Norte (88)</p>
+<p>Apuiarés (85)</p>
+<p>Aquiraz (85)</p>
+<p>Aracati (88)</p>
+<p>Aracoiaba (85)</p>
+<p>Ararendá (88)</p>
+<p>Araripe (88)</p>
+<p>Aratuba (85)</p>
+<p>Arneiroz (88)</p>
+<p>Assaré (88)</p>
+<p>Aurora (88)</p>
+<p>Baixio (88)</p>
+<p>Banabuiú (88)</p>
+<p>Barbalha (88)</p>
+<p>Barreira (85)</p>
+<p>Barro (88)</p>
+<p>Barroquinha (88)</p>
+<p>Baturité (85)</p>
+<p>Beberibe (85)</p>
+<p>Bela Cruz (88)</p>
+<p>Boa Viagem (88)</p>
+<p>Brejo Santo (88)</p>
+<p>Camocim (88)</p>
+<p>Campos Sales (88)</p>
+<p>Canindé (85)</p>
+<p>Capistrano (85)</p>
+<p>Caridade (85)</p>
+<p>Cariré (88)</p>
+<p>Caririaçu (88)</p>
+<p>Cariús (88)</p>
+<p>Carnaubal (88)</p>
+<p>Cascavel (85)</p>
+<p>Catarina (88)</p>
+<p>Catunda (88)</p>
+<p>Caucaia (85)</p>
+<p>Cedro (88)</p>
+<p>Chaval (88)</p>
+<p>Choró (88)</p>
+<p>Chorozinho (85)</p>
+<p>Coreaú (88)</p>
+<p>Crateús (88)</p>
+<p>Crato (88)</p>
+<p>Croatá (88)</p>
+<p>Cruz (88)</p>
+<p>Deputado Irapuan Pinheiro (88)</p>
+<p>Ererê (88)</p>
+<p>Eusébio (85)</p>
+<p>Farias Brito (88)</p>
+<p>Forquilha (88)</p>
+<p>Fortaleza (85) - Capital</p>
+<p>Fortim (88)</p>
+<p>Frecheirinha (88)</p>
+<p>General Sampaio (85)</p>
+<p>Graça (88)</p>
+<p>Granja (88)</p>
+<p>Granjeiro (88)</p>
+<p>Groaíras (88)</p>
+<p>Guaiúba (85)</p>
+<p>Guaraciaba do Norte (88)</p>
+<p>Guaramiranga (85)</p>
+<p>Hidrolândia (88)</p>
+<p>Horizonte (85)</p>
+<p>Ibaretama (88)</p>
+<p>Ibiapina (88)</p>
+<p>Ibicuitinga (88)</p>
+<p>Icapuí (88)</p>
+<p>Icó (88)</p>
+<p>Iguatu (88)</p>
+<p>Independência (88)</p>
+<p>Ipaporanga (88)</p>
+<p>Ipaumirim (88)</p>
+<p>Ipu (88)</p>
+<p>Ipueiras (88)</p>
+<p>Iracema (88)</p>
+<p>Irauçuba (88)</p>
+<p>Itaiçaba (88)</p>
+<p>Itaitinga (85)</p>
+<p>Itapagé (85)</p>
+<p>Itapipoca (88)</p>
+<p>Itapiúna (88)</p>
+<p>Itarema (88)</p>
+<p>Itatira (88)</p>
+<p>Jaguaretama (88)</p>
+<p>Jaguaribara (88)</p>
+<p>Jaguaribe (88)</p>
+<p>Jaguaruana (88)</p>
+<p>Jardim (88)</p>
+<p>Jati (88)</p>
+<p>Jijoca de Jericoacoara (88)</p>
+<p>Juazeiro do Norte (88)</p>
+<p>Jucás (88)</p>
+<p>Lavras da Mangabeira (88)</p>
+<p>Limoeiro do Norte (88)</p>
+<p>Madalena (88)</p>
+<p>Maracanaú (85)</p>
+<p>Maranguape (85)</p>
+<p>Marco (88)</p>
+<p>Martinópole (88)</p>
+<p>Massapê (88)</p>
+<p>Mauriti (88)</p>
+<p>Meruoca (88)</p>
+<p>Milagres (88)</p>
+<p>Milhã (88)</p>
+<p>Miraíma (88)</p>
+<p>Missão Velha (88)</p>
+<p>Mombaça (88)</p>
+<p>Monsenhor Tabosa (88)</p>
+<p>Morada Nova (88)</p>
+<p>Moraújo (88)</p>
+<p>Morrinhos (88)</p>
+<p>Mucambo (88)</p>
+<p>Mulungu (85)</p>
+<p>Nova Olinda (88)</p>
+<p>Nova Russas (88)</p>
+<p>Novo Oriente (88)</p>
+<p>Ocara (85)</p>
+<p>Orós (88)</p>
+<p>Pacajus (85)</p>
+<p>Pacatuba (85)</p>
+<p>Pacoti (85)</p>
+<p>Pacujá (88)</p>
+<p>Palhano (88)</p>
+<p>Palmácia (85)</p>
+<p>Paracuru (85)</p>
+<p>Paraipaba (85)</p>
+<p>Parambu (88)</p>
+<p>Paramoti (85)</p>
+<p>Pedra Branca (88)</p>
+<p>Penaforte (88)</p>
+<p>Pentecoste (85)</p>
+<p>Pereiro (88)</p>
+<p>Pindoretama (85)</p>
+<p>Piquet Carneiro (88)</p>
+<p>Pires Ferreira (88)</p>
+<p>Poranga (88)</p>
+<p>Porteiras (88)</p>
+<p>Potengi (88)</p>
+<p>Potiretama (88)</p>
+<p>Quiterianópolis (88)</p>
+<p>Quixadá (88)</p>
+<p>Quixelô (88)</p>
+<p>Quixeramobim (88)</p>
+<p>Quixeré (88)</p>
+<p>Redenção (85)</p>
+<p>Reriutaba (88)</p>
+<p>Russas (88)</p>
+<p>Saboeiro (88)</p>
+<p>Salitre (88)</p>
+<p>Santa Quitéria (88)</p>
+<p>Santana do Acaraú (88)</p>
+<p>Santana do Cariri (88)</p>
+<p>São Benedito (88)</p>
+<p>São Gonçalo do Amarante (85)</p>
+<p>São João do Jaguaribe (88)</p>
+<p>São Luís do Curu (85)</p>
+<p>Senador Pompeu (88)</p>
+<p>Senador Sá (88)</p>
+<p>Sobral (88)</p>
+<p>Solonópole (88)</p>
+<p>Tabuleiro do Norte (88)</p>
+<p>Tamboril (88)</p>
+<p>Tarrafas (88)</p>
+<p>Tauá (88)</p>
+<p>Tejuçuoca (85)</p>
+<p>Tianguá (88)</p>
+<p>Trairi (85)</p>
+<p>Tururu (85)</p>
+<p>Ubajara (88)</p>
+<p>Umari (88)</p>
+<p>Umirim (85)</p>
+<p>Uruburetama (85)</p>
+<p>Uruoca (88)</p>
+<p>Varjota (88)</p>
+<p>Várzea Alegre (88)</p>
+<p>Viçosa do Ceará (88)</p>
+    </div>
+  </div>
+  <div class="state-card" data-state="DF">
+    <h2>Distrito Federal<span class="arrow">▶</span></h2>
+    <div class="cities">
+      <p>Águas Claras (61)</p>
+<p>Arniqueiras (61)</p>
+<p>Asa Norte (61)</p>
+<p>Asa Sul (61)</p>
+<p>Brasília (61) - Capital Do Brasil</p>
+<p>Brazlândia (61)</p>
+<p>Candangolândia (61)</p>
+<p>Ceilândia (61)</p>
+<p>Cidade Estrutural (61)</p>
+<p>Cruzeiro (61)</p>
+<p>Fercal (61)</p>
+<p>Gama (61)</p>
+<p>Guará (61)</p>
+<p>Itapoã (61)</p>
+<p>Jardim Botânico (61)</p>
+<p>Lago Norte (61)</p>
+<p>Lago Sul (61)</p>
+<p>Núcleo Bandeirante (61)</p>
+<p>Paranoá (61)</p>
+<p>Park Way (61)</p>
+<p>Planaltina (61)</p>
+<p>Recanto das Emas (61)</p>
+<p>Riacho Fundo (61)</p>
+<p>Riacho Fundo II (61)</p>
+<p>Samambaia Norte (61)</p>
+<p>Samambaia Sul (61)</p>
+<p>Santa Maria (61)</p>
+<p>São Sebastião (61)</p>
+<p>SCIA – Setor Complementar de Indústria e Abastecimento (61)</p>
+<p>SIA – Setor de Indústria e Abastecimento (61)</p>
+<p>Sobradinho (61)</p>
+<p>Taguatinga (61)</p>
+<p>Varjão (61)</p>
+<p>Vicente Pires (61)</p>
+    </div>
+  </div>
+  <div class="state-card" data-state="ES">
+    <h2>Espirito Santo <span class="arrow">▶</span></h2>
+    <div class="cities">
+      <p>Afonso Cláudio (27)</p>
+<p>Água Doce do Norte (27)</p>
+<p>Águia Branca (27)</p>
+<p>Alegre (28)</p>
+<p>Alfredo Chaves (27)</p>
+<p>Alto Rio Novo (27)</p>
+<p>Anchieta (28)</p>
+<p>Apiacá (28)</p>
+<p>Aracruz (27)</p>
+<p>Atílio Vivácqua (28)</p>
+<p>Baixo Guandu (27)</p>
+<p>Barra de São Francisco (27)</p>
+<p>Boa Esperança (35)</p>
+<p>Bom Jesus do Norte (28)</p>
+<p>Brejetuba (27)</p>
+<p>Cachoeiro de Itapemirim (28)</p>
+<p>Cariacica (27)</p>
+<p>Castelo (28)</p>
+<p>Colatina (27)</p>
+<p>Conceição da Barra (27)</p>
+<p>Conceição do Castelo (28)</p>
+<p>Divino de São Lourenço (28)</p>
+<p>Domingos Martins (27)</p>
+<p>Dores do Rio Preto (28)</p>
+<p>Ecoporanga (27)</p>
+<p>Fundão (27)</p>
+<p>Governador Lindenberg (27)</p>
+<p>Guaçuí (28)</p>
+<p>Guarapari (27)</p>
+<p>Ibatiba (28)</p>
+<p>Ibiraçu (27)</p>
+<p>Ibitirama (28)</p>
+<p>Iconha (28)</p>
+<p>Irupi (28)</p>
+<p>Itaguaçu (27)</p>
+<p>Itapemirim (28)</p>
+<p>Itarana (27)</p>
+<p>Iúna (28)</p>
+<p>Jaguaré (27)</p>
+<p>Jerônimo Monteiro (28)</p>
+<p>João Neiva (27)</p>
+<p>Laranja da Terra (27)</p>
+<p>Linhares (27)</p>
+<p>Mantenópolis (27)</p>
+<p>Marataízes (28)</p>
+<p>Marechal Floriano (27)</p>
+<p>Marilândia (27)</p>
+<p>Mimoso do Sul (28)</p>
+<p>Montanha (27)</p>
+<p>Mucurici (27)</p>
+<p>Muniz Freire (28)</p>
+<p>Muqui (28)</p>
+<p>Nova Venécia (27)</p>
+<p>Pancas (27)</p>
+<p>Pedro Canário (27)</p>
+<p>Pinheiros (27)</p>
+<p>Piúma (28)</p>
+<p>Ponto Belo (27)</p>
+<p>Presidente Kennedy (28)</p>
+<p>Rio Bananal (27)</p>
+<p>Rio Novo do Sul (28)</p>
+<p>Santa Leopoldina (27)</p>
+<p>Santa Maria de Jetibá (27)</p>
+<p>Santa Teresa (27)</p>
+<p>São Domingos do Norte (27)</p>
+<p>São Gabriel da Palha (27)</p>
+<p>São José do Calçado (28)</p>
+<p>São Mateus (27)</p>
+<p>São Roque do Canaã (27)</p>
+<p>Serra (27)</p>
+<p>Sooretama (27)</p>
+<p>Vargem Alta (28)</p>
+<p>Venda Nova do Imigrante (28)</p>
+<p>Viana (27)</p>
+<p>Vila Pavão (27)</p>
+<p>Vila Valério (27)</p>
+<p>Vila Velha (27)</p>
+<p>Vitória (27) - Capital</p>
+    </div>
+  </div>
+  <div class="state-card" data-state="GO">
+    <h2>Goiás <span class="arrow">▶</span></h2>
+    <div class="cities">
+      <p>Abadia de Goiás (62)</p>
+<p>Abadiânia (62)</p>
+<p>Acreúna (64)</p>
+<p>Adelândia (64)</p>
+<p>Água Fria de Goiás (62)</p>
+<p>Água Limpa (64)</p>
+<p>Águas Lindas de Goiás (61)</p>
+<p>Alexânia (62)</p>
+<p>Aloândia (64)</p>
+<p>Alto Horizonte (62)</p>
+<p>Alto Paraíso de Goiás (62)</p>
+<p>Alvorada do Norte (62)</p>
+<p>Amaralina (62)</p>
+<p>Americano do Brasil (64)</p>
+<p>Amorinópolis (64)</p>
+<p>Anápolis (62)</p>
+<p>Anhanguera (64)</p>
+<p>Anicuns (64)</p>
+<p>Aparecida de Goiânia (62)</p>
+<p>Aparecida do Rio Doce (64)</p>
+<p>Aporé (64)</p>
+<p>Araçu (62)</p>
+<p>Aragarças (64)</p>
+<p>Aragoiânia (62)</p>
+<p>Araguapaz (62)</p>
+<p>Arenópolis (64)</p>
+<p>Aruanã (62)</p>
+<p>Aurilândia (64)</p>
+<p>Avelinópolis (64)</p>
+<p>Baliza (64)</p>
+<p>Barro Alto (62)</p>
+<p>Bela Vista de Goiás (62)</p>
+<p>Bom Jardim de Goiás (64)</p>
+<p>Bom Jesus de Goiás (64)</p>
+<p>Bonfinópolis (62)</p>
+<p>Bonópolis (62)</p>
+<p>Brazabrantes (62)</p>
+<p>Britânia (62)</p>
+<p>Buriti Alegre (64)</p>
+<p>Buriti de Goiás (64)</p>
+<p>Buritinópolis (62)</p>
+<p>Cabeceiras (61)</p>
+<p>Cachoeira Alta (64)</p>
+<p>Cachoeira de Goiás (64)</p>
+<p>Cachoeira Dourada (64)</p>
+<p>Caçu (64)</p>
+<p>Caiapônia (64)</p>
+<p>Caldas Novas (64)</p>
+<p>Caldazinha (62)</p>
+<p>Campestre de Goiás (62)</p>
+<p>Campinaçu (62)</p>
+<p>Campinorte (62)</p>
+<p>Campo Alegre de Goiás (64)</p>
+<p>Campo Limpo de Goiás (62)</p>
+<p>Campos Belos (62)</p>
+<p>Campos Verdes (62)</p>
+<p>Carmo do Rio Verde (62)</p>
+<p>Castelândia (64)</p>
+<p>Catalão (64)</p>
+<p>Caturaí (62)</p>
+<p>Cavalcante (62)</p>
+<p>Ceres (62)</p>
+<p>Cezarina (64)</p>
+<p>Chapadão do Céu (64)</p>
+<p>Cidade Ocidental (61)</p>
+<p>Cocalzinho de Goiás (62)</p>
+<p>Colinas do Sul (62)</p>
+<p>Córrego do Ouro (64)</p>
+<p>Corumbá de Goiás (62)</p>
+<p>Corumbaíba (64)</p>
+<p>Cristalina (61)</p>
+<p>Cristianópolis (64)</p>
+<p>Crixás (62)</p>
+<p>Cromínia (64)</p>
+<p>Cumari (64)</p>
+<p>Damianópolis (62)</p>
+<p>Damolândia (62)</p>
+<p>Davinópolis (64)</p>
+<p>Diorama (64)</p>
+<p>Divinópolis de Goiás (62)</p>
+<p>Doverlândia (64)</p>
+<p>Edealina (64)</p>
+<p>Edéia (64)</p>
+<p>Estrela do Norte (62)</p>
+<p>Faina (62)</p>
+<p>Fazenda Nova (62)</p>
+<p>Firminópolis (64)</p>
+<p>Flores de Goiás (62)</p>
+<p>Formosa (61)</p>
+<p>Formoso (62)</p>
+<p>Gameleira de Goiás (62)</p>
+<p>Goianápolis (62)</p>
+<p>Goiandira (64)</p>
+<p>Goianésia (62)</p>
+<p>Goiânia (62) - Goiânia</p>
+<p>Goianira (62)</p>
+<p>Goiás (62)</p>
+<p>Goiatuba (64)</p>
+<p>Gouvelândia (64)</p>
+<p>Guapó (62)</p>
+<p>Guaraíta (62)</p>
+<p>Guarani de Goiás (62)</p>
+<p>Guarinos (62)</p>
+<p>Heitoraí (62)</p>
+<p>Hidrolândia (62)</p>
+<p>Hidrolina (62)</p>
+<p>Iaciara (62)</p>
+<p>Inaciolândia (64)</p>
+<p>Indiara (64)</p>
+<p>Inhumas (62)</p>
+<p>Ipameri (64)</p>
+<p>Ipiranga de Goiás (62)</p>
+<p>Iporá (64)</p>
+<p>Israelândia (64)</p>
+<p>Itaberaí (62)</p>
+<p>Itaguá (64)</p>
+<p>Itaguari (62)</p>
+<p>Itaguaru (62)</p>
+<p>Itajá (64)</p>
+<p>Itapaci (62)</p>
+<p>Itapirapuã (62)</p>
+<p>Itapuranga (62)</p>
+<p>Itarumã (64)</p>
+<p>Itauçu (62)</p>
+<p>Itumbiara (64)</p>
+<p>Ivolândia (64)</p>
+<p>Jandaia (64)</p>
+<p>Jaraguá (62)</p>
+<p>Jataí (64)</p>
+<p>Jaupaci (64)</p>
+<p>Jesúpolis (62)</p>
+<p>Joviânia (64)</p>
+<p>Jussara (62)</p>
+<p>Lagoa Santa (64)</p>
+<p>Leopoldo de Bulhões (62)</p>
+<p>Luziânia (61)</p>
+<p>Mairipotaba (64)</p>
+<p>Mambaí (62)</p>
+<p>Mara Rosa (62)</p>
+<p>Marzagão (64)</p>
+<p>Matrinchã (62)</p>
+<p>Maurilândia (64)</p>
+<p>Mimoso de Goiás (62)</p>
+<p>Minaçu (62)</p>
+<p>Mineiros (64)</p>
+<p>Moiporá (64)</p>
+<p>Monte Alegre de Goiás (62)</p>
+<p>Montes Claros de Goiás (62)</p>
+<p>Montividiu (64)</p>
+<p>Montividiu do Norte (62)</p>
+<p>Morrinhos (64)</p>
+<p>Morro Agudo de Goiás (62)</p>
+<p>Mossâmedes (64)</p>
+<p>Mozarlândia (62)</p>
+<p>Mundo Novo (62)</p>
+<p>Mutunópolis (62)</p>
+<p>Nazário (64)</p>
+<p>Nerópolis (62)</p>
+<p>Niquelândia (62)</p>
+<p>Nova América (62)</p>
+<p>Nova Aurora (64)</p>
+<p>Nova Crixás (62)</p>
+<p>Nova Glória (62)</p>
+<p>Nova Iguaçu de Goiás (62)</p>
+<p>Nova Roma (62)</p>
+<p>Nova Veneza (62)</p>
+<p>Novo Brasil (62)</p>
+<p>Novo Gama (61)</p>
+<p>Novo Planalto (62)</p>
+<p>Orizona (64)</p>
+<p>Ouro Verde de Goiás (62)</p>
+<p>Ouvidor (64)</p>
+<p>Padre Bernardo (61)</p>
+<p>Palestina de Goiás (64)</p>
+<p>Palmeiras de Goiás (64)</p>
+<p>Palmelo (64)</p>
+<p>Palminópolis (64)</p>
+<p>Panamá (64)</p>
+<p>Paranaiguara (64)</p>
+<p>Paraúna (64)</p>
+<p>Perolândia (64)</p>
+<p>Petrolina de Goiás (62)</p>
+<p>Pilar de Goiás (62)</p>
+<p>Piracanjuba (64)</p>
+<p>Piranhas (64)</p>
+<p>Pirenópolis (62)</p>
+<p>Pires do Rio (64)</p>
+<p>Planaltina (61)</p>
+<p>Pontalina (64)</p>
+<p>Porangatu (62)</p>
+<p>Porteirão (64)</p>
+<p>Portelândia (64)</p>
+<p>Posse (62)</p>
+<p>Professor Jamil (64)</p>
+<p>Quirinópolis (64)</p>
+<p>Rialma (62)</p>
+<p>Rianápolis (62)</p>
+<p>Rio Quente (64)</p>
+<p>Rio Verde (64)</p>
+<p>Rubiataba (62)</p>
+<p>Sanclerlândia (64)</p>
+<p>Santa Bárbara de Goiás (62)</p>
+<p>Santa Cruz de Goiás (64)</p>
+<p>Santa Fé de Goiás (62)</p>
+<p>Santa Helena de Goiás (64)</p>
+<p>Santa Isabel (62)</p>
+<p>Santa Rita do Araguaia (64)</p>
+<p>Santa Rita do Novo Destino (62)</p>
+<p>Santa Rosa de Goiás (62)</p>
+<p>Santa Tereza de Goiás (62)</p>
+<p>Santa Terezinha de Goiás (62)</p>
+<p>Santo Antônio da Barra (64)</p>
+<p>Santo Antônio de Goiás (62)</p>
+<p>Santo Antônio do Descoberto (61)</p>
+<p>São Domingos (62)</p>
+<p>São Francisco de Goiás (62)</p>
+<p>São João da Paraúna (64)</p>
+<p>São João d'Aliança (62)</p>
+<p>São Luís de Montes Belos (64)</p>
+<p>São Luiz do Norte (62)</p>
+<p>São Miguel do Araguaia (62)</p>
+<p>São Miguel do Passa Quatro (62)</p>
+<p>São Patrício (62)</p>
+<p>São Simão (64)</p>
+<p>Senador Canedo (62)</p>
+<p>Serranópolis (64)</p>
+<p>Silvânia (62)</p>
+<p>Simolândia (62)</p>
+<p>Sítio d'Abadia (62)</p>
+<p>Taquaral de Goiás (62)</p>
+<p>Teresina de Goiás (62)</p>
+<p>Terezópolis de Goiás (62)</p>
+<p>Três Ranchos (64)</p>
+<p>Trindade (62)</p>
+<p>Trombas (62)</p>
+<p>Turvânia (64)</p>
+<p>Turvelândia (64)</p>
+<p>Uirapuru (62)</p>
+<p>Uruaçu (62)</p>
+<p>Uruana (62)</p>
+<p>Urutaí (64)</p>
+<p>Valparaíso de Goiás (61)</p>
+<p>Varjão (62)</p>
+<p>Vianópolis (62)</p>
+<p>Vicentinópolis (64)</p>
+<p>Vila Boa (62)</p>
+<p>Vila Propício (62)</p>
+    </div>
+  </div>
+  <div class="state-card" data-state="MA">
+    <h2>Maranhão<span class="arrow">▶</span></h2>
+    <div class="cities">
+      <p>Açailândia (99)</p>
+<p>Água Doce do Maranhão (98)</p>
+<p>Alcântara (98)</p>
+<p>Aldeias Altas (99)</p>
+<p>Altamira do Maranhão (98)</p>
+<p>Alto Alegre do Maranhão (99)</p>
+<p>Alto Alegre do Pindaré (98)</p>
+<p>Alto Parnaíba (99)</p>
+<p>Amapá do Maranhão (98)</p>
+<p>Amarante do Maranhão (99)</p>
+<p>Anajatuba (98)</p>
+<p>Anapurus (98)</p>
+<p>Apicum-Açu (98)</p>
+<p>Araguanã (98)</p>
+<p>Araioses (98)</p>
+<p>Arame (99)</p>
+<p>Arari (98)</p>
+<p>Axixá (98)</p>
+<p>Bacabal (99)</p>
+<p>Bacabeira (98)</p>
+<p>Bacuri (98)</p>
+<p>Bacurituba (98)</p>
+<p>Balsas (99)</p>
+<p>Barão de Grajaú (99)</p>
+<p>Barra do Corda (99)</p>
+<p>Barreirinhas (98)</p>
+<p>Bela Vista do Maranhão (98)</p>
+<p>Belágua (98)</p>
+<p>Benedito Leite (99)</p>
+<p>Bequimão (98)</p>
+<p>Bernardo do Mearim (99)</p>
+<p>Boa Vista do Gurupi (98)</p>
+<p>Bom Jardim (98)</p>
+<p>Bom Jesus das Selvas (99)</p>
+<p>Bom Lugar (99)</p>
+<p>Brejo (98)</p>
+<p>Brejo de Areia (98)</p>
+<p>Buriti (98)</p>
+<p>Buriti Bravo (99)</p>
+<p>Buriticupu (98)</p>
+<p>Buritirana (99)</p>
+<p>Cachoeira Grande (98)</p>
+<p>Cajapió (98)</p>
+<p>Cajari (98)</p>
+<p>Campestre do Maranhão (99)</p>
+<p>Cândido Mendes (98)</p>
+<p>Cantanhede (98)</p>
+<p>Capinzal do Norte (99)</p>
+<p>Carolina (99)</p>
+<p>Carutapera (98)</p>
+<p>Caxias (99)</p>
+<p>Cedral (98)</p>
+<p>Central do Maranhão (98)</p>
+<p>Centro do Guilherme (98)</p>
+<p>Centro Novo do Maranhão (98)</p>
+<p>Chapadinha (98)</p>
+<p>Cidelândia (99)</p>
+<p>Codó (99)</p>
+<p>Coelho Neto (98)</p>
+<p>Colinas (99)</p>
+<p>Conceição do Lago-Açu (98)</p>
+<p>Coroatá (99)</p>
+<p>Cururupu (98)</p>
+<p>Davinópolis (99)</p>
+<p>Dom Pedro (99)</p>
+<p>Duque Bacelar (98)</p>
+<p>Esperantinópolis (99)</p>
+<p>Estreito (99)</p>
+<p>Feira Nova do Maranhão (99)</p>
+<p>Fernando Falcão (99)</p>
+<p>Formosa da Serra Negra (99)</p>
+<p>Fortaleza dos Nogueiras (99)</p>
+<p>Fortuna (99)</p>
+<p>Godofredo Viana (98)</p>
+<p>Gonçalves Dias (99)</p>
+<p>Governador Archer (99)</p>
+<p>Governador Edison Lobão (99)</p>
+<p>Governador Eugênio Barros (99)</p>
+<p>Governador Luiz Rocha (99)</p>
+<p>Governador Newton Bello (98)</p>
+<p>Governador Nunes Freire (98)</p>
+<p>Graça Aranha (99)</p>
+<p>Grajaú (99)</p>
+<p>Guimarães (98)</p>
+<p>Humberto de Campos (98)</p>
+<p>Icatu (98)</p>
+<p>Igarapé do Meio (98)</p>
+<p>Igarapé Grande (99)</p>
+<p>Imperatriz (99)</p>
+<p>Itaipava do Grajaú (99)</p>
+<p>Itapecuru Mirim (98)</p>
+<p>Itinga do Maranhão (99)</p>
+<p>Jatobá (99)</p>
+<p>Jenipapo dos Vieiras (99)</p>
+<p>João Lisboa (99)</p>
+<p>Joselândia (99)</p>
+<p>Junco do Maranhão (98)</p>
+<p>Lago da Pedra (99)</p>
+<p>Lago do Junco (99)</p>
+<p>Lago dos Rodrigues (99)</p>
+<p>Lago Verde (99)</p>
+<p>Lagoa do Mato (99)</p>
+<p>Lagoa Grande do Maranhão (98)</p>
+<p>Lajeado Novo (99)</p>
+<p>Lima Campos (99)</p>
+<p>Loreto (99)</p>
+<p>Luís Domingues (98)</p>
+<p>Magalhães de Almeida (98)</p>
+<p>Maracaçumé (98)</p>
+<p>Marajá do Sena (99)</p>
+<p>Maranhãozinho (98)</p>
+<p>Mata Roma (98)</p>
+<p>Matinha (98)</p>
+<p>Matões (99)</p>
+<p>Matões do Norte (98)</p>
+<p>Milagres do Maranhão (99)</p>
+<p>Mirador (99)</p>
+<p>Miranda do Norte (98)</p>
+<p>Mirinzal (98)</p>
+<p>Monção (98)</p>
+<p>Montes Altos (99)</p>
+<p>Morros (98)</p>
+<p>Nina Rodrigues (98)</p>
+<p>Nova Colinas (99)</p>
+<p>Nova Iorque (99)</p>
+<p>Nova Olinda do Maranhão (98)</p>
+<p>Olho d'Água das Cunhãs (98)</p>
+<p>Olinda Nova do Maranhão (98)</p>
+<p>Paço do Lumiar (98)</p>
+<p>Palmeirândia (98)</p>
+<p>Paraibano (99)</p>
+<p>Parnarama (99)</p>
+<p>Passagem Franca (99)</p>
+<p>Pastos Bons (99)</p>
+<p>Paulino Neves (98)</p>
+<p>Paulo Ramos (99)</p>
+<p>Pedreiras (99)</p>
+<p>Pedro do Rosário (98)</p>
+<p>Penalva (98)</p>
+<p>Peri Mirim (98)</p>
+<p>Peritoró (99)</p>
+<p>Pindaré-Mirim (98)</p>
+<p>Pinheiro (98)</p>
+<p>Pio XII (98)</p>
+<p>Pirapemas (98)</p>
+<p>Poção de Pedras (99)</p>
+<p>Porto Franco (99)</p>
+<p>Porto Rico do Maranhão (98)</p>
+<p>Presidente Dutra (99)</p>
+<p>Presidente Juscelino (98)</p>
+<p>Presidente Médici (99)</p>
+<p>Presidente Sarney (98)</p>
+<p>Presidente Vargas (98)</p>
+<p>Primeira Cruz (98)</p>
+<p>Raposa (98)</p>
+<p>Riachão (99)</p>
+<p>Ribamar Fiquene (99)</p>
+<p>Rosário (98)</p>
+<p>Sambaíba (99)</p>
+<p>Santa Filomena do Maranhão (99)</p>
+<p>Santa Helena (98)</p>
+<p>Santa Inês (98)</p>
+<p>Santa Luzia (99)</p>
+<p>Santa Luzia do Paruá (98)</p>
+<p>Santa Quitéria do Maranhão (98)</p>
+<p>Santa Rita (98)</p>
+<p>Santana do Maranhão (98)</p>
+<p>Santo Amaro do Maranhão (98)</p>
+<p>Santo Antônio dos Lopes (99)</p>
+<p>São Benedito do Rio Preto (98)</p>
+<p>São Bento (98)</p>
+<p>São Bernardo (98)</p>
+<p>São Domingos do Azeitão (99)</p>
+<p>São Domingos do Maranhão (99)</p>
+<p>São Félix de Balsas (99)</p>
+<p>São Francisco do Brejão (99)</p>
+<p>São Francisco do Maranhão (99)</p>
+<p>São João Batista (98)</p>
+<p>São João do Carú (99)</p>
+<p>São João do Paraíso (99)</p>
+<p>São João do Soter (99)</p>
+<p>São João dos Patos (99)</p>
+<p>São José de Ribamar (98)</p>
+<p>São José dos Basílios (99)</p>
+<p>São Luís (98) - Capital</p>
+<p>São Luís Gonzaga do Maranhão (99)</p>
+<p>São Mateus do Maranhão (99)</p>
+<p>São Pedro da Água Branca (99)</p>
+<p>São Pedro dos Crentes (99)</p>
+<p>São Raimundo das Mangabeiras (99)</p>
+<p>São Raimundo do Doca Bezerra (98)</p>
+<p>São Roberto (99)</p>
+<p>São Vicente Ferrer (98)</p>
+<p>Satubinha (99)</p>
+<p>Senador Alexandre Costa (99)</p>
+<p>Senador La Rocque (99)</p>
+<p>Serrano do Maranhão (98)</p>
+<p>Sítio Novo (99)</p>
+<p>Sucupira do Norte (99)</p>
+<p>Sucupira do Riachão (99)</p>
+<p>Tasso Fragoso (99)</p>
+<p>Timbiras (99)</p>
+<p>Timon (99)</p>
+<p>Trizidela do Vale (99)</p>
+<p>Tufilândia (98)</p>
+<p>Tuntum (99)</p>
+<p>Turiaçu (98)</p>
+<p>Turilândia (98)</p>
+<p>Tutóia (98)</p>
+<p>Urbano Santos (98)</p>
+<p>Vargem Grande (98)</p>
+<p>Viana (98)</p>
+<p>Vila Nova dos Martírios (99)</p>
+<p>Vitória do Mearim (98)</p>
+<p>Vitorino Freire (99)</p>
+<p>Zé Doca (98)</p>
+    </div>
+  </div>
+  <div class="state-card" data-state="MT">
+    <h2>Mato Grosso <span class="arrow">▶</span></h2>
+    <div class="cities">
+      <p>Acorizal (65)</p>
+<p>Água Boa (66)</p>
+<p>Alta Floresta (66)</p>
+<p>Alto Araguaia (66)</p>
+<p>Alto Boa Vista (66)</p>
+<p>Alto Garças (66)</p>
+<p>Alto Paraguai (65)</p>
+<p>Alto Taquari (66)</p>
+<p>Apiacás (66)</p>
+<p>Araguaiana (66)</p>
+<p>Araguainha (66)</p>
+<p>Araputanga (65)</p>
+<p>Arenápolis (65)</p>
+<p>Aripuanã (66)</p>
+<p>Barão de Melgaço (65)</p>
+<p>Barra do Bugres (65)</p>
+<p>Barra do Garças (66)</p>
+<p>Boa Esperança do Norte (66)</p>
+<p>Bom Jesus do Araguaia (66)</p>
+<p>Brasnorte (66)</p>
+<p>Cáceres (65)</p>
+<p>Campinápolis (66)</p>
+<p>Campo Novo do Parecis (65)</p>
+<p>Campo Verde (66)</p>
+<p>Campos de Júlio (65)</p>
+<p>Canabrava do Norte (66)</p>
+<p>Canarana (66)</p>
+<p>Carlinda (66)</p>
+<p>Castanheira (66)</p>
+<p>Chapada dos Guimarães (65)</p>
+<p>Cláudia (66)</p>
+<p>Cocalinho (66)</p>
+<p>Colíder (66)</p>
+<p>Colniza (66)</p>
+<p>Comodoro (65)</p>
+<p>Confresa (66)</p>
+<p>Conquista d'Oeste (65)</p>
+<p>Cotriguaçu (66)</p>
+<p>Cuiabá (65) - Capital</p>
+<p>Curvelândia (65)</p>
+<p>Denise (65)</p>
+<p>Diamantino (65)</p>
+<p>Dom Aquino (66)</p>
+<p>Feliz Natal (66)</p>
+<p>Figueirópolis d'Oeste (65)</p>
+<p>Gaúcha do Norte (66)</p>
+<p>General Carneiro (66)</p>
+<p>Glória d'Oeste (65)</p>
+<p>Guarantã do Norte (66)</p>
+<p>Guiratinga (66)</p>
+<p>Indiavaí (65)</p>
+<p>Ipiranga do Norte (66)</p>
+<p>Itanhangá (66)</p>
+<p>Itaúba (66)</p>
+<p>Itiquira (65)</p>
+<p>Jaciara (66)</p>
+<p>Jangada (65)</p>
+<p>Jauru (65)</p>
+<p>Juara (66)</p>
+<p>Juína (66)</p>
+<p>Juruena (66)</p>
+<p>Juscimeira (66)</p>
+<p>Lambari d'Oeste (65)</p>
+<p>Lucas do Rio Verde (65)</p>
+<p>Luciara (66)</p>
+<p>Marcelândia (66)</p>
+<p>Matupá (66)</p>
+<p>Mirassol d'Oeste (65)</p>
+<p>Nobres (65)</p>
+<p>Nortelândia (65)</p>
+<p>Nossa Senhora do Livramento (65)</p>
+<p>Nova Bandeirantes (66)</p>
+<p>Nova Brasilândia (66)</p>
+<p>Nova Canaã do Norte (66)</p>
+<p>Nova Guarita (66)</p>
+<p>Nova Lacerda (65)</p>
+<p>Nova Marilândia (65)</p>
+<p>Nova Maringá (66)</p>
+<p>Nova Monte Verde (66)</p>
+<p>Nova Mutum (65)</p>
+<p>Nova Nazaré (66)</p>
+<p>Nova Olímpia (65)</p>
+<p>Nova Santa Helena (66)</p>
+<p>Nova Ubiratã (66)</p>
+<p>Nova Xavantina (66)</p>
+<p>Novo Horizonte do Norte (66)</p>
+<p>Novo Mundo (66)</p>
+<p>Novo Santo Antônio (66)</p>
+<p>Novo São Joaquim (66)</p>
+<p>Paranaíta (66)</p>
+<p>Paranatinga (66)</p>
+<p>Pedra Preta (66)</p>
+<p>Peixoto de Azevedo (66)</p>
+<p>Planalto da Serra (66)</p>
+<p>Poconé (65)</p>
+<p>Pontal do Araguaia (66)</p>
+<p>Ponte Branca (66)</p>
+<p>Pontes e Lacerda (65)</p>
+<p>Porto Alegre do Norte (66)</p>
+<p>Porto dos Gaúchos (66)</p>
+<p>Porto Esperidião (65)</p>
+<p>Porto Estrela (65)</p>
+<p>Poxoréu (66)</p>
+<p>Primavera do Leste (66)</p>
+<p>Querência (66)</p>
+<p>Reserva do Cabaçal (65)</p>
+<p>Ribeirão Cascalheira (66)</p>
+<p>Ribeirãozinho (66)</p>
+<p>Rio Branco (65)</p>
+<p>Rondolândia (66)</p>
+<p>Rondonópolis (66)</p>
+<p>Rosário Oeste (65)</p>
+<p>Salto do Céu (65)</p>
+<p>Santa Carmem (66)</p>
+<p>Santa Cruz do Xingu (66)</p>
+<p>Santa Rita do Trivelato (65)</p>
+<p>Santa Terezinha (66)</p>
+<p>Santo Afonso (65)</p>
+<p>Santo Antônio do Leste (66)</p>
+<p>Santo Antônio do Leverger (65)</p>
+<p>São Félix do Araguaia (66)</p>
+<p>São José do Povo (66)</p>
+<p>São José do Rio Claro (65)</p>
+<p>São José do Xingu (66)</p>
+<p>São José dos Quatro Marcos (65)</p>
+<p>São Pedro da Cipa (66)</p>
+<p>Sapezal (65)</p>
+<p>Serra Nova Dourada (66)</p>
+<p>Sinop (66)</p>
+<p>Sorriso (66)</p>
+<p>Tabaporã (66)</p>
+<p>Tangará da Serra (65)</p>
+<p>Tapurah (66)</p>
+<p>Terra Nova do Norte (66)</p>
+<p>Tesouro (66)</p>
+<p>Torixoréu (66)</p>
+<p>União do Sul (66)</p>
+<p>Vale de São Domingos (65)</p>
+<p>Várzea Grande (65)</p>
+<p>Vera (66)</p>
+<p>Vila Bela da Santíssima Trindade (65)</p>
+<p>Vila Rica (66)</p>
+<p>Vitória (65)</p>
+    </div>
+  </div>
+  <div class="state-card" data-state="MS">
+    <h2>Mato Grosso Do Sul <span class="arrow">▶</span></h2>
+    <div class="cities">
+      <p>Água Clara (67)</p>
+<p>Alcinópolis (67)</p>
+<p>Amambai (67)</p>
+<p>Anastácio (67)</p>
+<p>Anaurilândia (67)</p>
+<p>Angélica (67)</p>
+<p>Antônio João (67)</p>
+<p>Aparecida do Taboado (67)</p>
+<p>Aquidauana (67)</p>
+<p>Aral Moreira (67)</p>
+<p>Bandeirantes (67)</p>
+<p>Bataguassu (67)</p>
+<p>Batayporã (67)</p>
+<p>Bela Vista (67)</p>
+<p>Bodoquena (67)</p>
+<p>Bonito (67)</p>
+<p>Brasilândia (67)</p>
+<p>Caarapó (67)</p>
+<p>Camapuã (67)</p>
+<p>Campo Grande (67) - Capital</p>
+<p>Caracol (67)</p>
+<p>Cassilândia (67)</p>
+<p>Chapadão do Sul (67)</p>
+<p>Corguinho (67)</p>
+<p>Coronel Sapucaia (67)</p>
+<p>Corumbá (67)</p>
+<p>Costa Rica (67)</p>
+<p>Coxim (67)</p>
+<p>Deodápolis (67)</p>
+<p>Dois Irmãos do Buriti (67)</p>
+<p>Douradina (67)</p>
+<p>Dourados (67)</p>
+<p>Eldorado (67)</p>
+<p>Fátima do Sul (67)</p>
+<p>Figueirão (67)</p>
+<p>Glória de Dourados (67)</p>
+<p>Guia Lopes da Laguna (67)</p>
+<p>Iguatemi (67)</p>
+<p>Inocência (67)</p>
+<p>Itaporã (67)</p>
+<p>Itaquiraí (67)</p>
+<p>Ivinhema (67)</p>
+<p>Japorã (67)</p>
+<p>Jaraguari (67)</p>
+<p>Jardim (67)</p>
+<p>Jateí (67)</p>
+<p>Juti (67)</p>
+<p>Ladário (67)</p>
+<p>Laguna Carapã (67)</p>
+<p>Maracaju (67)</p>
+<p>Miranda (67)</p>
+<p>Mundo Novo (67)</p>
+<p>Naviraí (67)</p>
+<p>Nioaque (67)</p>
+<p>Nova Alvorada do Sul (67)</p>
+<p>Nova Andradina (67)</p>
+<p>Novo Horizonte do Sul (67)</p>
+<p>Paraíso das Águas (67)</p>
+<p>Paranaíba (67)</p>
+<p>Paranhos (67)</p>
+<p>Pedro Gomes (67)</p>
+<p>Ponta Porã (67)</p>
+<p>Porto Murtinho (67)</p>
+<p>Ribas do Rio Pardo (67)</p>
+<p>Rio Brilhante (67)</p>
+<p>Rio Negro (67)</p>
+<p>Rio Verde de Mato Grosso (67)</p>
+<p>Rochedo (67)</p>
+<p>Santa Rita do Pardo (67)</p>
+<p>São Gabriel do Oeste (67)</p>
+<p>Sete Quedas (67)</p>
+<p>Selvínia (67)</p>
+<p>Sidrolândia (67)</p>
+<p>Sonora (67)</p>
+<p>Tacuru (67)</p>
+<p>Taquarussu (67)</p>
+<p>Terenos (67)</p>
+<p>Três Lagoas (67)</p>
+<p>Vicentina (67)</p>
+    </div>
+  </div>
+  <div class="state-card" data-state="MG">
+    <h2>Minas Gerais <span class="arrow">▶</span></h2>
+    <div class="cities">
+      <p>Abaeté (37)</p>
+<p>Abre Campo (33)</p>
+<p>Acaiaca (31)</p>
+<p>Açucena (33)</p>
+<p>Água Boa (33)</p>
+<p>Água Comprida (34)</p>
+<p>Aguanil (35)</p>
+<p>Águas Formosas (33)</p>
+<p>Águas Vermelhas (33)</p>
+<p>Aimorés (33)</p>
+<p>Aiuruoca (35)</p>
+<p>Alagoa (35)</p>
+<p>Albertina (35)</p>
+<p>Além Paraíba (32)</p>
+<p>Alfenas (35)</p>
+<p>Alfredo Vasconcelos (32)</p>
+<p>Almenara (33)</p>
+<p>Alpercata (33)</p>
+<p>Alpinópolis (35)</p>
+<p>Alterosa (35)</p>
+<p>Alto Caparaó (33)</p>
+<p>Alto Jequitibá (33)</p>
+<p>Alto Rio Doce (32)</p>
+<p>Alvarenga (33)</p>
+<p>Alvinópolis (31)</p>
+<p>Alvorada de Minas (31)</p>
+<p>Amparo do Serra (32)</p>
+<p>Andradas (35)</p>
+<p>Andrelândia (35)</p>
+<p>Angelândia (33)</p>
+<p>Antônio Carlos (32)</p>
+<p>Antônio Dias (31)</p>
+<p>Antônio Prado de Minas (32)</p>
+<p>Araçaí (31)</p>
+<p>Aracitaba (32)</p>
+<p>Araçuaí (33)</p>
+<p>Araguari (34)</p>
+<p>Arantina (32)</p>
+<p>Araponga (31)</p>
+<p>Araporã (34)</p>
+<p>Arapuá (34)</p>
+<p>Araújos (37)</p>
+<p>Araxá (34)</p>
+<p>Arceburgo (35)</p>
+<p>Arcos (37)</p>
+<p>Areado (35)</p>
+<p>Argirita (32)</p>
+<p>Aricanduva (33)</p>
+<p>Arinos (38)</p>
+<p>Astolfo Dutra (32)</p>
+<p>Ataléia (33)</p>
+<p>Augusto de Lima (38)</p>
+<p>Baependi (35)</p>
+<p>Baldim (31)</p>
+<p>Bambuí (37)</p>
+<p>Bandeira (33)</p>
+<p>Bandeira do Sul (35)</p>
+<p>Barão de Cocais (31)</p>
+<p>Barão de Monte Alto (32)</p>
+<p>Barbacena (32)</p>
+<p>Barra Longa (31)</p>
+<p>Barroso (32)</p>
+<p>Bela Vista de Minas (31)</p>
+<p>Belmiro Braga (32)</p>
+<p>Belo Horizonte (31) - Capital</p>
+<p>Belo Oriente (33)</p>
+<p>Belo Vale (31)</p>
+<p>Berilo (33)</p>
+<p>Berizal (33)</p>
+<p>Bertópolis (33)</p>
+<p>Betim (31)</p>
+<p>Bias Fortes (32)</p>
+<p>Bicas (32)</p>
+<p>Biquinhas (37)</p>
+<p>Boa Esperança (35)</p>
+<p>Bocaina de Minas (32)</p>
+<p>Bocaiuva (38)</p>
+<p>Bom Despacho (37)</p>
+<p>Bom Jardim de Minas (32)</p>
+<p>Bom Jesus da Penha (35)</p>
+<p>Bom Jesus do Amparo (31)</p>
+<p>Bom Jesus do Galho (33)</p>
+<p>Bom Repouso (35)</p>
+<p>Bom Sucesso (35)</p>
+<p>Bonfim (32)</p>
+<p>Bonfinópolis de Minas (38)</p>
+<p>Bonito de Minas (38)</p>
+<p>Borda da Mata (35)</p>
+<p>Botelhos (35)</p>
+<p>Botumirim (38)</p>
+<p>Brás Pires (32)</p>
+<p>Brasilândia de Minas (38)</p>
+<p>Brasília de Minas (38)</p>
+<p>Brasópolis (35)</p>
+<p>Braúnas (33)</p>
+<p>Brumadinho (31)</p>
+<p>Bueno Brandão (35)</p>
+<p>Buenópolis (38)</p>
+<p>Bugre (33)</p>
+<p>Buritis (38)</p>
+<p>Buritizeiro (38)</p>
+<p>Cabeceira Grande (38)</p>
+<p>Cabo Verde (35)</p>
+<p>Cachoeira da Prata (37)</p>
+<p>Cachoeira de Minas (35)</p>
+<p>Cachoeira de Pajeú (33)</p>
+<p>Cachoeira Dourada (34)</p>
+<p>Caetanópolis (31)</p>
+<p>Caeté (31)</p>
+<p>Caiana (32)</p>
+<p>Cajuri (31)</p>
+<p>Caldas (35)</p>
+<p>Camacho (37)</p>
+<p>Camanducaia (35)</p>
+<p>Cambuí (35)</p>
+<p>Cambuquira (35)</p>
+<p>Campanário (33)</p>
+<p>Campanha (35)</p>
+<p>Campestre (35)</p>
+<p>Campina Verde (34)</p>
+<p>Campo Azul (38)</p>
+<p>Campo Belo (35)</p>
+<p>Campo do Meio (35)</p>
+<p>Campo Florido (34)</p>
+<p>Campos Altos (37)</p>
+<p>Campos Gerais (35)</p>
+<p>Cana Verde (35)</p>
+<p>Canaã (31)</p>
+<p>Canápolis (34)</p>
+<p>Candeias (35)</p>
+<p>Cantagalo (33)</p>
+<p>Caparaó (33)</p>
+<p>Capela Nova (32)</p>
+<p>Capelinha (33)</p>
+<p>Capetinga (35)</p>
+<p>Capim Branco (31)</p>
+<p>Capinópolis (34)</p>
+<p>Capitão Andrade (33)</p>
+<p>Capitão Enéas (38)</p>
+<p>Capitólio (37)</p>
+<p>Caputira (31)</p>
+<p>Caraí (33)</p>
+<p>Caranaíba (32)</p>
+<p>Carandaí (32)</p>
+<p>Carangola (32)</p>
+<p>Caratinga (33)</p>
+<p>Carbonita (38)</p>
+<p>Careaçu (35)</p>
+<p>Carlos Chagas (33)</p>
+<p>Carmésia (31)</p>
+<p>Carmo da Cachoeira (35)</p>
+<p>Carmo da Mata (37)</p>
+<p>Carmo de Minas (35)</p>
+<p>Carmo do Cajuru (37)</p>
+<p>Carmo do Paranaíba (34)</p>
+<p>Carmo do Rio Claro (35)</p>
+<p>Carmópolis de Minas (37)</p>
+<p>Carneirinho (34)</p>
+<p>Carrancas (35)</p>
+<p>Carvalhópolis (35)</p>
+<p>Carvalhos (35)</p>
+<p>Casa Grande (32)</p>
+<p>Cascalho Rico (34)</p>
+<p>Cássia (35)</p>
+<p>Cataguases (32)</p>
+<p>Catas Altas (31)</p>
+<p>Catas Altas da Noruega (31)</p>
+<p>Catuji (33)</p>
+<p>Catuti (38)</p>
+<p>Caxambu (35)</p>
+<p>Cedro do Abaeté (37)</p>
+<p>Central de Minas (33)</p>
+<p>Centralina (34)</p>
+<p>Chácara (32)</p>
+<p>Chalé (33)</p>
+<p>Chapada do Norte (33)</p>
+<p>Chapada Gaúcha (38)</p>
+<p>Chiador (32)</p>
+<p>Cipotânea (32)</p>
+<p>Claraval (34)</p>
+<p>Claro dos Poções (38)</p>
+<p>Cláudio (37)</p>
+<p>Coimbra (32)</p>
+<p>Coluna (33)</p>
+<p>Comendador Gomes (34)</p>
+<p>Comercinho (33)</p>
+<p>Conceição da Aparecida (35)</p>
+<p>Conceição da Barra de Minas (32)</p>
+<p>Conceição das Alagoas (34)</p>
+<p>Conceição das Pedras (35)</p>
+<p>Conceição de Ipanema (33)</p>
+<p>Conceição do Mato Dentro (31)</p>
+<p>Conceição do Pará (37)</p>
+<p>Conceição do Rio Verde (35)</p>
+<p>Conceição dos Ouros (35)</p>
+<p>Cônego Marinho (38)</p>
+<p>Confins (31)</p>
+<p>Congonhal (35)</p>
+<p>Congonhas (31)</p>
+<p>Congonhas do Norte (38)</p>
+<p>Conquista (34)</p>
+<p>Conselheiro Lafaiete (31)</p>
+<p>Conselheiro Pena (33)</p>
+<p>Consolação (35)</p>
+<p>Contagem (31)</p>
+<p>Coqueiral (35)</p>
+<p>Coração de Jesus (38)</p>
+<p>Cordisburgo (37)</p>
+<p>Cordislândia (35)</p>
+<p>Corinto (37)</p>
+<p>Coroaci (33)</p>
+<p>Coromandel (34)</p>
+<p>Coronel Fabriciano (31)</p>
+<p>Coronel Murta (33)</p>
+<p>Coronel Pacheco (32)</p>
+<p>Coronel Xavier Chaves (32)</p>
+<p>Córrego Danta (37)</p>
+<p>Córrego do Bom Jesus (35)</p>
+<p>Córrego Fundo (37)</p>
+<p>Córrego Novo (33)</p>
+<p>Couto de Magalhães de Minas (38)</p>
+<p>Crisólita (33)</p>
+<p>Cristais (35)</p>
+<p>Cristália (38)</p>
+<p>Cristiano Otoni (31)</p>
+<p>Cristina (35)</p>
+<p>Crucilândia (31)</p>
+<p>Cruzeiro da Fortaleza (34)</p>
+<p>Cruzília (35)</p>
+<p>Cuparaque (33)</p>
+<p>Curral de Dentro (38)</p>
+<p>Curvelo (38)</p>
+<p>Datas (38)</p>
+<p>Delfim Moreira (35)</p>
+<p>Delfinópolis (35)</p>
+<p>Delta (34)</p>
+<p>Descoberto (32)</p>
+<p>Desterro de Entre Rios (31)</p>
+<p>Desterro do Melo (32)</p>
+<p>Diamantina (38)</p>
+<p>Diogo de Vasconcelos (31)</p>
+<p>Dionísio (31)</p>
+<p>Divinésia (32)</p>
+<p>Divino (33)</p>
+<p>Divino das Laranjeiras (33)</p>
+<p>Divinolândia de Minas (33)</p>
+<p>Divinópolis (37)</p>
+<p>Divisa Alegre (33)</p>
+<p>Divisa Nova (35)</p>
+<p>Divisópolis (33)</p>
+<p>Dom Bosco (38)</p>
+<p>Dom Cavati (33)</p>
+<p>Dom Joaquim (38)</p>
+<p>Dom Silvério (31)</p>
+<p>Dom Viçoso (35)</p>
+<p>Dona Euzébia (32)</p>
+<p>Dores de Campos (32)</p>
+<p>Dores de Guanhães (33)</p>
+<p>Dores do Indaiá (37)</p>
+<p>Dores do Turvo (32)</p>
+<p>Doresópolis (37)</p>
+<p>Douradoquara (34)</p>
+<p>Durandé (33)</p>
+<p>Elói Mendes (35)</p>
+<p>Engenheiro Caldas (33)</p>
+<p>Engenheiro Navarro (38)</p>
+<p>Entre Folhas (33)</p>
+<p>Entre Rios de Minas (31)</p>
+<p>Ervália (32)</p>
+<p>Esmeraldas (31)</p>
+<p>Espera Feliz (33)</p>
+<p>Espinosa (38)</p>
+<p>Espírito Santo do Dourado (35)</p>
+<p>Estiva (35)</p>
+<p>Estrela Dalva (32)</p>
+<p>Estrela do Indaiá (37)</p>
+<p>Estrela do Sul (34)</p>
+<p>Eugenópolis (32)</p>
+<p>Ewbank da Câmara (32)</p>
+<p>Extrema (35)</p>
+<p>Fama (35)</p>
+<p>Faria Lemos (32)</p>
+<p>Felício dos Santos (38)</p>
+<p>Felisburgo (33)</p>
+<p>Felixlândia (37)</p>
+<p>Fernandes Tourinho (33)</p>
+<p>Ferros (31)</p>
+<p>Fervedouro (33)</p>
+<p>Florestal (31)</p>
+<p>Formiga (37)</p>
+<p>Formoso (38)</p>
+<p>Fortaleza de Minas (35)</p>
+<p>Fortuna de Minas (31)</p>
+<p>Francisco Badaró (33)</p>
+<p>Francisco Dumont (38)</p>
+<p>Francisco Sá (38)</p>
+<p>Franciscópolis (33)</p>
+<p>Frei Gaspar (33)</p>
+<p>Frei Inocêncio (33)</p>
+<p>Frei Lagonegro (35)</p>
+<p>Fronteira (34)</p>
+<p>Fronteira dos Vales (33)</p>
+<p>Fruta de Leite (33)</p>
+<p>Frutal (34)</p>
+<p>Funilândia (31)</p>
+<p>Galiléia (33)</p>
+<p>Gameleiras (38)</p>
+<p>Glaucilândia (38)</p>
+<p>Goiabeira (33)</p>
+<p>Goianá (32)</p>
+<p>Gonçalves (35)</p>
+<p>Gonzaga (33)</p>
+<p>Gouveia (38)</p>
+<p>Governador Valadares (33)</p>
+<p>Grão Mogol (38)</p>
+<p>Grupiara (34)</p>
+<p>Guanhães (33)</p>
+<p>Guapé (35)</p>
+<p>Guaraciaba (31)</p>
+<p>Guaraciama (38)</p>
+<p>Guaranésia (35)</p>
+<p>Guarani (32)</p>
+<p>Guarará (32)</p>
+<p>Guarda-Mor (38)</p>
+<p>Guaxupé (35)</p>
+<p>Guidoval (32)</p>
+<p>Guimarânia (34)</p>
+<p>Guiricema (32)</p>
+<p>Gurinhatã (34)</p>
+<p>Heliodora (35)</p>
+<p>Iapu (33)</p>
+<p>Ibertioga (32)</p>
+<p>Ibiá (34)</p>
+<p>Ibiaí (38)</p>
+<p>Ibiracatu (38)</p>
+<p>Ibiraci (35)</p>
+<p>Ibirité (31)</p>
+<p>Ibitiúra de Minas (35)</p>
+<p>Ibituruna (35)</p>
+<p>Icaraí de Minas (38)</p>
+<p>Igarapé (31)</p>
+<p>Igaratinga (37)</p>
+<p>Iguatama (37)</p>
+<p>Ijaci (35)</p>
+<p>Ilicínea (35)</p>
+<p>Imbé de Minas (33)</p>
+<p>Inconfidentes (35)</p>
+<p>Indaiabira (38)</p>
+<p>Indianópolis (34)</p>
+<p>Ingaí (35)</p>
+<p>Inhapim (33)</p>
+<p>Inhaúma (31)</p>
+<p>Inimutaba (38)</p>
+<p>Ipaba (31)</p>
+<p>Ipanema (33)</p>
+<p>Ipatinga (31)</p>
+<p>Ipiaçu (34)</p>
+<p>Ipuiuna (35)</p>
+<p>Iraí de Minas (34)</p>
+<p>Itabira (31)</p>
+<p>Itabirinha (33)</p>
+<p>Itabirito (31)</p>
+<p>Itacambira (38)</p>
+<p>Itacarambi (38)</p>
+<p>Itaguara (37)</p>
+<p>Itaipé (33)</p>
+<p>Itajubá (35)</p>
+<p>Itamarandiba (38)</p>
+<p>Itamarati de Minas (32)</p>
+<p>Itambacuri (33)</p>
+<p>Itambé do Mato Dentro (31)</p>
+<p>Itamogi (35)</p>
+<p>Itamonte (35)</p>
+<p>Itanhandu (35)</p>
+<p>Itanhomi (33)</p>
+<p>Itaobim (33)</p>
+<p>Itapagipe (34)</p>
+<p>Itapecerica (37)</p>
+<p>Itapeva (35)</p>
+<p>Itatiaiuçu (31)</p>
+<p>Itaú de Minas (35)</p>
+<p>Itaúna (37)</p>
+<p>Itaverava (31)</p>
+<p>Itinga (33)</p>
+<p>Ituiutaba (34)</p>
+<p>Itumirim (35)</p>
+<p>Iturama (34)</p>
+<p>Itutinga (35)</p>
+<p>Jaboticatubas (31)</p>
+<p>Jacinto (33)</p>
+<p>Jacuí (35)</p>
+<p>Jacutinga (35)</p>
+<p>Jaguaraçu (31)</p>
+<p>Jaíba (38)</p>
+<p>Jampruca (33)</p>
+<p>Janaúba (38)</p>
+<p>Januária (38)</p>
+<p>Japaraíba (37)</p>
+<p>Japonvar (38)</p>
+<p>Jeceaba (31)</p>
+<p>Jenipapo de Minas (33)</p>
+<p>Jequeri (31)</p>
+<p>Jequitaí (38)</p>
+<p>Jequitinhonha (33)</p>
+<p>Jesuânia (35)</p>
+<p>Joaíma (33)</p>
+<p>Joanésia (33)</p>
+<p>João Monlevade (31)</p>
+<p>João Pinheiro (38)</p>
+<p>Joaquim Felício (38)</p>
+<p>Jordânia (33)</p>
+<p>José Gonçalves de Minas (33)</p>
+<p>José Raydan (33)</p>
+<p>Josenópolis (38)</p>
+<p>Juatuba (31)</p>
+<p>Juirá de Minas (33)</p>
+<p>Juramento (38)</p>
+<p>Juruaia (35)</p>
+<p>Juvenília (38)</p>
+<p>Ladainha (33)</p>
+<p>Lagamar (38)</p>
+<p>Lagoa da Prata (37)</p>
+<p>Lagoa dos Patos (38)</p>
+<p>Lagoa Dourada (32)</p>
+<p>Lagoa Formosa (34)</p>
+<p>Lagoa Grande (38)</p>
+<p>Lagoa Santa (31)</p>
+<p>Lajinha (33)</p>
+<p>Lambari (35)</p>
+<p>Lamim (31)</p>
+<p>Laranjal (32)</p>
+<p>Lassance (38)</p>
+<p>Lavras (35)</p>
+<p>Leandro Ferreira (37)</p>
+<p>Leme do Prado (33)</p>
+<p>Leopoldina (32)</p>
+<p>Liberdade (32)</p>
+<p>Lima Duarte (32)</p>
+<p>Limeira do Oeste (34)</p>
+<p>Lontra (38)</p>
+<p>Luisburgo (33)</p>
+<p>Luislândia (38)</p>
+<p>Luminárias (35)</p>
+<p>Luz (37)</p>
+<p>Machacalis (33)</p>
+<p>Machado (35)</p>
+<p>Madre de Deus de Minas (32)</p>
+<p>Malacacheta (33)</p>
+<p>Mamonas (38)</p>
+<p>Manga (38)</p>
+<p>Manhuaçu (33)</p>
+<p>Manhumirim (33)</p>
+<p>Mantena (33)</p>
+<p>Mar de Espanha (32)</p>
+<p>Maravilhas (37)</p>
+<p>Maria da Fé (35)</p>
+<p>Mariana (31)</p>
+<p>Marilac (33)</p>
+<p>Mário Campos (31)</p>
+<p>Maripá de Minas (32)</p>
+<p>Marliéria (31)</p>
+<p>Marmelópolis (35)</p>
+<p>Martinho Campos (37)</p>
+<p>Martins Soares (33)</p>
+<p>Mata Verde (33)</p>
+<p>Materlândia (33)</p>
+<p>Mateus Leme (31)</p>
+<p>Mathias Lobato (33)</p>
+<p>Matias Barbosa (32)</p>
+<p>Matias Cardoso (38)</p>
+<p>Matipó (31)</p>
+<p>Mato Verde (38)</p>
+<p>Matozinhos (31)</p>
+<p>Matutina (34)</p>
+<p>Medina (33)</p>
+<p>Mendes Pimentel (33)</p>
+<p>Mercês (32)</p>
+<p>Mesquita (33)</p>
+<p>Minas Novas (33)</p>
+<p>Minduri (35)</p>
+<p>Miradouro (32)</p>
+<p>Miraí (32)</p>
+<p>Miravânia (38)</p>
+<p>Moeda (31)</p>
+<p>Moema (37)</p>
+<p>Monjolos (38)</p>
+<p>Monsenhor Paulo (35)</p>
+<p>Montalvânia (38)</p>
+<p>Monte Alegre de Minas (34)</p>
+<p>Monte Azul (38)</p>
+<p>Monte Belo (35)</p>
+<p>Monte Carmelo (34)</p>
+<p>Monte Formoso (33)</p>
+<p>Monte Santo de Minas (35)</p>
+<p>Monte Sião (35)</p>
+<p>Montes Claros (38)</p>
+<p>Montezuma (38)</p>
+<p>Morada Nova de Minas (37)</p>
+<p>Morro da Garça (38)</p>
+<p>Morro do Pilar (31)</p>
+<p>Munhoz (35)</p>
+<p>Muriaé (32)</p>
+<p>Mutum (33)</p>
+<p>Muzambinho (35)</p>
+<p>Nacip Raydan (33)</p>
+<p>Nanuque (33)</p>
+<p>Naque (33)</p>
+<p>Natalândia (38)</p>
+<p>Natércia (35)</p>
+<p>Nazareno (35)</p>
+<p>Nepomuceno (35)</p>
+<p>Ninheira (38)</p>
+<p>Nova Belém (33)</p>
+<p>Nova Era (31)</p>
+<p>Nova Lima (31)</p>
+<p>Nova Módica (33)</p>
+<p>Nova Ponte (34)</p>
+<p>Nova Porteirinha (38)</p>
+<p>Nova Resende (35)</p>
+<p>Nova Serrana (37)</p>
+<p>Nova União (31)</p>
+<p>Novo Cruzeiro (33)</p>
+<p>Novo Oriente de Minas (33)</p>
+<p>Novorizonte (38)</p>
+<p>Olaria (32)</p>
+<p>Olhos-d'Água (38)</p>
+<p>Olímpio Noronha (35)</p>
+<p>Oliveira (37)</p>
+<p>Oliveira Fortes (32)</p>
+<p>Onça de Pitangui (37)</p>
+<p>Oratórios (31)</p>
+<p>Orizânia (32)</p>
+<p>Ouro Branco (31)</p>
+<p>Ouro Fino (35)</p>
+<p>Ouro Preto (31)</p>
+<p>Ouro Verde de Minas (33)</p>
+<p>Padre Carvalho (38)</p>
+<p>Padre Paraíso (33)</p>
+<p>Pai Pedro (38)</p>
+<p>Paineiras (37)</p>
+<p>Pains (37)</p>
+<p>Paiva (32)</p>
+<p>Palma (33)</p>
+<p>Palmópolis (33)</p>
+<p>Papagaios (37)</p>
+<p>Pará de Minas (37)</p>
+<p>Paracatu (38)</p>
+<p>Paraguaçu (35)</p>
+<p>Paraisópolis (35)</p>
+<p>Paraopeba (31)</p>
+<p>Passa Quatro (35)</p>
+<p>Passa Tempo (37)</p>
+<p>Passa Vinte (32)</p>
+<p>Passabém (31)</p>
+<p>Passos (35)</p>
+<p>Patis (38)</p>
+<p>Patos de Minas (34)</p>
+<p>Patrocínio (34)</p>
+<p>Patrocínio do Muriaé (32)</p>
+<p>Paula Cândido (31)</p>
+<p>Paulistas (33)</p>
+<p>Pavão (33)</p>
+<p>Peçanha (33)</p>
+<p>Pedra Azul (33)</p>
+<p>Pedra Bonita (31)</p>
+<p>Pedra do Anta (31)</p>
+<p>Pedra do Indaiá (37)</p>
+<p>Pedra Dourada (32)</p>
+<p>Pedralva (35)</p>
+<p>Pedras de Maria da Cruz (38)</p>
+<p>Pedrinópolis (34)</p>
+<p>Pedro Leopoldo (31)</p>
+<p>Pedro Teixeira (32)</p>
+<p>Pequeri (32)</p>
+<p>Pequi (37)</p>
+<p>Perdigão (37)</p>
+<p>Perdizes (34)</p>
+<p>Perdões (35)</p>
+<p>Periquito (33)</p>
+<p>Pescador (33)</p>
+<p>Piau (32)</p>
+<p>Piedade de Caratinga (33)</p>
+<p>Piedade de Ponte Nova (31)</p>
+<p>Piedade do Rio Grande (35)</p>
+<p>Piedade dos Gerais (31)</p>
+<p>Pimenta (37)</p>
+<p>Pingo-d'Água (33)</p>
+<p>Pintópolis (38)</p>
+<p>Piracema (37)</p>
+<p>Pirajuba (34)</p>
+<p>Piranga (31)</p>
+<p>Piranguçu (35)</p>
+<p>Piranguinho (35)</p>
+<p>Pirapetinga (32)</p>
+<p>Pirapora (38)</p>
+<p>Piraúba (32)</p>
+<p>Pitangui (37)</p>
+<p>Piumhi (37)</p>
+<p>Planura (34)</p>
+<p>Poço Fundo (35)</p>
+<p>Poços de Caldas (35)</p>
+<p>Pocrane (33)</p>
+<p>Pompéu (37)</p>
+<p>Ponte Nova (31)</p>
+<p>Ponto Chique (38)</p>
+<p>Ponto dos Volantes (33)</p>
+<p>Porteirinha (38)</p>
+<p>Porto Firme (31)</p>
+<p>Poté (33)</p>
+<p>Pouso Alegre (35)</p>
+<p>Pouso Alto (35)</p>
+<p>Prados (32)</p>
+<p>Prata (34)</p>
+<p>Pratápolis (35)</p>
+<p>Pratinha (34)</p>
+<p>Presidente Bernardes (32)</p>
+<p>Presidente Juscelino (31)</p>
+<p>Presidente Kubitschek (38)</p>
+<p>Presidente Olegário (34)</p>
+<p>Prudente de Morais (31)</p>
+<p>Quartel Geral (37)</p>
+<p>Queluzito (31)</p>
+<p>Raposos (31)</p>
+<p>Raul Soares (33)</p>
+<p>Recreio (32)</p>
+<p>Reduto (33)</p>
+<p>Resende Costa (32)</p>
+<p>Resplendor (33)</p>
+<p>Ressaquinha (32)</p>
+<p>Riachinho (38)</p>
+<p>Riacho dos Machados (38)</p>
+<p>Ribeirão das Neves (31)</p>
+<p>Ribeirão Vermelho (35)</p>
+<p>Rio Acima (31)</p>
+<p>Rio Casca (31)</p>
+<p>Rio Doce (31)</p>
+<p>Rio do Prado (33)</p>
+<p>Rio Espera (31)</p>
+<p>Rio Manso (31)</p>
+<p>Rio Novo (32)</p>
+<p>Rio Paranaíba (34)</p>
+<p>Rio Pardo de Minas (38)</p>
+<p>Rio Piracicaba (31)</p>
+<p>Rio Pomba (32)</p>
+<p>Rio Preto (32)</p>
+<p>Rio Vermelho (33)</p>
+<p>Ritápolis (32)</p>
+<p>Rochedo de Minas (32)</p>
+<p>Rodeiro (32)</p>
+<p>Romaria (34)</p>
+<p>Rosário da Limeira (32)</p>
+<p>Rubelita (38)</p>
+<p>Rubim (33)</p>
+<p>Sabará (31)</p>
+<p>Sabinópolis (33)</p>
+<p>Sacramento (34)</p>
+<p>Salinas (38)</p>
+<p>Salto da Divisa (33)</p>
+<p>Santa Bárbara (31)</p>
+<p>Santa Bárbara do Leste (33)</p>
+<p>Santa Bárbara do Monte Verde (32)</p>
+<p>Santa Bárbara do Tugúrio (32)</p>
+<p>Santa Cruz de Minas (32)</p>
+<p>Santa Cruz de Salinas (38)</p>
+<p>Santa Cruz do Escalvado (31)</p>
+<p>Santa Efigênia de Minas (33)</p>
+<p>Santa Fé de Minas (38)</p>
+<p>Santa Helena de Minas (33)</p>
+<p>Santa Juliana (34)</p>
+<p>Santa Luzia (31)</p>
+<p>Santa Margarida (33)</p>
+<p>Santa Maria de Itabira (31)</p>
+<p>Santa Maria do Salto (33)</p>
+<p>Santa Maria do Suaçuí (33)</p>
+<p>Santa Rita de Caldas (35)</p>
+<p>Santa Rita de Ibitipoca (32)</p>
+<p>Santa Rita de Jacutinga (32)</p>
+<p>Santa Rita de Minas (33)</p>
+<p>Santa Rita do Sapucaí (35)</p>
+<p>Santa Rosa da Serra (34)</p>
+<p>Santa Vitória (34)</p>
+<p>Santana da Vargem (35)</p>
+<p>Santana de Cataguases (32)</p>
+<p>Santana de Pirapama (31)</p>
+<p>Santana do Deserto (32)</p>
+<p>Santana do Garambéu (32)</p>
+<p>Santana do Jacaré (35)</p>
+<p>Santana do Manhuaçu (33)</p>
+<p>Santana do Paraíso (31)</p>
+<p>Santana do Riacho (31)</p>
+<p>Santana dos Montes (31)</p>
+<p>Santo Antônio do Amparo (35)</p>
+<p>Santo Antônio do Aventureiro (32)</p>
+<p>Santo Antônio do Grama (31)</p>
+<p>Santo Antônio do Itambé (38)</p>
+<p>Santo Antônio do Jacinto (33)</p>
+<p>Santo Antônio do Monte (37)</p>
+<p>Santo Antônio do Retiro (38)</p>
+<p>Santo Antônio do Rio Abaixo (31)</p>
+<p>Santo Hipólito (37)</p>
+<p>Santos Dumont (32)</p>
+<p>São Bento Abade (35)</p>
+<p>São Brás do Suaçuí (33)</p>
+<p>São Domingos das Dores (33)</p>
+<p>São Domingos do Prata (31)</p>
+<p>São Félix de Minas (33)</p>
+<p>São Francisco (38)</p>
+<p>São Francisco de Paula (35)</p>
+<p>São Francisco de Sales (34)</p>
+<p>São Francisco do Glória (32)</p>
+<p>São Geraldo (32)</p>
+<p>São Geraldo da Piedade (33)</p>
+<p>São Geraldo do Baixio (33)</p>
+<p>São Gonçalo do Abaeté (38)</p>
+<p>São Gonçalo do Pará (37)</p>
+<p>São Gonçalo do Rio Abaixo (31)</p>
+<p>São Gonçalo do Rio Preto (33)</p>
+<p>São Gonçalo do Sapucaí (35)</p>
+<p>São Gotardo (34)</p>
+<p>São João Batista do Glória (35)</p>
+<p>São João da Lagoa (38)</p>
+<p>São João da Mata (35)</p>
+<p>São João da Ponte (38)</p>
+<p>São João das Missões (38)</p>
+<p>São João del-Rei (32)</p>
+<p>São João do Manhuaçu (33)</p>
+<p>São João do Manteninha (33)</p>
+<p>São João do Oriente (33)</p>
+<p>São João do Pacuí (38)</p>
+<p>São João do Paraíso (38)</p>
+<p>São João Evangelista (33)</p>
+<p>São João Nepomuceno (32)</p>
+<p>São Joaquim de Bicas (31)</p>
+<p>São José da Barra (35)</p>
+<p>São José da Lapa (31)</p>
+<p>São José da Safira (33)</p>
+<p>São José da Varginha (37)</p>
+<p>São José do Alegre (35)</p>
+<p>São José do Divino (33)</p>
+<p>São José do Goiabal (31)</p>
+<p>São José do Jacuri (33)</p>
+<p>São José do Mantimento (33)</p>
+<p>São Lourenço (35)</p>
+<p>São Miguel do Anta (31)</p>
+<p>São Pedro da União (35)</p>
+<p>São Pedro do Suaçuí (33)</p>
+<p>São Pedro dos Ferros (33)</p>
+<p>São Romão (38)</p>
+<p>São Roque de Minas (37)</p>
+<p>São Sebastião da Bela Vista (35)</p>
+<p>São Sebastião da Vargem Alegre (32)</p>
+<p>São Sebastião do Anta (33)</p>
+<p>São Sebastião do Maranhão (33)</p>
+<p>São Sebastião do Oeste (37)</p>
+<p>São Sebastião do Paraíso (35)</p>
+<p>São Sebastião do Rio Preto (32)</p>
+<p>São Sebastião do Rio Verde (35)</p>
+<p>São Thomé das Letras (35)</p>
+<p>São Tiago (32)</p>
+<p>São Tomás de Aquino (35)</p>
+<p>São Vicente de Minas (35)</p>
+<p>Sapucaí-Mirim (35)</p>
+<p>Sardoá (33)</p>
+<p>Sarzedo (31)</p>
+<p>Sem-Peixe (31)</p>
+<p>Senador Amaral (35)</p>
+<p>Senador Cortes (32)</p>
+<p>Senador Firmino (32)</p>
+<p>Senador José Bento (35)</p>
+<p>Senador Modestino Gonçalves (38)</p>
+<p>Senhora de Oliveira (31)</p>
+<p>Senhora do Porto (33)</p>
+<p>Senhora dos Remédios (31)</p>
+<p>Sericita (31)</p>
+<p>Seritinga (35)</p>
+<p>Serra Azul de Minas (38)</p>
+<p>Serra da Saudade (37)</p>
+<p>Serra do Salitre (34)</p>
+<p>Serra dos Aimorés (33)</p>
+<p>Serrania (35)</p>
+<p>Serranópolis de Minas (38)</p>
+<p>Serranos (35)</p>
+<p>Serra Azul de Minas (38)</p>
+<p>Serra do Salitre (34)</p>
+<p>Serra dos Aimorés (33)</p>
+<p>Serrania (35)</p>
+<p>Serranos (35)</p>
+<p>Serrinha (33)</p>
+<p>Sete Lagoas (31)</p>
+<p>Setubinha (33)</p>
+<p>Silva Campos (35)</p>
+<p>Silvianópolis (35)</p>
+<p>Simão Pereira (32)</p>
+<p>Simõesia (33)</p>
+<p>Sobrália (33)</p>
+<p>Soledade de Minas (35)</p>
+<p>Tabuleiro (32)</p>
+<p>Taiobeiras (38)</p>
+<p>Taparuba (33)</p>
+<p>Tapeira (34)</p>
+<p>Tapiraí (35)</p>
+<p>Taquaraçu de Minas (31)</p>
+<p>Tarumirim (33)</p>
+<p>Teixeiras (31)</p>
+<p>Teófilo Otoni (33)</p>
+<p>Timóteo (31)</p>
+<p>Tiradentes (32)</p>
+<p>Tiros (34)</p>
+<p>Tocantins (32)</p>
+<p>Tocos do Moji (35)</p>
+<p>Toledo (35)</p>
+<p>Tombos (32)</p>
+<p>Três Corações (35)</p>
+<p>Três Marias (38)</p>
+<p>Três Pontas (35)</p>
+<p>Tumiritinga (33)</p>
+<p>Tupaciguara (34)</p>
+<p>Turmalina (38)</p>
+<p>Turvolândia (35)</p>
+<p>Ubá (32)</p>
+<p>Ubaí (38)</p>
+<p>Ubaporanga (33)</p>
+<p>Uberaba (34)</p>
+<p>Uberlândia (34)</p>
+<p>Umburatiba (33)</p>
+<p>Unaí (38)</p>
+<p>União de Minas (34)</p>
+<p>Uruana de Minas (38)</p>
+<p>Urucânia (31)</p>
+<p>Urucuia (38)</p>
+<p>Vargem Alegre (33)</p>
+<p>Vargem Bonita (37)</p>
+<p>Vargem Grande do Rio Pardo (38)</p>
+<p>Varginha (35)</p>
+<p>Varjão de Minas (38)</p>
+<p>Várzea da Palma (38)</p>
+<p>Varzelândia (38)</p>
+<p>Vazante (34)</p>
+<p>Verdelândia (38)</p>
+<p>Veredinha (38)</p>
+<p>Veríssimo (34)</p>
+<p>Vermelho Novo (33)</p>
+<p>Vespasiano (31)</p>
+<p>Viçosa (31)</p>
+<p>Vieiras (32)</p>
+<p>Virgem da Lapa (33)</p>
+<p>Virgínia (35)</p>
+<p>Virginópolis (33)</p>
+<p>Virgolândia (33)</p>
+<p>Visconde do Rio Branco (32)</p>
+<p>Volta Grande (32)</p>
+<p>Wenceslau Braz (35)</p>
+    </div>
+  </div>
+  <div class="state-card" data-state="PA">
+    <h2>Pará <span class="arrow">▶</span></h2>
+    <div class="cities">
+      <p>Abaetetuba (91)</p>
+<p>Abel Figueiredo (94)</p>
+<p>Acará (91)</p>
+<p>Afuá (91)</p>
+<p>Água Azul do Norte (94)</p>
+<p>Alenquer (93)</p>
+<p>Almeirim (93)</p>
+<p>Altamira (93)</p>
+<p>Anajás (91)</p>
+<p>Ananindeua (91)</p>
+<p>Anapu (91)</p>
+<p>Augusto Corrêa (91)</p>
+<p>Aurora do Pará (91)</p>
+<p>Aveiro (93)</p>
+<p>Bagre (91)</p>
+<p>Baião (91)</p>
+<p>Bannach (94)</p>
+<p>Barcarena (91)</p>
+<p>Belém (91) - Capital</p>
+<p>Belterra (93)</p>
+<p>Benevides (91)</p>
+<p>Bom Jesus do Tocantins (94)</p>
+<p>Bonito (91)</p>
+<p>Bragança (91)</p>
+<p>Brasil Novo (93)</p>
+<p>Brejo Grande do Araguaia (94)</p>
+<p>Breu Branco (94)</p>
+<p>Breves (91)</p>
+<p>Bujaru (91)</p>
+<p>Cachoeira do Arari (91)</p>
+<p>Cachoeira do Piriá (91)</p>
+<p>Cametá (91)</p>
+<p>Canaã dos Carajás (94)</p>
+<p>Capanema (91)</p>
+<p>Capitão Poço (91)</p>
+<p>Castanhal (91)</p>
+<p>Chaves (91)</p>
+<p>Colares (91)</p>
+<p>Conceição do Araguaia (94)</p>
+<p>Concórdia do Pará (91)</p>
+<p>Cumaru do Norte (94)</p>
+<p>Curionópolis (94)</p>
+<p>Curralinho (91)</p>
+<p>Curuá (93)</p>
+<p>Curuçá (91)</p>
+<p>Dom Eliseu (94)</p>
+<p>Eldorado dos Carajás (94)</p>
+<p>Faro (93)</p>
+<p>Floresta do Araguaia (94)</p>
+<p>Garrafão do Norte (91)</p>
+<p>Goianésia do Pará (94)</p>
+<p>Gurupá (91)</p>
+<p>Igarapé-Açu (91)</p>
+<p>Igarapé-Miri (91)</p>
+<p>Inhangapi (91)</p>
+<p>Ipixuna do Pará (91)</p>
+<p>Irituia (91)</p>
+<p>Itaituba (93)</p>
+<p>Itupiranga (94)</p>
+<p>Jacareacanga (93)</p>
+<p>Jacundá (94)</p>
+<p>Juruti (93)</p>
+<p>Limoeiro do Ajuru (91)</p>
+<p>Mãe do Rio (91)</p>
+<p>Magalhães Barata (91)</p>
+<p>Marabá (94)</p>
+<p>Maracanã (91)</p>
+<p>Marapanim (91)</p>
+<p>Marituba (91)</p>
+<p>Medicilândia (93)</p>
+<p>Melgaço (91)</p>
+<p>Mocajuba (91)</p>
+<p>Moju (91)</p>
+<p>Mojuí dos Campos (93)</p>
+<p>Monte Alegre (93)</p>
+<p>Muaná (91)</p>
+<p>Nova Esperança do Piriá (91)</p>
+<p>Nova Ipixuna (94)</p>
+<p>Nova Timboteua (91)</p>
+<p>Novo Progresso (93)</p>
+<p>Novo Repartimento (94)</p>
+<p>Óbidos (93)</p>
+<p>Oeiras do Pará (91)</p>
+<p>Oriximiná (93)</p>
+<p>Ourém (91)</p>
+<p>Ourilândia do Norte (94)</p>
+<p>Pacajá (91)</p>
+<p>Palestina do Pará (94)</p>
+<p>Paragominas (91)</p>
+<p>Parauapebas (94)</p>
+<p>Pau d'Arco (94)</p>
+<p>Peixe-Boi (91)</p>
+<p>Piçarra (94)</p>
+<p>Placas (93)</p>
+<p>Ponta de Pedras (91)</p>
+<p>Portel (91)</p>
+<p>Porto de Moz (93)</p>
+<p>Prainha (93)</p>
+<p>Primavera (91)</p>
+<p>Quatipuru (91)</p>
+<p>Redenção (94)</p>
+<p>Rio Maria (94)</p>
+<p>Rondon do Pará (94)</p>
+<p>Rurópolis (93)</p>
+<p>Salinópolis (91)</p>
+<p>Salvaterra (91)</p>
+<p>Santa Bárbara do Pará (91)</p>
+<p>Santa Cruz do Arari (91)</p>
+<p>Santa Izabel do Pará (91)</p>
+<p>Santa Luzia do Pará (91)</p>
+<p>Santa Maria das Barreiras (94)</p>
+<p>Santa Maria do Pará (91)</p>
+<p>Santana do Araguaia (94)</p>
+<p>Santarém (93)</p>
+<p>Santarém Novo (91)</p>
+<p>Santo Antônio do Tauá (91)</p>
+<p>São Caetano de Odivelas (91)</p>
+<p>São Domingos do Araguaia (94)</p>
+<p>São Domingos do Capim (91)</p>
+<p>São Félix do Xingu (94)</p>
+<p>São Francisco do Pará (91)</p>
+<p>São Geraldo do Araguaia (94)</p>
+<p>São João da Ponta (91)</p>
+<p>São João de Pirabas (91)</p>
+<p>São João do Araguaia (94)</p>
+<p>São Miguel do Guamá (91)</p>
+<p>São Sebastião da Boa Vista (91)</p>
+<p>Sapucaia (94)</p>
+<p>Senador José Porfírio (91)</p>
+<p>Soure (91)</p>
+<p>Tailândia (91)</p>
+<p>Terra Alta (91)</p>
+<p>Terra Santa (93)</p>
+<p>Tomé-Açu (91)</p>
+<p>Tracuateua (91)</p>
+<p>Trairão (93)</p>
+<p>Tucumã (94)</p>
+<p>Tucuruí (94)</p>
+<p>Ulianópolis (91)</p>
+<p>Uruará (93)</p>
+<p>Vigia (91)</p>
+<p>Viseu (91)</p>
+<p>Vitória do Xingu (93)</p>
+<p>Xinguara (94)</p>
+    </div>
+  </div>
+    <div class="state-card" data-state="PB">
+    <h2>Paraíba<span class="arrow">▶</span></h2>
+    <div class="cities">
+      <p>Água Branca (83)</p>
+<p>Aguiar (83)</p>
+<p>Alagoa Grande (83)</p>
+<p>Alagoa Nova (83)</p>
+<p>Alagoinha (83)</p>
+<p>Alcantil (83)</p>
+<p>Algodão de Jandaíra (83)</p>
+<p>Alhandra (83)</p>
+<p>Amparo (83)</p>
+<p>Aparecida (83)</p>
+<p>Araçagi (83)</p>
+<p>Arara (83)</p>
+<p>Araruna (83)</p>
+<p>Areia (83)</p>
+<p>Areia de Baraúnas (83)</p>
+<p>Areial (83)</p>
+<p>Aroeiras (83)</p>
+<p>Assunção (83)</p>
+<p>Baía da Traição (83)</p>
+<p>Bananeiras (83)</p>
+<p>Baraúna (83)</p>
+<p>Barra de Santa Rosa (83)</p>
+<p>Barra de Santana (83)</p>
+<p>Barra de São Miguel (83)</p>
+<p>Bayeux (83)</p>
+<p>Belém (83)</p>
+<p>Belém do Brejo do Cruz (83)</p>
+<p>Bernardino Batista (83)</p>
+<p>Boa Ventura (83)</p>
+<p>Boa Vista (83)</p>
+<p>Bom Jesus (83)</p>
+<p>Bom Sucesso (83)</p>
+<p>Bonito de Santa Fé (83)</p>
+<p>Boqueirão (83)</p>
+<p>Borborema (83)</p>
+<p>Brejo do Cruz (83)</p>
+<p>Brejo dos Santos (83)</p>
+<p>Caaporã (83)</p>
+<p>Cabaceiras (83)</p>
+<p>Cabedelo (83)</p>
+<p>Cachoeira dos Índios (83)</p>
+<p>Cacimba de Areia (83)</p>
+<p>Cacimba de Dentro (83)</p>
+<p>Cacimbas (83)</p>
+<p>Caiçara (83)</p>
+<p>Cajazeiras (83)</p>
+<p>Cajazeirinhas (83)</p>
+<p>Caldas Brandão (83)</p>
+<p>Camalaú (83)</p>
+<p>Campina Grande (83)</p>
+<p>Capim (83)</p>
+<p>Caraúbas (83)</p>
+<p>Carrapateira (83)</p>
+<p>Casserengue (83)</p>
+<p>Catingueira (83)</p>
+<p>Catolé do Rocha (83)</p>
+<p>Caturité (83)</p>
+<p>Conceição (83)</p>
+<p>Condado (83)</p>
+<p>Conde (83)</p>
+<p>Congo (83)</p>
+<p>Coremas (83)</p>
+<p>Coxixola (83)</p>
+<p>Cruz do Espírito Santo (83)</p>
+<p>Cubati (83)</p>
+<p>Cuité (83)</p>
+<p>Cuité de Mamanguape (83)</p>
+<p>Cuitegi (83)</p>
+<p>Curral de Cima (83)</p>
+<p>Curral Velho (83)</p>
+<p>Damião (83)</p>
+<p>Desterro (83)</p>
+<p>Diamante (83)</p>
+<p>Dona Inês (83)</p>
+<p>Duas Estradas (83)</p>
+<p>Emas (83)</p>
+<p>Esperança (83)</p>
+<p>Fagundes (83)</p>
+<p>Frei Martinho (83)</p>
+<p>Gado Bravo (83)</p>
+<p>Guarabira (83)</p>
+<p>Gurinhém (83)</p>
+<p>Gurjão (83)</p>
+<p>Ibiara (83)</p>
+<p>Igaracy (83)</p>
+<p>Imaculada (83)</p>
+<p>Ingá (83)</p>
+<p>Itabaiana (83)</p>
+<p>Itaporanga (83)</p>
+<p>Itapororoca (83)</p>
+<p>Itatuba (83)</p>
+<p>Jacaraú (83)</p>
+<p>Jericó (83)</p>
+<p>João Pessoa (83) - Capital </p>
+<p>Joca Claudino (83)</p>
+<p>Juarez Távora (83)</p>
+<p>Juazeirinho (83)</p>
+<p>Junco do Seridó (83)</p>
+<p>Juripiranga (83)</p>
+<p>Juru (83)</p>
+<p>Lagoa (83)</p>
+<p>Lagoa de Dentro (83)</p>
+<p>Lagoa Seca (83)</p>
+<p>Lastro (83)</p>
+<p>Livramento (83)</p>
+<p>Logradouro (83)</p>
+<p>Lucena (83)</p>
+<p>Mãe d'Água (83)</p>
+<p>Malta (83)</p>
+<p>Mamanguape (83)</p>
+<p>Manaíra (83)</p>
+<p>Marcação (83)</p>
+<p>Mari (83)</p>
+<p>Marizópolis (83)</p>
+<p>Massaranduba (83)</p>
+<p>Mataraca (83)</p>
+<p>Matinhas (83)</p>
+<p>Mato Grosso (83)</p>
+<p>Matureia (83)</p>
+<p>Mogeiro (83)</p>
+<p>Montadas (83)</p>
+<p>Monte Horebe (83)</p>
+<p>Monteiro (83)</p>
+<p>Mulungu (83)</p>
+<p>Natuba (83)</p>
+<p>Nazarezinho (83)</p>
+<p>Nova Floresta (83)</p>
+<p>Nova Olinda (83)</p>
+<p>Nova Palmeira (83)</p>
+<p>Olho d'Água (83)</p>
+<p>Olivedos (83)</p>
+<p>Ouro Velho (83)</p>
+<p>Parari (83)</p>
+<p>Passagem (83)</p>
+<p>Patos (83)</p>
+<p>Paulista (83)</p>
+<p>Pedra Branca (83)</p>
+<p>Pedra Lavrada (83)</p>
+<p>Pedras de Fogo (83)</p>
+<p>Pedro Régis (83)</p>
+<p>Piancó (83)</p>
+<p>Picuí (83)</p>
+<p>Pilar (83)</p>
+<p>Pilões (83)</p>
+<p>Pilõezinhos (83)</p>
+<p>Pirpirituba (83)</p>
+<p>Pitimbu (83)</p>
+<p>Pocinhos (83)</p>
+<p>Poço Dantas (83)</p>
+<p>Poço de José de Moura (83)</p>
+<p>Pombal (83)</p>
+<p>Prata (83)</p>
+<p>Princesa Isabel (83)</p>
+<p>Puxinanã (83)</p>
+<p>Queimadas (83)</p>
+<p>Quixaba (83)</p>
+<p>Remígio (83)</p>
+<p>Riachão (83)</p>
+<p>Riachão do Bacamarte (83)</p>
+<p>Riachão do Poço (83)</p>
+<p>Riacho de Santo Antônio (83)</p>
+<p>Riacho dos Cavalos (83)</p>
+<p>Rio Tinto (83)</p>
+<p>Salgadinho (83)</p>
+<p>Salgado de São Félix (83)</p>
+<p>Santa Cecília (83)</p>
+<p>Santa Cruz (83)</p>
+<p>Santa Helena (83)</p>
+<p>Santa Inês (83)</p>
+<p>Santa Luzia (83)</p>
+<p>Santa Rita (83)</p>
+<p>Santa Terezinha (83)</p>
+<p>Santana de Mangueira (83)</p>
+<p>Santana dos Garrotes (83)</p>
+<p>Santo André (83)</p>
+<p>São Bentinho (83)</p>
+<p>São Bento (83)</p>
+<p>São Domingos (83)</p>
+<p>São Domingos do Cariri (83)</p>
+<p>São Francisco (83)</p>
+<p>São João do Cariri (83)</p>
+<p>São João do Rio do Peixe (83)</p>
+<p>São João do Tigre (83)</p>
+<p>São José da Lagoa Tapada (83)</p>
+<p>São José de Caiana (83)</p>
+<p>São José de Espinharas (83)</p>
+<p>São José de Piranhas (83)</p>
+<p>São José de Princesa (83)</p>
+<p>São José do Bonfim (83)</p>
+<p>São José do Brejo do Cruz (83)</p>
+<p>São José do Sabugi (83)</p>
+<p>São José dos Cordeiros (83)</p>
+<p>São José dos Ramos (83)</p>
+<p>São Mamede (83)</p>
+<p>São Miguel de Taipu (83)</p>
+<p>São Sebastião de Lagoa de Roça (83)</p>
+<p>São Sebastião do Umbuzeiro (83)</p>
+<p>São Vicente do Seridó (83)</p>
+<p>Sapé (83)</p>
+<p>Serra Branca (83)</p>
+<p>Serra da Raiz (83)</p>
+<p>Serra Grande (83)</p>
+<p>Serra Redonda (83)</p>
+<p>Serraria (83)</p>
+<p>Sertãozinho (83)</p>
+<p>Sobrado (83)</p>
+<p>Solânea (83)</p>
+<p>Soledade (83)</p>
+<p>Sossêgo (83)</p>
+<p>Sousa (83)</p>
+<p>Sumé (83)</p>
+<p>Tacima (83)</p>
+<p>Taperoá (83)</p>
+<p>Tavares (83)</p>
+<p>Teixeira (83)</p>
+<p>Tenório (83)</p>
+<p>Triunfo (83)</p>
+<p>Uiraúna (83)</p>
+<p>Umbuzeiro (83)</p>
+<p>Várzea (83)</p>
+<p>Vieirópolis (83)</p>
+<p>Vista Serrana (83)</p>
+<p>Zabelê (83)</p>
+    </div>
+  </div>
+    <div class="state-card" data-state="PR">
+    <h2>Paraná <span class="arrow">▶</span></h2>
+    <div class="cities">
+      <p>Abatiá (43)</p>
+<p>Adrianópolis (41)</p>
+<p>Agudos do Sul (41)</p>
+<p>Almirante Tamandaré (41)</p>
+<p>Altamira do Paraná (44)</p>
+<p>Altônia (44)</p>
+<p>Alto Paraná (44)</p>
+<p>Alto Piquiri (44)</p>
+<p>Alvorada do Sul (43)</p>
+<p>Amaporã (44)</p>
+<p>Ampére (46)</p>
+<p>Anahy (45)</p>
+<p>Andirá (43)</p>
+<p>Ângulo (44)</p>
+<p>Antonina (41)</p>
+<p>Antônio Olinto (42)</p>
+<p>Apucarana (43)</p>
+<p>Arapongas (43)</p>
+<p>Arapoti (43)</p>
+<p>Arapuã (44)</p>
+<p>Araruna (44)</p>
+<p>Araucária (41)</p>
+<p>Ariranha do Ivaí (43)</p>
+<p>Assaí (43)</p>
+<p>Assis Chateaubriand (44)</p>
+<p>Astorga (44)</p>
+<p>Atalaia (44)</p>
+<p>Balsa Nova (41)</p>
+<p>Bandeirantes (43)</p>
+<p>Barbacena (44)</p>
+<p>Barra do Jacaré (43)</p>
+<p>Bela Vista da Caroba (46)</p>
+<p>Bela Vista do Paraíso (43)</p>
+<p>Bituruna (42)</p>
+<p>Boa Esperança (44)</p>
+<p>Boa Esperança do Iguaçu (46)</p>
+<p>Boa Ventura de São Roque (42)</p>
+<p>Boa Vista da Aparecida (45)</p>
+<p>Bocaiúva do Sul (41)</p>
+<p>Bom Jesus do Sul (46)</p>
+<p>Bom Sucesso (43)</p>
+<p>Bom Sucesso do Sul (46)</p>
+<p>Borrazópolis (43)</p>
+<p>Braganey (45)</p>
+<p>Brasilândia do Sul (44)</p>
+<p>Cafeara (43)</p>
+<p>Cafelândia (45)</p>
+<p>Cafezal do Sul (44)</p>
+<p>Califórnia (43)</p>
+<p>Cambará (43)</p>
+<p>Cambé (43)</p>
+<p>Cambira (43)</p>
+<p>Campina da Lagoa (44)</p>
+<p>Campina do Simão (42)</p>
+<p>Campina Grande do Sul (41)</p>
+<p>Campo Bonito (45)</p>
+<p>Campo do Tenente (41)</p>
+<p>Campo Largo (41)</p>
+<p>Campo Magro (41)</p>
+<p>Campo Mourão (44)</p>
+<p>Cândido de Abreu (43)</p>
+<p>Candói (42)</p>
+<p>Cantagalo (42)</p>
+<p>Capanema (46)</p>
+<p>Capitão Leônidas Marques (45)</p>
+<p>Carambeí (42)</p>
+<p>Carlópolis (43)</p>
+<p>Cascavel (45)</p>
+<p>Castro (42)</p>
+<p>Catanduvas (45)</p>
+<p>Centenário do Sul (43)</p>
+<p>Cerro Azul (41)</p>
+<p>Céu Azul (45)</p>
+<p>Chopinzinho (46)</p>
+<p>Cianorte (44)</p>
+<p>Cidade Gaúcha (44)</p>
+<p>Clevelândia (46)</p>
+<p>Colombo (41)</p>
+<p>Colorado (44)</p>
+<p>Congonhinhas (43)</p>
+<p>Conselheiro Mairinck (43)</p>
+<p>Contenda (41)</p>
+<p>Corbélia (45)</p>
+<p>Cornélio Procópio (43)</p>
+<p>Coronel Domingos Soares (46)</p>
+<p>Coronel Vivida (46)</p>
+<p>Corumbataí do Sul (44)</p>
+<p>Cruz Machado (42)</p>
+<p>Cruzeiro do Iguaçu (46)</p>
+<p>Cruzeiro do Oeste (44)</p>
+<p>Cruzmaltina (43)</p>
+<p>Curitiba (41) - Capital</p>
+<p>Curiúva (43)</p>
+<p>Diamante do Norte (44)</p>
+<p>Diamante do Sul (45)</p>
+<p>Diamante d'Oeste (45)</p>
+<p>Dois Vizinhos (46)</p>
+<p>Douradina (44)</p>
+<p>Doutor Camargo (44)</p>
+<p>Doutor Ulysses (41)</p>
+<p>Enéas Marques (46)</p>
+<p>Engenheiro Beltrão (44)</p>
+<p>Entre Rios do Oeste (45)</p>
+<p>Esperança Nova (44)</p>
+<p>Espigão Alto do Iguaçu (42)</p>
+<p>Farol (44)</p>
+<p>Faxinal (43)</p>
+<p>Fazenda Rio Grande (41)</p>
+<p>Fênix (44)</p>
+<p>Fernandes Pinheiro (42)</p>
+<p>Figueira (43)</p>
+<p>Flor da Serra do Sul (46)</p>
+<p>Floraí (44)</p>
+<p>Floresta (43)</p>
+<p>Florestópolis (43)</p>
+<p>Flórida (43)</p>
+<p>Formosa do Oeste (44)</p>
+<p>Foz do Iguaçu (45)</p>
+<p>Foz do Jordão (46)</p>
+<p>Francisco Alves (44)</p>
+<p>Francisco Beltrão (46)</p>
+<p>General Carneiro (42)</p>
+<p>Godoy Moreira (43)</p>
+<p>Goioerê (44)</p>
+<p>Goioxim (42)</p>
+<p>Grandes Rios (43)</p>
+<p>Guaíra (44)</p>
+<p>Guairaçá (44)</p>
+<p>Guamiranga (42)</p>
+<p>Guapirama (43)</p>
+<p>Guaporema (44)</p>
+<p>Guaraci (43)</p>
+<p>Guaraniaçu (45)</p>
+<p>Guarapuava (42)</p>
+<p>Guaraqueçaba (41)</p>
+<p>Guaratuba (41)</p>
+<p>Honório Serpa (46)</p>
+<p>Ibaiti (43)</p>
+<p>Ibema (45)</p>
+<p>Ibiporã (43)</p>
+<p>Icaraíma (44)</p>
+<p>Iguaraçu (44)</p>
+<p>Iguatu (42)</p>
+<p>Imbaú (42)</p>
+<p>Imbituva (42)</p>
+<p>Inácio Martins (42)</p>
+<p>Inajá (44)</p>
+<p>Indianópolis (44)</p>
+<p>Ipiranga (42)</p>
+<p>Iporã (44)</p>
+<p>Iracema do Oeste (45)</p>
+<p>Irati (42)</p>
+<p>Iretama (44)</p>
+<p>Itaguajé (44)</p>
+<p>Itaipulândia (45)</p>
+<p>Itambaracá (43)</p>
+<p>Itambé (44)</p>
+<p>Itapejara d'Oeste (46)</p>
+<p>Itaperuçu (41)</p>
+<p>Itaúna do Sul (44)</p>
+<p>Ivaí (42)</p>
+<p>Ivaiporã (43)</p>
+<p>Ivaté (44)</p>
+<p>Ivatuba (44)</p>
+<p>Jaboti (43)</p>
+<p>Jacarezinho (43)</p>
+<p>Jaguapitã (43)</p>
+<p>Jaguariaíva (43)</p>
+<p>Jandaia do Sul (43)</p>
+<p>Janiópolis (44)</p>
+<p>Japira (43)</p>
+<p>Japurá (44)</p>
+<p>Jardim Alegre (43)</p>
+<p>Jardim Olinda (43)</p>
+<p>Jataizinho (43)</p>
+<p>Jesuítas (45)</p>
+<p>Joaquim Távora (43)</p>
+<p>Jundiaí do Sul (43)</p>
+<p>Juranda (44)</p>
+<p>Jussara (44)</p>
+<p>Kaloré (43)</p>
+<p>Lapa (41)</p>
+<p>Laranjal (42)</p>
+<p>Laranjeiras do Sul (42)</p>
+<p>Leópolis (43)</p>
+<p>Lidianópolis (43)</p>
+<p>Lindoeste (45)</p>
+<p>Loanda (44)</p>
+<p>Lobato (44)</p>
+<p>Londrina (43)</p>
+<p>Luiziana (44)</p>
+<p>Lunardelli (43)</p>
+<p>Lupionópolis (43)</p>
+<p>Mallet (42)</p>
+<p>Mamborê (44)</p>
+<p>Mandaguaçu (44)</p>
+<p>Mandaguari (44)</p>
+<p>Mandirituba (41)</p>
+<p>Manfrinópolis (46)</p>
+<p>Mangueirinha (46)</p>
+<p>Manoel Ribas (43)</p>
+<p>Marechal Cândido Rondon (45)</p>
+<p>Maria Helena (44)</p>
+<p>Marialva (44)</p>
+<p>Marilândia do Sul (43)</p>
+<p>Marilena (44)</p>
+<p>Mariluz (44)</p>
+<p>Maringá (44)</p>
+<p>Mariópolis (46)</p>
+<p>Maripá (45)</p>
+<p>Marmeleiro (46)</p>
+<p>Marquinho (42)</p>
+<p>Marumbi (43)</p>
+<p>Matelândia (45)</p>
+<p>Matinhos (41)</p>
+<p>Mato Rico (42)</p>
+<p>Mauá da Serra (43)</p>
+<p>Medianeira (45)</p>
+<p>Mercedes (45)</p>
+<p>Mirador (43)</p>
+<p>Miraselva (43)</p>
+<p>Missal (45)</p>
+<p>Moreira Sales (44)</p>
+<p>Morretes (41)</p>
+<p>Munhoz de Melo (44)</p>
+<p>Nossa Senhora das Graças (44)</p>
+<p>Nova Aliança do Ivaí (44)</p>
+<p>Nova América da Colina (43)</p>
+<p>Nova Aurora (45)</p>
+<p>Nova Cantu (44)</p>
+<p>Nova Esperança (44)</p>
+<p>Nova Esperança do Sudoeste (46)</p>
+<p>Nova Fátima (43)</p>
+<p>Nova Laranjeiras (42)</p>
+<p>Nova Londrina (44)</p>
+<p>Nova Olímpia (44)</p>
+<p>Nova Prata do Iguaçu (46)</p>
+<p>Nova Santa Bárbara (43)</p>
+<p>Nova Santa Rosa (45)</p>
+<p>Nova Tebas (42)</p>
+<p>Novo Itacolomi (43)</p>
+<p>Ortigueira (42)</p>
+<p>Ourizona (44)</p>
+<p>Ouro Verde do Oeste (45)</p>
+<p>Paiçandu (44)</p>
+<p>Palmas (46)</p>
+<p>Palmeira (42)</p>
+<p>Palmital (42)</p>
+<p>Palotina (44)</p>
+<p>Paraíso do Norte (44)</p>
+<p>Paranacity (44)</p>
+<p>Paranaguá (41)</p>
+<p>Paranapoema (44)</p>
+<p>Paranavaí (44)</p>
+<p>Pato Bragado (45)</p>
+<p>Pato Branco (46)</p>
+<p>Paula Freitas (42)</p>
+<p>Paulo Frontin (42)</p>
+<p>Peabiru (44)</p>
+<p>Perobal (44)</p>
+<p>Pérola (44)</p>
+<p>Pérola d'Oeste (46)</p>
+<p>Piên (41)</p>
+<p>Pinhais (41)</p>
+<p>Pinhal de São Bento (46)</p>
+<p>Pinhalão (43)</p>
+<p>Pinhão (42)</p>
+<p>Piraí do Sul (42)</p>
+<p>Piraquara (41)</p>
+<p>Pitanga (42)</p>
+<p>Pitangueiras (43)</p>
+<p>Planaltina do Paraná (44)</p>
+<p>Planalto (46)</p>
+<p>Ponta Grossa (42)</p>
+<p>Pontal do Paraná (41)</p>
+<p>Porecatu (43)</p>
+<p>Porto Amazonas (42)</p>
+<p>Porto Barreiro (42)</p>
+<p>Porto Rico (44)</p>
+<p>Porto Vitória (42)</p>
+<p>Prado Ferreira (43)</p>
+<p>Pranchita (46)</p>
+<p>Presidente Castelo Branco (43)</p>
+<p>Primeiro de Maio (43)</p>
+<p>Prudentópolis (42)</p>
+<p>Quarto Centenário (44)</p>
+<p>Quatiguá (43)</p>
+<p>Quatro Barras (41)</p>
+<p>Quatro Pontes (45)</p>
+<p>Quedas do Iguaçu (46)</p>
+<p>Querência do Norte (44)</p>
+<p>Quinta do Sol (44)</p>
+<p>Quitandinha (41)</p>
+<p>Ramilândia (45)</p>
+<p>Rancho Alegre (43)</p>
+<p>Rancho Alegre d'Oeste (44)</p>
+<p>Realeza (46)</p>
+<p>Rebouças (42)</p>
+<p>Renascença (46)</p>
+<p>Reserva (42)</p>
+<p>Reserva do Iguaçu (42)</p>
+<p>Ribeirão Claro (43)</p>
+<p>Ribeirão do Pinhal (43)</p>
+<p>Rio Azul (42)</p>
+<p>Rio Bom (43)</p>
+<p>Rio Bonito do Iguaçu (42)</p>
+<p>Rio Branco do Ivaí (43)</p>
+<p>Rio Branco do Sul (41)</p>
+<p>Rio Negro (47)</p>
+<p>Rolândia (43)</p>
+<p>Roncador (44)</p>
+<p>Rondon (44)</p>
+<p>Rosário do Ivaí (43)</p>
+<p>Sabáudia (43)</p>
+<p>Salgado Filho (46)</p>
+<p>Salto do Itararé (43)</p>
+<p>Salto do Lontra (46)</p>
+<p>Santa Amélia (43)</p>
+<p>Santa Cecília do Pavão (43)</p>
+<p>Santa Cruz de Monte Castelo (44)</p>
+<p>Santa Fé (44)</p>
+<p>Santa Helena (45)</p>
+<p>Santa Inês (43)</p>
+<p>Santa Isabel do Ivaí (44)</p>
+<p>Santa Izabel do Oeste (46)</p>
+<p>Santa Lúcia (45)</p>
+<p>Santa Maria do Oeste (42)</p>
+<p>Santa Mariana (43)</p>
+<p>Santa Mônica (44)</p>
+<p>Santa Tereza do Oeste (45)</p>
+<p>Santa Terezinha de Itaipu (45)</p>
+<p>Santana do Itararé (43)</p>
+<p>Santo Antônio da Platina (43)</p>
+<p>Santo Antônio do Caiuá (44)</p>
+<p>Santo Antônio do Paraíso (43)</p>
+<p>Santo Antônio do Sudoeste (46)</p>
+<p>Santo Inácio (44)</p>
+<p>São Carlos do Ivaí (44)</p>
+<p>São Jerônimo da Serra (43)</p>
+<p>São João (46)</p>
+<p>São João do Caiuá (44)</p>
+<p>São João do Ivaí (43)</p>
+<p>São João do Triunfo (42)</p>
+<p>São Jorge d'Oeste (46)</p>
+<p>São Jorge do Ivaí (44)</p>
+<p>São Jorge do Patrocínio (44)</p>
+<p>São José da Boa Vista (43)</p>
+<p>São José das Palmeiras (45)</p>
+<p>São José dos Pinhais (41)</p>
+<p>São Manoel do Paraná (44)</p>
+<p>São Mateus do Sul (42)</p>
+<p>São Miguel do Iguaçu (45)</p>
+<p>São Pedro do Iguaçu (45)</p>
+<p>São Pedro do Ivaí (43)</p>
+<p>São Pedro do Paraná (44)</p>
+<p>São Sebastião da Amoreira (43)</p>
+<p>São Tomé (44)</p>
+<p>Sapopema (43)</p>
+<p>Sarandi (44)</p>
+<p>Saudade do Iguaçu (46)</p>
+<p>Sengés (43)</p>
+<p>Serranópolis do Iguaçu (46)</p>
+<p>Sertaneja (43)</p>
+<p>Sertanópolis (43)</p>
+<p>Siqueira Campos (43)</p>
+<p>Sulina (46)</p>
+<p>Tamarana (43)</p>
+<p>Tamboara (44)</p>
+<p>Tapejara (44)</p>
+<p>Tapira (44)</p>
+<p>Teixeira Soares (42)</p>
+<p>Telêmaco Borba (42)</p>
+<p>Terra Boa (44)</p>
+<p>Terra Rica (44)</p>
+<p>Terra Roxa (44)</p>
+<p>Tibagi (42)</p>
+<p>Tijucas do Sul (41)</p>
+<p>Toledo (45)</p>
+<p>Tomazina (43)</p>
+<p>Três Barras do Paraná (45)</p>
+<p>Tunas do Paraná (41)</p>
+<p>Tuneiras do Oeste (44)</p>
+<p>Tupãssi (45)</p>
+<p>Turvo (42)</p>
+<p>Ubiratã (44)</p>
+<p>Umuarama (44)</p>
+<p>União da Vitória (42)</p>
+<p>Uniflor (44)</p>
+<p>Uraí (43)</p>
+<p>Ventania (42)</p>
+<p>Vera Cruz do Oeste (45)</p>
+<p>Verê (46)</p>
+<p>Virmond (42)</p>
+<p>Vitorino (46)</p>
+<p>Wenceslau Braz (43)</p>
+<p>Xambrê (44)</p>
+    </div>
+  </div>
+    <div class="state-card" data-state="PE">
+    <h2>Pernambuco<span class="arrow">▶</span></h2>
+    <div class="cities">
+      <p>Abreu e Lima (81)</p>
+<p>Afogados da Ingazeira (87)</p>
+<p>Afrânio (87)</p>
+<p>Agrestina (81)</p>
+<p>Água Preta (81)</p>
+<p>Águas Belas (87)</p>
+<p>Alagoinha (87)</p>
+<p>Aliança (81)</p>
+<p>Altinho (81)</p>
+<p>Amaraji (81)</p>
+<p>Angelim (87)</p>
+<p>Araçoiaba (81)</p>
+<p>Araripina (87)</p>
+<p>Arcoverde (87)</p>
+<p>Barra de Guabiraba (81)</p>
+<p>Barreiros (81)</p>
+<p>Belém de Maria (81)</p>
+<p>Belém do São Francisco (87)</p>
+<p>Belo Jardim (81)</p>
+<p>Betânia (87)</p>
+<p>Bezerros (81)</p>
+<p>Bodocó (87)</p>
+<p>Bom Conselho (87)</p>
+<p>Bom Jardim (81)</p>
+<p>Bonito (81)</p>
+<p>Brejão (87)</p>
+<p>Brejinho (87)</p>
+<p>Brejo da Madre de Deus (81)</p>
+<p>Buenos Aires (81)</p>
+<p>Buíque (87)</p>
+<p>Cabo de Santo Agostinho (81)</p>
+<p>Cabrobó (87)</p>
+<p>Cachoeirinha (81)</p>
+<p>Caetés (87)</p>
+<p>Calçado (87)</p>
+<p>Calumbi (87)</p>
+<p>Camaragibe (81)</p>
+<p>Camocim de São Félix (81)</p>
+<p>Camutanga (81)</p>
+<p>Canhotinho (87)</p>
+<p>Capoeiras (87)</p>
+<p>Carnaíba (87)</p>
+<p>Carnaubeira da Penha (87)</p>
+<p>Carpina (81)</p>
+<p>Caruaru (81)</p>
+<p>Casinhas (81)</p>
+<p>Catende (81)</p>
+<p>Cedro (87)</p>
+<p>Chã de Alegria (81)</p>
+<p>Chã Grande (81)</p>
+<p>Condado (81)</p>
+<p>Correntes (87)</p>
+<p>Cortês (81)</p>
+<p>Cumaru (81)</p>
+<p>Cupira (81)</p>
+<p>Custódia (87)</p>
+<p>Dormentes (87)</p>
+<p>Escada (81)</p>
+<p>Exu (87)</p>
+<p>Feira Nova (81)</p>
+<p>Ferreiros (81)</p>
+<p>Flores (87)</p>
+<p>Floresta (87)</p>
+<p>Frei Miguelinho (81)</p>
+<p>Gameleira (81)</p>
+<p>Garanhuns (87)</p>
+<p>Glória do Goitá (81)</p>
+<p>Goiana (81)</p>
+<p>Granito (87)</p>
+<p>Gravatá (81)</p>
+<p>Iati (87)</p>
+<p>Ibimirim (87)</p>
+<p>Ibirajuba (81)</p>
+<p>Igarassu (81)</p>
+<p>Iguaracy (87)</p>
+<p>Inajá (87)</p>
+<p>Ingazeira (87)</p>
+<p>Ipojuca (81)</p>
+<p>Ipubi (87)</p>
+<p>Itacuruba (87)</p>
+<p>Itaíba (87)</p>
+<p>Itamaracá (81)</p>
+<p>Itambé (81)</p>
+<p>Itapetim (87)</p>
+<p>Itapissuma (81)</p>
+<p>Itaquitinga (81)</p>
+<p>Jaboatão dos Guararapes (81)</p>
+<p>Jaqueira (81)</p>
+<p>Jataúba (81)</p>
+<p>Jatobá (87)</p>
+<p>João Alfredo (81)</p>
+<p>Joaquim Nabuco (81)</p>
+<p>Jucati (87)</p>
+<p>Jupi (87)</p>
+<p>Jurema (87)</p>
+<p>Lagoa de Itaenga (81)</p>
+<p>Lagoa do Carro (81)</p>
+<p>Lagoa do Ouro (87)</p>
+<p>Lagoa dos Gatos (81)</p>
+<p>Lagoa Grande (87)</p>
+<p>Lajedo (87)</p>
+<p>Limoeiro (81)</p>
+<p>Macaparana (81)</p>
+<p>Machados (81)</p>
+<p>Manari (87)</p>
+<p>Maraial (81)</p>
+<p>Mirandiba (87)</p>
+<p>Moreilândia (87)</p>
+<p>Moreno (81)</p>
+<p>Nazaré da Mata (81)</p>
+<p>Olinda (81)</p>
+<p>Orobó (81)</p>
+<p>Orocó (87)</p>
+<p>Ouricuri (87)</p>
+<p>Palmares (81)</p>
+<p>Palmeirina (87)</p>
+<p>Panelas (81)</p>
+<p>Paranatama (87)</p>
+<p>Parnamirim (87)</p>
+<p>Passira (81)</p>
+<p>Paudalho (81)</p>
+<p>Paulista (81)</p>
+<p>Pedra (87)</p>
+<p>Pesqueira (87)</p>
+<p>Petrolândia (87)</p>
+<p>Petrolina (87)</p>
+<p>Poção (87)</p>
+<p>Pombos (81)</p>
+<p>Quipapá (81)</p>
+<p>Quixaba (87)</p>
+<p>Recife (81) - Capital</p>
+<p>Riacho das Almas (81)</p>
+<p>Ribeirão (81)</p>
+<p>Rio Formoso (81)</p>
+<p>Sairé (81)</p>
+<p>Salgadinho (87)</p>
+<p>Salgueiro (87)</p>
+<p>Saloá (87)</p>
+<p>Sanharó (87)</p>
+<p>Santa Cruz (87)</p>
+<p>Santa Cruz da Baixa Verde (87)</p>
+<p>Santa Cruz do Capibaribe (81)</p>
+<p>Santa Filomena (87)</p>
+<p>Santa Maria da Boa Vista (87)</p>
+<p>Santa Maria do Cambucá (81)</p>
+<p>Santa Terezinha (87)</p>
+<p>São Benedito do Sul (81)</p>
+<p>São Bento do Una (81)</p>
+<p>São Caitano (81)</p>
+<p>São João (87)</p>
+<p>São Joaquim do Monte (81)</p>
+<p>São José da Coroa Grande (81)</p>
+<p>São José do Belmonte (87)</p>
+<p>São José do Egito (87)</p>
+<p>São Lourenço da Mata (81)</p>
+<p>Serrita (87)</p>
+<p>Serra Talhada (87)</p>
+<p>Sertânia (87)</p>
+<p>Sirinhaém (81)</p>
+<p>Solidão (87)</p>
+<p>Surubim (81)</p>
+<p>Tabira (87)</p>
+<p>Tacaimbó (81)</p>
+<p>Tacaratu (87)</p>
+<p>Tamandaré (81)</p>
+<p>Taquaritinga do Norte (81)</p>
+<p>Terezinha (87)</p>
+<p>Terra Nova (87)</p>
+<p>Timbaúba (81)</p>
+<p>Toritama (81)</p>
+<p>Tracunhaém (81)</p>
+<p>Trindade (87)</p>
+<p>Triunfo (87)</p>
+<p>Tupanatinga (87)</p>
+<p>Tuparetama (87)</p>
+<p>Venturosa (87)</p>
+<p>Verdejante (87)</p>
+<p>Vertente do Lério (81)</p>
+<p>Vertentes (81)</p>
+<p>Vicência (81)</p>
+<p>Vitória de Santo Antão (81)</p>
+<p>Xexéu (81)</p>
+    </div>
+  </div>
+    <div class="state-card" data-state="PI">
+    <h2>Piauí<span class="arrow">▶</span></h2>
+    <div class="cities">
+      <p>Acauã (89)</p>
+<p>Agricolândia (86)</p>
+<p>Água Branca (86)</p>
+<p>Alagoinha do Piauí (89)</p>
+<p>Alegrete do Piauí (89)</p>
+<p>Alto Longá (86)</p>
+<p>Altos (86)</p>
+<p>Alvorada do Gurguéia (89)</p>
+<p>Amarante (86)</p>
+<p>Angical do Piauí (86)</p>
+<p>Anísio de Abreu (89)</p>
+<p>Antônio Almeida (89)</p>
+<p>Aroazes (86)</p>
+<p>Aroeiras do Itaim (89)</p>
+<p>Arraial (86)</p>
+<p>Assunção do Piauí (86)</p>
+<p>Avelino Lopes (89)</p>
+<p>Baixa Grande do Ribeiro (89)</p>
+<p>Barra D'Alcântara (86)</p>
+<p>Barras (86)</p>
+<p>Barreiras do Piauí (86)</p>
+<p>Barro Duro (86)</p>
+<p>Batalha (86)</p>
+<p>Bela Vista do Piauí (89)</p>
+<p>Belém do Piauí (89)</p>
+<p>Beneditinos (86)</p>
+<p>Bertolínia (89)</p>
+<p>Betânia do Piauí (89)</p>
+<p>Boa Hora (86)</p>
+<p>Bocaina (89)</p>
+<p>Bom Jesus (89)</p>
+<p>Bom Princípio do Piauí (86)</p>
+<p>Bonfim do Piauí (89)</p>
+<p>Boqueirão do Piauí (86)</p>
+<p>Brasileira (86)</p>
+<p>Brejo do Piauí (89)</p>
+<p>Buriti dos Lopes (86)</p>
+<p>Buriti dos Montes (86)</p>
+<p>Cabeceiras do Piauí (86)</p>
+<p>Cajazeiras do Piauí (89)</p>
+<p>Cajueiro da Praia (86)</p>
+<p>Caldeirão Grande do Piauí (89)</p>
+<p>Campinas do Piauí (89)</p>
+<p>Campo Alegre do Fidalgo (89)</p>
+<p>Campo Grande do Piauí (89)</p>
+<p>Campo Largo do Piauí (86)</p>
+<p>Campo Maior (86)</p>
+<p>Canavieira (89)</p>
+<p>Canto do Buriti (89)</p>
+<p>Capitão de Campos (86)</p>
+<p>Capitão Gervásio Oliveira (89)</p>
+<p>Caracol (89)</p>
+<p>Caraúbas do Piauí (86)</p>
+<p>Caridade do Piauí (89)</p>
+<p>Castelo do Piauí (86)</p>
+<p>Caxingó (86)</p>
+<p>Cocal (86)</p>
+<p>Cocal de Telha (86)</p>
+<p>Cocal dos Alves (86)</p>
+<p>Coivaras (86)</p>
+<p>Colônia do Gurguéia (89)</p>
+<p>Colônia do Piauí (89)</p>
+<p>Conceição do Canindé (89)</p>
+<p>Coronel José Dias (89)</p>
+<p>Corrente (89)</p>
+<p>Cristalândia do Piauí (89)</p>
+<p>Cristino Castro (89)</p>
+<p>Curimatá (89)</p>
+<p>Currais (89)</p>
+<p>Curral Novo do Piauí (89)</p>
+<p>Curralinhos (86)</p>
+<p>Demerval Lobão (86)</p>
+<p>Dirceu Arcoverde (89)</p>
+<p>Dom Expedito Lopes (89)</p>
+<p>Dom Inocêncio (89)</p>
+<p>Domingos Mourão (86)</p>
+<p>Elesbão Veloso (86)</p>
+<p>Eliseu Martins (89)</p>
+<p>Esperantina (86)</p>
+<p>Fartura do Piauí (89)</p>
+<p>Flores do Piauí (89)</p>
+<p>Floresta do Piauí (89)</p>
+<p>Floriano (89)</p>
+<p>Francinópolis (86)</p>
+<p>Francisco Ayres (86)</p>
+<p>Francisco Macedo (89)</p>
+<p>Francisco Santos (89)</p>
+<p>Fronteiras (89)</p>
+<p>Geminiano (89)</p>
+<p>Gilbués (89)</p>
+<p>Guadalupe (89)</p>
+<p>Guaribas (89)</p>
+<p>Hugo Napoleão (86)</p>
+<p>Ilha Grande (86)</p>
+<p>Inhuma (89)</p>
+<p>Ipiranga do Piauí (86)</p>
+<p>Isaías Coelho (89)</p>
+<p>Itainópolis (89)</p>
+<p>Itaueira (89)</p>
+<p>Jacobina do Piauí (89)</p>
+<p>Jaicós (89)</p>
+<p>Jardim do Mulato (86)</p>
+<p>Jatobá do Piauí (86)</p>
+<p>Jerumenha (89)</p>
+<p>João Costa (89)</p>
+<p>Joaquim Pires (86)</p>
+<p>Joca Marques (86)</p>
+<p>José de Freitas (86)</p>
+<p>Juazeiro do Piauí (89)</p>
+<p>Júlio Borges (89)</p>
+<p>Jurema (89)</p>
+<p>Lagoa Alegre (86)</p>
+<p>Lagoa de São Francisco (86)</p>
+<p>Lagoa do Barro do Piauí (89)</p>
+<p>Lagoa do Piauí (86)</p>
+<p>Lagoa do Sítio (86)</p>
+<p>Lagoinha do Piauí (86)</p>
+<p>Landri Sales (89)</p>
+<p>Luis Correia (86)</p>
+<p>Luzilândia (86)</p>
+<p>Madeiro (86)</p>
+<p>Manoel Emídio (89)</p>
+<p>Marcolândia (89)</p>
+<p>Marcos Parente (89)</p>
+<p>Massapê do Piauí (89)</p>
+<p>Matias Olímpio (86)</p>
+<p>Miguel Alves (86)</p>
+<p>Miguel Leão (86)</p>
+<p>Milton Brandão (86)</p>
+<p>Monsenhor Gil (86)</p>
+<p>Monsenhor Hipólito (89)</p>
+<p>Monte Alegre do Piauí (89)</p>
+<p>Morro Cabeça no Tempo (89)</p>
+<p>Morro do Chapéu do Piauí (86)</p>
+<p>Murici dos Portelas (86)</p>
+<p>Nazária (86)</p>
+<p>Nossa Senhora de Nazaré (86)</p>
+<p>Nossa Senhora dos Remédios (86)</p>
+<p>Nova Santa Rita (89)</p>
+<p>Novo Oriente do Piauí (89)</p>
+<p>Novo Santo Antônio (86)</p>
+<p>Oeiras (89)</p>
+<p>Olho D'Água do Piauí (89)</p>
+<p>Padre Marcos (89)</p>
+<p>Paes Landim (89)</p>
+<p>Pajeú do Piauí (89)</p>
+<p>Palmeira do Piauí (89)</p>
+<p>Palmeirais (86)</p>
+<p>Paquetá (86)</p>
+<p>Parnaguá (89)</p>
+<p>Parnaíba (86)</p>
+<p>Passagem Franca do Piauí (86)</p>
+<p>Patos do Piauí (89)</p>
+<p>Pau D'Arco do Piauí (86)</p>
+<p>Paulistana (89)</p>
+<p>Pavussu (89)</p>
+<p>Pedro II (86)</p>
+<p>Pedro Laurentino (89)</p>
+<p>Picos (89)</p>
+<p>Pimenteiras (89)</p>
+<p>Pio IX (89)</p>
+<p>Piracuruca (86)</p>
+<p>Piripiri (86)</p>
+<p>Porto (86)</p>
+<p>Porto Alegre do Piauí (89)</p>
+<p>Prata do Piauí (86)</p>
+<p>Queimada Nova (89)</p>
+<p>Ribeiro Gonçalves (89)</p>
+<p>Rio Grande do Piauí (89)</p>
+<p>Santa Cruz do Piauí (89)</p>
+<p>Santa Cruz dos Milagres (86)</p>
+<p>Santa Filomena (89)</p>
+<p>Santa Luz (89)</p>
+<p>Santa Rosa do Piauí (89)</p>
+<p>Santana do Piauí (89)</p>
+<p>Santo Antônio de Lisboa (89)</p>
+<p>Santo Antônio dos Milagres (86)</p>
+<p>Santo Inácio do Piauí (89)</p>
+<p>São Braz do Piauí (89)</p>
+<p>São Félix do Piauí (86)</p>
+<p>São Francisco de Assis do Piauí (89)</p>
+<p>São Francisco do Piauí (89)</p>
+<p>São Gonçalo do Piauí (86)</p>
+<p>São João da Canabrava (89)</p>
+<p>São João da Fronteira (86)</p>
+<p>São João da Serra (86)</p>
+<p>São João da Varjota (89)</p>
+<p>São João do Arraial (86)</p>
+<p>São João do Piauí (89)</p>
+<p>São José do Divino (86)</p>
+<p>São José do Peixe (89)</p>
+<p>São José do Piauí (89)</p>
+<p>São Julião (89)</p>
+<p>São Lourenço do Piauí (89)</p>
+<p>São Luis do Piauí (89)</p>
+<p>São Miguel da Baixa Grande (86)</p>
+<p>São Miguel do Fidalgo (89)</p>
+<p>São Miguel do Tapuio (86)</p>
+<p>São Pedro do Piauí (86)</p>
+<p>São Raimundo Nonato (89)</p>
+<p>Sebastião Barros (89)</p>
+<p>Sebastião Leal (89)</p>
+<p>Sigefredo Pacheco (86)</p>
+<p>Simões (89)</p>
+<p>Simplício Mendes (89)</p>
+<p>Socorro do Piauí (89)</p>
+<p>Sussuapara (89)</p>
+<p>Tamboril do Piauí (89)</p>
+<p>Tanque do Piauí (89)</p>
+<p>Teresina (86) - Capital</p>
+<p>União (86)</p>
+<p>Uruçuí (89)</p>
+<p>Valença do Piauí (89)</p>
+<p>Várzea Branca (89)</p>
+<p>Várzea Grande (86)</p>
+<p>Vera Mendes (89)</p>
+<p>Vila Nova do Piauí (89)</p>
+<p>Wall Ferraz (89)</p>
+    </div>
+  </div>
+    <div class="state-card" data-state="RJ">
+    <h2>Rio de Janeiro<span class="arrow">▶</span></h2>
+    <div class="cities">
+      <p>Angra dos Reis (24)</p>
+<p>Aperibé (22)</p>
+<p>Araruama (22)</p>
+<p>Areal (24)</p>
+<p>Armação dos Búzios (22)</p>
+<p>Arraial do Cabo (22)</p>
+<p>Barra do Piraí (24)</p>
+<p>Barra Mansa (24)</p>
+<p>Belford Roxo (21)</p>
+<p>Bom Jardim (22)</p>
+<p>Bom Jesus do Itabapoana (22)</p>
+<p>Cabo Frio (22)</p>
+<p>Cachoeiras de Macacu (21)</p>
+<p>Cambuci (22)</p>
+<p>Campos dos Goytacazes (22)</p>
+<p>Cantagalo (22)</p>
+<p>Carapebus (22)</p>
+<p>Cardoso Moreira (22)</p>
+<p>Carmo (22)</p>
+<p>Casimiro de Abreu (22)</p>
+<p>Comendador Levy Gasparian (24)</p>
+<p>Conceição de Macabu (22)</p>
+<p>Cordeiro (22)</p>
+<p>Duas Barras (22)</p>
+<p>Duque de Caxias (21)</p>
+<p>Engenheiro Paulo de Frontin (24)</p>
+<p>Guapimirim (21)</p>
+<p>Iguaba Grande (22)</p>
+<p>Itaboraí (21)</p>
+<p>Itaguaí (21)</p>
+<p>Italva (22)</p>
+<p>Itaocara (22)</p>
+<p>Itaperuna (22)</p>
+<p>Itatiaia (24)</p>
+<p>Japeri (21)</p>
+<p>Laje do Muriaé (22)</p>
+<p>Macaé (22)</p>
+<p>Macuco (22)</p>
+<p>Magé (21)</p>
+<p>Mangaratiba (21)</p>
+<p>Maricá (21)</p>
+<p>Mendes (24)</p>
+<p>Mesquita (21)</p>
+<p>Miguel Pereira (24)</p>
+<p>Miracema (22)</p>
+<p>Natividade (22)</p>
+<p>Nilópolis (21)</p>
+<p>Niterói (21)</p>
+<p>Nova Friburgo (22)</p>
+<p>Nova Iguaçu (21)</p>
+<p>Paracambi (21)</p>
+<p>Paraíba do Sul (24)</p>
+<p>Paraty (24)</p>
+<p>Paty do Alferes (24)</p>
+<p>Petrópolis (24)</p>
+<p>Pinheiral (24)</p>
+<p>Piraí (24)</p>
+<p>Porciúncula (22)</p>
+<p>Porto Real (24)</p>
+<p>Quatis (24)</p>
+<p>Queimados (21)</p>
+<p>Quissamã (22)</p>
+<p>Resende (24)</p>
+<p>Rio Bonito (21)</p>
+<p>Rio Claro (24)</p>
+<p>Rio das Flores (24)</p>
+<p>Rio das Ostras (22)</p>
+<p>Rio de Janeiro (21) - Capital</p>
+<p>Santa Maria Madalena (22)</p>
+<p>Santo Antônio de Pádua (22)</p>
+<p>São Fidélis (22)</p>
+<p>São Francisco de Itabapoana (22)</p>
+<p>São Gonçalo (21)</p>
+<p>São João da Barra (22)</p>
+<p>São João de Meriti (21)</p>
+<p>São José de Ubá (22)</p>
+<p>São José do Vale do Rio Preto (24)</p>
+<p>São Pedro da Aldeia (22)</p>
+<p>São Sebastião do Alto (22)</p>
+<p>Sapucaia (24)</p>
+<p>Saquarema (22)</p>
+<p>Seropédica (21)</p>
+<p>Silva Jardim (22)</p>
+<p>Sumidouro (22)</p>
+<p>Tanguá (21)</p>
+<p>Teresópolis (21)</p>
+<p>Trajano de Moraes (22)</p>
+<p>Três Rios (24)</p>
+<p>Valença (24)</p>
+<p>Varre-Sai (22)</p>
+<p>Vassouras (24)</p>
+<p>Volta Redonda (24)</p>
+    </div>
+  </div>
+    <div class="state-card" data-state="RN">
+    <h2>Rio grande Do Norte<span class="arrow">▶</span></h2>
+    <div class="cities">
+      <p>Acari (84)</p>
+<p>Afonso Bezerra (84)</p>
+<p>Água Nova (84)</p>
+<p>Alexandria (84)</p>
+<p>Almino Afonso (84)</p>
+<p>Alto do Rodrigues (84)</p>
+<p>Angicos (84)</p>
+<p>Antônio Martins (84)</p>
+<p>Apodi (84)</p>
+<p>Areia Branca (84)</p>
+<p>Arez (84)</p>
+<p>Assu (84)</p>
+<p>Baía Formosa (84)</p>
+<p>Baraúna (84)</p>
+<p>Barcelona (84)</p>
+<p>Bento Fernandes (84)</p>
+<p>Boa Saúde (84)</p>
+<p>Bodó (84)</p>
+<p>Bom Jesus (84)</p>
+<p>Brejinho (84)</p>
+<p>Caiçara do Norte (84)</p>
+<p>Caiçara do Rio do Vento (84)</p>
+<p>Caicó (84)</p>
+<p>Campo Grande (84)</p>
+<p>Campo Redondo (84)</p>
+<p>Canguaretama (84)</p>
+<p>Caraúbas (84)</p>
+<p>Carnaúba dos Dantas (84)</p>
+<p>Carnaubais (84)</p>
+<p>Ceará-Mirim (84)</p>
+<p>Cerro Corá (84)</p>
+<p>Coronel Ezequiel (84)</p>
+<p>Coronel João Pessoa (84)</p>
+<p>Cruzeta (84)</p>
+<p>Currais Novos (84)</p>
+<p>Doutor Severiano (84)</p>
+<p>Encanto (84)</p>
+<p>Equador (84)</p>
+<p>Espírito Santo (84)</p>
+<p>Extremoz (84)</p>
+<p>Felipe Guerra (84)</p>
+<p>Fernando Pedroza (84)</p>
+<p>Florânia (84)</p>
+<p>Francisco Dantas (84)</p>
+<p>Frutuoso Gomes (84)</p>
+<p>Galinhos (84)</p>
+<p>Goianinha (84)</p>
+<p>Governador Dix-Sept Rosado (84)</p>
+<p>Grossos (84)</p>
+<p>Guamaré (84)</p>
+<p>Ielmo Marinho (84)</p>
+<p>Ipanguaçu (84)</p>
+<p>Ipueira (84)</p>
+<p>Itajá (84)</p>
+<p>Itaú (84)</p>
+<p>Jaçanã (84)</p>
+<p>Jandaíra (84)</p>
+<p>Janduís (84)</p>
+<p>Japi (84)</p>
+<p>Jardim de Angicos (84)</p>
+<p>Jardim de Piranhas (84)</p>
+<p>Jardim do Seridó (84)</p>
+<p>João Câmara (84)</p>
+<p>João Dias (84)</p>
+<p>José da Penha (84)</p>
+<p>Jucurutu (84)</p>
+<p>Jundiá (84)</p>
+<p>Lagoa d'Anta (84)</p>
+<p>Lagoa de Pedras (84)</p>
+<p>Lagoa de Velhos (84)</p>
+<p>Lagoa Nova (84)</p>
+<p>Lagoa Salgada (84)</p>
+<p>Lajes (84)</p>
+<p>Lajes Pintadas (84)</p>
+<p>Lucrécia (84)</p>
+<p>Luís Gomes (84)</p>
+<p>Macaíba (84)</p>
+<p>Macau (84)</p>
+<p>Major Sales (84)</p>
+<p>Marcelino Vieira (84)</p>
+<p>Martins (84)</p>
+<p>Maxaranguape (84)</p>
+<p>Messias Targino (84)</p>
+<p>Montanhas (84)</p>
+<p>Monte Alegre (84)</p>
+<p>Monte das Gameleiras (84)</p>
+<p>Mossoró (84)</p>
+<p>Natal (84) - Capital</p>
+<p>Nísia Floresta (84)</p>
+<p>Nova Cruz (84)</p>
+<p>Olho-d'Água do Borges (84)</p>
+<p>Ouro Branco (84)</p>
+<p>Paraná (84)</p>
+<p>Paraú (84)</p>
+<p>Parazinho (84)</p>
+<p>Parelhas (84)</p>
+<p>Parnamirim (84)</p>
+<p>Passa-e-Fica (84)</p>
+<p>Passagem (84)</p>
+<p>Patu (84)</p>
+<p>Pau dos Ferros (84)</p>
+<p>Pedra Grande (84)</p>
+<p>Pedra Preta (84)</p>
+<p>Pedro Avelino (84)</p>
+<p>Pedro Velho (84)</p>
+<p>Pendências (84)</p>
+<p>Pilões (84)</p>
+<p>Poço Branco (84)</p>
+<p>Portalegre (84)</p>
+<p>Porto do Mangue (84)</p>
+<p>Pureza (84)</p>
+<p>Rafael Fernandes (84)</p>
+<p>Rafael Godeiro (84)</p>
+<p>Riacho da Cruz (84)</p>
+<p>Riacho de Santana (84)</p>
+<p>Riachuelo (84)</p>
+<p>Rio do Fogo (84)</p>
+<p>Rodolfo Fernandes (84)</p>
+<p>Ruy Barbosa (84)</p>
+<p>Santa Cruz (84)</p>
+<p>Santa Maria (84)</p>
+<p>Santana do Matos (84)</p>
+<p>Santana do Seridó (84)</p>
+<p>Santo Antônio (84)</p>
+<p>São Bento do Norte (84)</p>
+<p>São Bento do Trairi (84)</p>
+<p>São Fernando (84)</p>
+<p>São Francisco do Oeste (84)</p>
+<p>São Gonçalo do Amarante (84)</p>
+<p>São João do Sabugi (84)</p>
+<p>São José de Mipibu (84)</p>
+<p>São José do Campestre (84)</p>
+<p>São José do Seridó (84)</p>
+<p>São Miguel (84)</p>
+<p>São Miguel do Gostoso (84)</p>
+<p>São Paulo do Potengi (84)</p>
+<p>São Pedro (84)</p>
+<p>São Rafael (84)</p>
+<p>São Tomé (84)</p>
+<p>São Vicente (84)</p>
+<p>Senador Elói de Souza (84)</p>
+<p>Senador Georgino Avelino (84)</p>
+<p>Serra Caiada (84)</p>
+<p>Serra de São Bento (84)</p>
+<p>Serra do Mel (84)</p>
+<p>Serra Negra do Norte (84)</p>
+<p>Serrinha (84)</p>
+<p>Serrinha dos Pintos (84)</p>
+<p>Severiano Melo (84)</p>
+<p>Sítio Novo (84)</p>
+<p>Taboleiro Grande (84)</p>
+<p>Taipu (84)</p>
+<p>Tangará (84)</p>
+<p>Tenente Ananias (84)</p>
+<p>Tenente Laurentino Cruz (84)</p>
+<p>Tibau (84)</p>
+<p>Tibau do Sul (84)</p>
+<p>Timbaúba dos Batistas (84)</p>
+<p>Touros (84)</p>
+<p>Triunfo Potiguar (84)</p>
+<p>Umarizal (84)</p>
+<p>Upanema (84)</p>
+<p>Várzea (84)</p>
+<p>Venha-Ver (84)</p>
+<p>Vera Cruz (84)</p>
+<p>Viçosa (84)</p>
+<p>Vila Flor (84)</p>
+    </div>
+  </div>
+    <div class="state-card" data-state="RS">
+    <h2>Rio Grande Do Sul<span class="arrow">▶</span></h2>
+    <div class="cities">
+      <p>Aceguá (53)</p>
+<p>Água Santa (54)</p>
+<p>Agudo (55)</p>
+<p>Ajuricaba (55)</p>
+<p>Alecrim (55)</p>
+<p>Alegrete (55)</p>
+<p>Alegria (55)</p>
+<p>Almirante Tamandaré do Sul (54)</p>
+<p>Alpestre (55)</p>
+<p>Alto Alegre (55)</p>
+<p>Alto Feliz (51)</p>
+<p>Alvorada (51)</p>
+<p>Amaral Ferrador (51)</p>
+<p>Ametista do Sul (55)</p>
+<p>André da Rocha (54)</p>
+<p>Anta Gorda (51)</p>
+<p>Antônio Prado (54)</p>
+<p>Arambaré (51)</p>
+<p>Araricá (51)</p>
+<p>Aratiba (54)</p>
+<p>Arroio do Meio (51)</p>
+<p>Arroio do Padre (53)</p>
+<p>Arroio do Sal (51)</p>
+<p>Arroio do Tigre (51)</p>
+<p>Arroio dos Ratos (51)</p>
+<p>Arroio Grande (53)</p>
+<p>Arvorezinha (51)</p>
+<p>Augusto Pestana (55)</p>
+<p>Áurea (54)</p>
+<p>Bagé (53)</p>
+<p>Balneário Pinhal (51)</p>
+<p>Barão (51)</p>
+<p>Barão de Cotegipe (54)</p>
+<p>Barão do Triunfo (51)</p>
+<p>Barracão (54)</p>
+<p>Barra do Guarita (55)</p>
+<p>Barra do Quaraí (55)</p>
+<p>Barra do Ribeiro (51)</p>
+<p>Barra do Rio Azul (54)</p>
+<p>Barra Funda (54)</p>
+<p>Barros Cassal (54)</p>
+<p>Benjamin Constant do Sul (54)</p>
+<p>Bento Gonçalves (54)</p>
+<p>Boa Vista das Missões (55)</p>
+<p>Boa Vista do Buricá (55)</p>
+<p>Boa Vista do Cadeado (55)</p>
+<p>Boa Vista do Incra (55)</p>
+<p>Boa Vista do Sul (51)</p>
+<p>Bom Jesus (54)</p>
+<p>Bom Princípio (51)</p>
+<p>Bom Progresso (55)</p>
+<p>Bom Retiro do Sul (51)</p>
+<p>Boqueirão do Leão (51)</p>
+<p>Bossoroca (55)</p>
+<p>Bozano (55)</p>
+<p>Braga (55)</p>
+<p>Brochier (51)</p>
+<p>Butiá (51)</p>
+<p>Caçapava do Sul (55)</p>
+<p>Cacequi (55)</p>
+<p>Cachoeira do Sul (51)</p>
+<p>Cachoeirinha (51)</p>
+<p>Cacique Doble (54)</p>
+<p>Caibaté (55)</p>
+<p>Caiçara (55)</p>
+<p>Camaquã (51)</p>
+<p>Camargo (54)</p>
+<p>Cambará do Sul (54)</p>
+<p>Campestre da Serra (54)</p>
+<p>Campina das Missões (55)</p>
+<p>Campinas do Sul (54)</p>
+<p>Campo Bom (51)</p>
+<p>Campo Novo (55)</p>
+<p>Campos Borges (54)</p>
+<p>Candelária (51)</p>
+<p>Cândido Godói (55)</p>
+<p>Candiota (53)</p>
+<p>Canela (54)</p>
+<p>Canguçu (53)</p>
+<p>Canoas (51)</p>
+<p>Canudos do Vale (51)</p>
+<p>Capão Bonito do Sul (54)</p>
+<p>Capão da Canoa (51)</p>
+<p>Capão do Leão (53)</p>
+<p>Capela de Santana (51)</p>
+<p>Capitão (51)</p>
+<p>Capivari do Sul (51)</p>
+<p>Caraá (51)</p>
+<p>Carazinho (54)</p>
+<p>Carlos Barbosa (54)</p>
+<p>Carlos Gomes (54)</p>
+<p>Casca (54)</p>
+<p>Caseiros (54)</p>
+<p>Catuípe (55)</p>
+<p>Caxias do Sul (54)</p>
+<p>Centenário (54)</p>
+<p>Cerrito (53)</p>
+<p>Cerro Branco (51)</p>
+<p>Cerro Grande (55)</p>
+<p>Cerro Grande do Sul (51)</p>
+<p>Cerro Largo (55)</p>
+<p>Chapada (54)</p>
+<p>Charqueadas (51)</p>
+<p>Charrua (54)</p>
+<p>Chiapetta (55)</p>
+<p>Chuí (53)</p>
+<p>Chuvisca (51)</p>
+<p>Cidreira (51)</p>
+<p>Ciríaco (54)</p>
+<p>Colinas (51)</p>
+<p>Colorado (54)</p>
+<p>Condor (55)</p>
+<p>Constantina (54)</p>
+<p>Coqueiro Baixo (51)</p>
+<p>Coqueiros do Sul (54)</p>
+<p>Coronel Barros (55)</p>
+<p>Coronel Bicaco (55)</p>
+<p>Coronel Pilar (54)</p>
+<p>Cotiporã (54)</p>
+<p>Coxilha (54)</p>
+<p>Crissiumal (55)</p>
+<p>Cristal (51)</p>
+<p>Cristal do Sul (55)</p>
+<p>Cruz Alta (55)</p>
+<p>Cruzaltense (54)</p>
+<p>Cruzeiro do Sul (51)</p>
+<p>David Canabarro (54)</p>
+<p>Derrubadas (55)</p>
+<p>Dezesseis de Novembro (55)</p>
+<p>Dilermando de Aguiar (55)</p>
+<p>Dois Irmãos (51)</p>
+<p>Dois Irmãos das Missões (55)</p>
+<p>Dois Lajeados (54)</p>
+<p>Dom Feliciano (51)</p>
+<p>Dom Pedrito (53)</p>
+<p>Dom Pedro de Alcântara (51)</p>
+<p>Dona Francisca (55)</p>
+<p>Doutor Maurício Cardoso (55)</p>
+<p>Doutor Ricardo (54)</p>
+<p>Eldorado do Sul (51)</p>
+<p>Encantado (51)</p>
+<p>Encruzilhada do Sul (51)</p>
+<p>Engenho Velho (54)</p>
+<p>Entre-Ijuís (55)</p>
+<p>Entre Rios do Sul (54)</p>
+<p>Erebango (54)</p>
+<p>Erechim (54)</p>
+<p>Ernestina (54)</p>
+<p>Erval Grande (54)</p>
+<p>Erval Seco (55)</p>
+<p>Esmeralda (54)</p>
+<p>Esperança do Sul (55)</p>
+<p>Espumoso (54)</p>
+<p>Estação (54)</p>
+<p>Estância Velha (51)</p>
+<p>Esteio (51)</p>
+<p>Estrela (51)</p>
+<p>Estrela Velha (51)</p>
+<p>Eugênio de Castro (55)</p>
+<p>Fagundes Varela (54)</p>
+<p>Farroupilha (54)</p>
+<p>Faxinal do Soturno (55)</p>
+<p>Faxinalzinho (54)</p>
+<p>Fazenda Vilanova (51)</p>
+<p>Felipe Schmidt (51)</p>
+<p>Flores da Cunha (54)</p>
+<p>Floriano Peixoto (54)</p>
+<p>Fontoura Xavier (54)</p>
+<p>Formigueiro (55)</p>
+<p>Forquetinha (51)</p>
+<p>Fortaleza dos Valos (55)</p>
+<p>Frederico Westphalen (55)</p>
+<p>Garibaldi (54)</p>
+<p>Garruchos (55)</p>
+<p>Gaurama (54)</p>
+<p>General Câmara (51)</p>
+<p>Gentil (54)</p>
+<p>Getúlio Vargas (54)</p>
+<p>Giruá (55)</p>
+<p>Glorinha (51)</p>
+<p>Gramado (54)</p>
+<p>Gramado dos Loureiros (54)</p>
+<p>Gramado Xavier (51)</p>
+<p>Gravataí (51)</p>
+<p>Guabiju (54)</p>
+<p>Guaíba (51)</p>
+<p>Guaporé (54)</p>
+<p>Guarani das Missões (55)</p>
+<p>Harmonia (51)</p>
+<p>Herval (53)</p>
+<p>Herveiras (51)</p>
+<p>Horizontina (55)</p>
+<p>Hulha Negra (53)</p>
+<p>Humaitá (55)</p>
+<p>Ibarama (51)</p>
+<p>Ibiaçá (54)</p>
+<p>Ibiraiaras (54)</p>
+<p>Ibirapuitã (54)</p>
+<p>Ibirubá (54)</p>
+<p>Igrejinha (51)</p>
+<p>Ijuí (55)</p>
+<p>Ilópolis (51)</p>
+<p>Imbé (51)</p>
+<p>Imigrante (51)</p>
+<p>Independência (55)</p>
+<p>Inhacorá (55)</p>
+<p>Ipê (54)</p>
+<p>Ipiranga do Sul (54)</p>
+<p>Iraí (55)</p>
+<p>Itaara (55)</p>
+<p>Itacurubi (55)</p>
+<p>Itapuca (51)</p>
+<p>Itaqui (55)</p>
+<p>Itati (51)</p>
+<p>Itatiba do Sul (54)</p>
+<p>Ivorá (55)</p>
+<p>Ivoti (51)</p>
+<p>Jaboticaba (55)</p>
+<p>Jacuizinho (55)</p>
+<p>Jacutinga (54)</p>
+<p>Jaguarão (53)</p>
+<p>Jaguari (55)</p>
+<p>Jaquirana (54)</p>
+<p>Jari (55)</p>
+<p>Jóia (55)</p>
+<p>Júlio de Castilhos (55)</p>
+<p>Lagoa Bonita do Sul (51)</p>
+<p>Lagoa dos Três Cantos (54)</p>
+<p>Lagoa Vermelha (54)</p>
+<p>Lagoão (54)</p>
+<p>Lajeado (51)</p>
+<p>Lajeado do Bugre (55)</p>
+<p>Lavras do Sul (55)</p>
+<p>Liberato Salzano (55)</p>
+<p>Lindolfo Collor (51)</p>
+<p>Linha Nova (51)</p>
+<p>Maçambará (55)</p>
+<p>Machadinho (54)</p>
+<p>Mampituba (51)</p>
+<p>Manoel Viana (55)</p>
+<p>Maquiné (51)</p>
+<p>Maratá (51)</p>
+<p>Marau (54)</p>
+<p>Marcelino Ramos (54)</p>
+<p>Mariana Pimentel (51)</p>
+<p>Mariano Moro (54)</p>
+<p>Marques de Souza (51)</p>
+<p>Mata (55)</p>
+<p>Mato Castelhano (54)</p>
+<p>Mato Leitão (51)</p>
+<p>Mato Queimado (55)</p>
+<p>Maximiliano de Almeida (54)</p>
+<p>Minas do Leão (51)</p>
+<p>Miraguaí (55)</p>
+<p>Montauri (54)</p>
+<p>Monte Alegre dos Campos (54)</p>
+<p>Monte Belo do Sul (54)</p>
+<p>Montenegro (51)</p>
+<p>Mormaço (54)</p>
+<p>Morrinhos do Sul (51)</p>
+<p>Morro Redondo (53)</p>
+<p>Morro Reuter (51)</p>
+<p>Mostardas (51)</p>
+<p>Muçum (51)</p>
+<p>Muitos Capões (54)</p>
+<p>Muliterno (54)</p>
+<p>Não-Me-Toque (54)</p>
+<p>Nicolau Vergueiro (54)</p>
+<p>Nonoai (54)</p>
+<p>Nova Alvorada (54)</p>
+<p>Nova Araçá (54)</p>
+<p>Nova Bassano (54)</p>
+<p>Nova Boa Vista (54)</p>
+<p>Nova Bréscia (51)</p>
+<p>Nova Candelária (55)</p>
+<p>Nova Cruz (54)</p>
+<p>Nova Esperança do Sul (55)</p>
+<p>Nova Hartz (51)</p>
+<p>Nova Pádua (54)</p>
+<p>Nova Palma (55)</p>
+<p>Nova Petrópolis (54)</p>
+<p>Nova Prata (54)</p>
+<p>Nova Ramada (55)</p>
+<p>Nova Roma do Sul (54)</p>
+<p>Nova Santa Rita (51)</p>
+<p>Novo Barreiro (55)</p>
+<p>Novo Cabrais (51)</p>
+<p>Novo Hamburgo (51)</p>
+<p>Novo Machado (55)</p>
+<p>Novo Tiradentes (55)</p>
+<p>Novo Xingu (54)</p>
+<p>Osório (51)</p>
+<p>Paim Filho (54)</p>
+<p>Palmares do Sul (51)</p>
+<p>Palmeira das Missões (55)</p>
+<p>Palmitinho (55)</p>
+<p>Panambi (55)</p>
+<p>Pantano Grande (51)</p>
+<p>Paraí (54)</p>
+<p>Paraíso do Sul (55)</p>
+<p>Pareci Novo (51)</p>
+<p>Parobé (51)</p>
+<p>Passa Sete (51)</p>
+<p>Passo do Sobrado (51)</p>
+<p>Passo Fundo (54)</p>
+<p>Paulo Bento (54)</p>
+<p>Paverama (51)</p>
+<p>Pedras Altas (53)</p>
+<p>Pedro Osório (53)</p>
+<p>Pejuçara (55)</p>
+<p>Pelotas (53)</p>
+<p>Picada Café (51)</p>
+<p>Pinhal (51)</p>
+<p>Pinhal da Serra (54)</p>
+<p>Pinhal Grande (55)</p>
+<p>Pinheirinho do Vale (55)</p>
+<p>Pinheiro Machado (53)</p>
+<p>Pinto Bandeira (54)</p>
+<p>Pirapó (55)</p>
+<p>Piratini (53)</p>
+<p>Planalto (55)</p>
+<p>Poço das Antas (51)</p>
+<p>Pontão (54)</p>
+<p>Ponte Preta (54)</p>
+<p>Portão (51)</p>
+<p>Porto Alegre (51) - Capital</p>
+<p>Porto Lucena (55)</p>
+<p>Porto Mauá (55)</p>
+<p>Porto Vera Cruz (55)</p>
+<p>Porto Xavier (55)</p>
+<p>Pouso Novo (51)</p>
+<p>Presidente Lucena (51)</p>
+<p>Progresso (51)</p>
+<p>Protásio Alves (54)</p>
+<p>Putinga (51)</p>
+<p>Quaraí (55)</p>
+<p>Quatro Irmãos (54)</p>
+<p>Quevedos (55)</p>
+<p>Quinze de Novembro (55)</p>
+<p>Redentora (55)</p>
+<p>Relvado (51)</p>
+<p>Restinga Sêca (55)</p>
+<p>Rio dos Índios (55)</p>
+<p>Rio Grande (53)</p>
+<p>Rio Pardo (51)</p>
+<p>Riozinho (51)</p>
+<p>Roca Sales (51)</p>
+<p>Rodeio Bonito (55)</p>
+<p>Rolador (55)</p>
+<p>Rolante (51)</p>
+<p>Ronda Alta (54)</p>
+<p>Rondinha (54)</p>
+<p>Roque Gonzales (55)</p>
+<p>Rosário do Sul (55)</p>
+<p>Sagrada Família (54)</p>
+<p>Saldanha Marinho (55)</p>
+<p>Salto do Jacuí (55)</p>
+<p>Salvador das Missões (55)</p>
+<p>Salvador do Sul (51)</p>
+<p>Sananduva (54)</p>
+<p>Santa Bárbara do Sul (55)</p>
+<p>Santa Cecília do Sul (54)</p>
+<p>Santa Clara do Sul (51)</p>
+<p>Santa Cruz do Sul (51)</p>
+<p>Santa Margarida do Sul (55)</p>
+<p>Santa Maria (55)</p>
+<p>Santa Maria do Herval (51)</p>
+<p>Santa Rosa (55)</p>
+<p>Santa Tereza (54)</p>
+<p>Santa Vitória do Palmar (53)</p>
+<p>Santana da Boa Vista (53)</p>
+<p>Sant'Ana do Livramento (55)</p>
+<p>Santiago (55)</p>
+<p>Santo Ângelo (55)</p>
+<p>Santo Antônio da Patrulha (51)</p>
+<p>Santo Antônio das Missões (55)</p>
+<p>Santo Antônio do Palma (54)</p>
+<p>Santo Antônio do Planalto (55)</p>
+<p>Santo Augusto (55)</p>
+<p>Santo Cristo (55)</p>
+<p>Santo Expedito do Sul (54)</p>
+<p>São Borja (55)</p>
+<p>São Domingos do Sul (54)</p>
+<p>São Francisco de Assis (55)</p>
+<p>São Francisco de Paula (54)</p>
+<p>São Gabriel (55)</p>
+<p>São Jerônimo (51)</p>
+<p>São João da Urtiga (54)</p>
+<p>São João do Polêsine (55)</p>
+<p>São Jorge (54)</p>
+<p>São José das Missões (55)</p>
+<p>São José do Herval (54)</p>
+<p>São José do Inhacorá (55)</p>
+<p>São José do Norte (53)</p>
+<p>São José do Ouro (54)</p>
+<p>São José do Sul (51)</p>
+<p>São José dos Ausentes (54)</p>
+<p>São Leopoldo (51)</p>
+<p>São Lourenço do Sul (53)</p>
+<p>São Luiz Gonzaga (55)</p>
+<p>São Marcos (54)</p>
+<p>São Martinho (54)</p>
+<p>São Martinho da Serra (55)</p>
+<p>São Miguel das Missões (55)</p>
+<p>São Nicolau (55)</p>
+<p>São Paulo das Missões (55)</p>
+<p>São Pedro da Serra (51)</p>
+<p>São Pedro das Missões (55)</p>
+<p>São Pedro do Butiá (55)</p>
+<p>São Pedro do Sul (55)</p>
+<p>São Sebastião do Caí (51)</p>
+<p>São Sepé (55)</p>
+<p>São Valentim (54)</p>
+<p>São Valentim do Sul (54)</p>
+<p>São Valério do Sul (55)</p>
+<p>São Vendelino (51)</p>
+<p>São Vicente do Sul (55)</p>
+<p>Sapiranga (51)</p>
+<p>Sapucaia do Sul (51)</p>
+<p>Sarandi (54)</p>
+<p>Seberi (55)</p>
+<p>Sede Nova (55)</p>
+<p>Segredo (51)</p>
+<p>Selbach (54)</p>
+<p>Senador Salgado Filho (55)</p>
+<p>Sentinela do Sul (51)</p>
+<p>Serafina Corrêa (54)</p>
+<p>Sério (51)</p>
+<p>Sertão (54)</p>
+<p>Sertão Santana (51)</p>
+<p>Sete de Setembro (55)</p>
+<p>Severiano de Almeida (54)</p>
+<p>Silveira Martins (55)</p>
+<p>Sinimbu (51)</p>
+<p>Sobradinho (51)</p>
+<p>Soledade (54)</p>
+<p>Tabaí (51)</p>
+<p>Tapejara (54)</p>
+<p>Tapera (54)</p>
+<p>Tapes (51)</p>
+<p>Taquara (51)</p>
+<p>Taquari (51)</p>
+<p>Taquaruçu do Sul (55)</p>
+<p>Tavares (53)</p>
+<p>Tenente Portela (55)</p>
+<p>Terra de Areia (51)</p>
+<p>Teutônia (51)</p>
+<p>Tio Hugo (54)</p>
+<p>Tiradentes do Sul (55)</p>
+<p>Toropi (55)</p>
+<p>Torres (51)</p>
+<p>Tramandaí (51)</p>
+<p>Travesseiro (51)</p>
+<p>Três Arroios (54)</p>
+<p>Três Cachoeiras (51)</p>
+<p>Três Coroas (51)</p>
+<p>Três de Maio (55)</p>
+<p>Três Forquilhas (51)</p>
+<p>Três Palmeiras (54)</p>
+<p>Três Passos (55)</p>
+<p>Trindade do Sul (54)</p>
+<p>Triunfo (51)</p>
+<p>Tucunduva (55)</p>
+<p>Tunas (51)</p>
+<p>Tupanci do Sul (54)</p>
+<p>Tupanciretã (55)</p>
+<p>Tupandi (51)</p>
+<p>Tuparendi (55)</p>
+<p>Turuçu (53)</p>
+<p>Ubiretama (55)</p>
+<p>União da Serra (54)</p>
+<p>Unistalda (55)</p>
+<p>Uruguaiana (55)</p>
+<p>Vacaria (54)</p>
+<p>Vale do Sol (51)</p>
+<p>Vale Real (51)</p>
+<p>Vale Verde (51)</p>
+<p>Vanini (54)</p>
+<p>Venâncio Aires (51)</p>
+<p>Vera Cruz (51)</p>
+<p>Veranópolis (54)</p>
+<p>Vespasiano Corrêa (51)</p>
+<p>Viadutos (54)</p>
+<p>Viamão (51)</p>
+<p>Vicente Dutra (55)</p>
+<p>Victor Graeff (54)</p>
+<p>Vila Flores (54)</p>
+<p>Vila Lângaro (54)</p>
+<p>Vila Maria (54)</p>
+<p>Vila Nova do Sul (55)</p>
+<p>Vista Alegre (54)</p>
+<p>Vista Alegre do Prata (54)</p>
+<p>Vista Gaúcha (55)</p>
+<p>Vitória das Missões (55)</p>
+<p>Westfália (51)</p>
+<p>Xangri-lá (51)</p>
+    </div>
+  </div>
+    <div class="state-card" data-state="RO">
+    <h2>Rondônia<span class="arrow">▶</span></h2>
+    <div class="cities">
+      <p>Alta Floresta d'Oeste (69)</p>
+<p>Alto Alegre dos Parecis (69)</p>
+<p>Alto Paraíso (69)</p>
+<p>Alvorada d'Oeste (69)</p>
+<p>Ariquemes (69)</p>
+<p>Buritis (69)</p>
+<p>Cabixi (69)</p>
+<p>Cacaulândia (69)</p>
+<p>Cacoal (69)</p>
+<p>Campo Novo de Rondônia (69)</p>
+<p>Candeias do Jamari (69)</p>
+<p>Castanheiras (69)</p>
+<p>Cerejeiras (69)</p>
+<p>Chupinguaia (69)</p>
+<p>Colorado do Oeste (69)</p>
+<p>Corumbiara (69)</p>
+<p>Costa Marques (69)</p>
+<p>Cujubim (69)</p>
+<p>Espigão d'Oeste (69)</p>
+<p>Governador Jorge Teixeira (69)</p>
+<p>Guajará-Mirim (69)</p>
+<p>Itapuã do Oeste (69)</p>
+<p>Jaru (69)</p>
+<p>Ji-Paraná (69)</p>
+<p>Machadinho d'Oeste (69)</p>
+<p>Ministro Andreazza (69)</p>
+<p>Mirante da Serra (69)</p>
+<p>Monte Negro (69)</p>
+<p>Nova Brasilândia d'Oeste (69)</p>
+<p>Nova Mamoré (69)</p>
+<p>Nova União (69)</p>
+<p>Novo Horizonte do Oeste (69)</p>
+<p>Ouro Preto do Oeste (69)</p>
+<p>Parecis (69)</p>
+<p>Pimenta Bueno (69)</p>
+<p>Pimenteiras do Oeste (69)</p>
+<p>Porto Velho (69) - Capital</p>
+<p>Presidente Médici (69)</p>
+<p>Primavera de Rondônia (69)</p>
+<p>Rio Crespo (69)</p>
+<p>Rolim de Moura (69)</p>
+<p>Santa Luzia d'Oeste (69)</p>
+<p>São Felipe d'Oeste (69)</p>
+<p>São Francisco do Guaporé (69)</p>
+<p>São Miguel do Guaporé (69)</p>
+<p>Seringueiras (69)</p>
+<p>Teixeirópolis (69)</p>
+<p>Theobroma (69)</p>
+<p>Urupá (69)</p>
+<p>Vale do Anari (69)</p>
+<p>Vale do Paraíso (69)</p>
+<p>Vilhena (69)</p>
+    </div>
+  </div>
+    <div class="state-card" data-state="RR">
+    <h2>Roraima<span class="arrow">▶</span></h2>
+    <div class="cities">
+      <p>Alto Alegre (95)</p>
+<p>Amajari (95)</p>
+<p>Boa Vista (95) - Capital</p>
+<p>Bonfim (95)</p>
+<p>Cantá (95)</p>
+<p>Caracaraí (95)</p>
+<p>Caroebe (95)</p>
+<p>Iracema (95)</p>
+<p>Mucajaí (95)</p>
+<p>Normandia (95)</p>
+<p>Pacaraima (95)</p>
+<p>Rorainópolis (95)</p>
+<p>São João da Baliza (95)</p>
+<p>São Luiz (95)</p>
+<p>Uiramutã (95)</p>
+    </div>
+  </div>
+    <div class="state-card" data-state="SC">
+    <h2>Santa Catarina<span class="arrow">▶</span></h2>
+    <div class="cities">
+      <p>Abdon Batista (49)</p>
+<p>Abelardo Luz (49)</p>
+<p>Agrolândia (47)</p>
+<p>Agronômica (47)</p>
+<p>Água Doce (49)</p>
+<p>Águas de Chapecó (49)</p>
+<p>Águas Frias (49)</p>
+<p>Águas Mornas (48)</p>
+<p>Alfredo Wagner (48)</p>
+<p>Alto Bela Vista (49)</p>
+<p>Anchieta (49)</p>
+<p>Anitápolis (48)</p>
+<p>Antônio Carlos (48)</p>
+<p>Apiúna (47)</p>
+<p>Arabutã (49)</p>
+<p>Araquari (47)</p>
+<p>Araranguá (48)</p>
+<p>Armazém (48)</p>
+<p>Arroio Trinta (49)</p>
+<p>Arvoredo (49)</p>
+<p>Ascurra (47)</p>
+<p>Atalanta (47)</p>
+<p>Aurora (47)</p>
+<p>Balneário Arroio do Silva (48)</p>
+<p>Balneário Barra do Sul (47)</p>
+<p>Balneário Camboriú (47)</p>
+<p>Balneário Gaivota (48)</p>
+<p>Balneário Piçarras (47)</p>
+<p>Balneário Rincão (48)</p>
+<p>Bandeirante (49)</p>
+<p>Barra Bonita (49)</p>
+<p>Barra Velha (47)</p>
+<p>Bela Vista do Toldo (47)</p>
+<p>Belmonte (49)</p>
+<p>Benedito Novo (47)</p>
+<p>Biguaçu (48)</p>
+<p>Blumenau (47)</p>
+<p>Bocaina do Sul (49)</p>
+<p>Bom Jardim da Serra (49)</p>
+<p>Bom Jesus (49)</p>
+<p>Bom Jesus do Oeste (49)</p>
+<p>Bom Retiro (48)</p>
+<p>Bombinhas (47)</p>
+<p>Botuverá (47)</p>
+<p>Braço do Norte (48)</p>
+<p>Braço do Trombudo (47)</p>
+<p>Brunópolis (49)</p>
+<p>Brusque (47)</p>
+<p>Caçador (49)</p>
+<p>Caibi (49)</p>
+<p>Calmon (49)</p>
+<p>Camboriú (47)</p>
+<p>Campo Alegre (47)</p>
+<p>Campo Belo do Sul (49)</p>
+<p>Campo Erê (49)</p>
+<p>Campos Novos (49)</p>
+<p>Canelinha (48)</p>
+<p>Canoinhas (47)</p>
+<p>Capão Alto (49)</p>
+<p>Capinzal (49)</p>
+<p>Capivari de Baixo (48)</p>
+<p>Catanduvas (49)</p>
+<p>Caxambu do Sul (49)</p>
+<p>Celso Ramos (49)</p>
+<p>Cerro Negro (49)</p>
+<p>Chapadão do Lageado (47)</p>
+<p>Chapecó (49)</p>
+<p>Cocal do Sul (48)</p>
+<p>Concórdia (49)</p>
+<p>Cordilheira Alta (49)</p>
+<p>Coronel Freitas (49)</p>
+<p>Coronel Martins (49)</p>
+<p>Correia Pinto (49)</p>
+<p>Corupá (47)</p>
+<p>Criciúma (48)</p>
+<p>Cunha Porã (49)</p>
+<p>Cunhataí (49)</p>
+<p>Curitibanos (49)</p>
+<p>Descanso (49)</p>
+<p>Dionísio Cerqueira (49)</p>
+<p>Dona Emma (47)</p>
+<p>Doutor Pedrinho (47)</p>
+<p>Entre Rios (49)</p>
+<p>Ermo (48)</p>
+<p>Erval Velho (49)</p>
+<p>Faxinal dos Guedes (49)</p>
+<p>Flor do Sertão (49)</p>
+<p>Florianópolis (48) - Capital</p>
+<p>Formosa do Sul (49)</p>
+<p>Forquilhinha (48)</p>
+<p>Fraiburgo (49)</p>
+<p>Frei Rogério (49)</p>
+<p>Galvão (49)</p>
+<p>Garopaba (48)</p>
+<p>Garuva (47)</p>
+<p>Gaspar (47)</p>
+<p>Governador Celso Ramos (48)</p>
+<p>Grão-Pará (48)</p>
+<p>Gravatal (48)</p>
+<p>Guabiruba (47)</p>
+<p>Guaraciaba (49)</p>
+<p>Guaramirim (47)</p>
+<p>Guarujá do Sul (49)</p>
+<p>Guatambú (49)</p>
+<p>Herval d'Oeste (49)</p>
+<p>Ibiam (49)</p>
+<p>Ibicaré (49)</p>
+<p>Ibirama (47)</p>
+<p>Içara (48)</p>
+<p>Ilhota (47)</p>
+<p>Imaruí (48)</p>
+<p>Imbituba (48)</p>
+<p>Imbuia (47)</p>
+<p>Indaial (47)</p>
+<p>Iomerê (49)</p>
+<p>Ipira (49)</p>
+<p>Iporã do Oeste (49)</p>
+<p>Ipuaçu (49)</p>
+<p>Ipumirim (49)</p>
+<p>Iraceminha (49)</p>
+<p>Irani (49)</p>
+<p>Irati (49)</p>
+<p>Irineópolis (47)</p>
+<p>Itá (49)</p>
+<p>Itaiópolis (47)</p>
+<p>Itajaí (47)</p>
+<p>Itapema (47)</p>
+<p>Itapiranga (49)</p>
+<p>Itapoá (47)</p>
+<p>Ituporanga (47)</p>
+<p>Jaborá (49)</p>
+<p>Jacinto Machado (48)</p>
+<p>Jaguaruna (48)</p>
+<p>Jaraguá do Sul (47)</p>
+<p>Jardinópolis (49)</p>
+<p>Joaçaba (49)</p>
+<p>Joinville (47)</p>
+<p>José Boiteux (47)</p>
+<p>Jupiá (49)</p>
+<p>Lacerdópolis (49)</p>
+<p>Lages (49)</p>
+<p>Laguna (48)</p>
+<p>Lajeado Grande (49)</p>
+<p>Laurentino (47)</p>
+<p>Lauro Müller (48)</p>
+<p>Lebon Régis (49)</p>
+<p>Leoberto Leal (48)</p>
+<p>Lindóia do Sul (49)</p>
+<p>Lontras (47)</p>
+<p>Luiz Alves (47)</p>
+<p>Luzerna (49)</p>
+<p>Macieira (49)</p>
+<p>Mafra (47)</p>
+<p>Major Gercino (48)</p>
+<p>Major Vieira (47)</p>
+<p>Maracajá (48)</p>
+<p>Maravilha (49)</p>
+<p>Marema (49)</p>
+<p>Massaranduba (47)</p>
+<p>Matos Costa (49)</p>
+<p>Meleiro (48)</p>
+<p>Miraguaí (49)</p>
+<p>Modelo (49)</p>
+<p>Mondaí (49)</p>
+<p>Monte Carlo (49)</p>
+<p>Monte Castelo (47)</p>
+<p>Morro da Fumaça (48)</p>
+<p>Morro Grande (48)</p>
+<p>Navegantes (47)</p>
+<p>Nova Erechim (49)</p>
+<p>Nova Itarana (47)</p>
+<p>Nova Trento (48)</p>
+<p>Nova Veneza (48)</p>
+<p>Novo Horizonte (49)</p>
+<p>Orleans (48)</p>
+<p>Otacílio Costa (49)</p>
+<p>Ouro (49)</p>
+<p>Ouro Verde (49)</p>
+<p>Paial (49)</p>
+<p>Painel (49)</p>
+<p>Palhoça (48)</p>
+<p>Palma Sola (49)</p>
+<p>Palmeira (49)</p>
+<p>Palmitos (49)</p>
+<p>Papanduva (47)</p>
+<p>Paraíso (49)</p>
+<p>Passo de Torres (48)</p>
+<p>Passos Maia (49)</p>
+<p>Paulo Lopes (48)</p>
+<p>Pedras Grandes (48)</p>
+<p>Penha (47)</p>
+<p>Peritiba (49)</p>
+<p>Pescaria Brava (48)</p>
+<p>Petrolândia (47)</p>
+<p>Pinhalzinho (49)</p>
+<p>Pinheiro Preto (49)</p>
+<p>Piratuba (49)</p>
+<p>Planalto Alegre (49)</p>
+<p>Pomerode (47)</p>
+<p>Ponte Alta (49)</p>
+<p>Ponte Alta do Norte (49)</p>
+<p>Ponte Serrada (49)</p>
+<p>Porto Belo (47)</p>
+<p>Porto União (47)</p>
+<p>Pouso Redondo (47)</p>
+<p>Praia Grande (48)</p>
+<p>Presidente Castello Branco (49)</p>
+<p>Presidente Getúlio (47)</p>
+<p>Presidente Nereu (47)</p>
+<p>Princesa (49)</p>
+<p>Quilombo (49)</p>
+<p>Rancho Queimado (48)</p>
+<p>Rio das Antas (49)</p>
+<p>Rio do Campo (47)</p>
+<p>Rio do Oeste (47)</p>
+<p>Rio do Sul (47)</p>
+<p>Rio dos Cedros (47)</p>
+<p>Rio Fortuna (48)</p>
+<p>Rio Negrinho (47)</p>
+<p>Rio Rufino (49)</p>
+<p>Riqueza (49)</p>
+<p>Rodeio (47)</p>
+<p>Romelândia (49)</p>
+<p>Salete (47)</p>
+<p>Saltinho (49)</p>
+<p>Salto Veloso (49)</p>
+<p>Sangão (48)</p>
+<p>Santa Cecília (49)</p>
+<p>Santa Helena (49)</p>
+<p>Santa Rosa de Lima (48)</p>
+<p>Santa Rosa do Sul (48)</p>
+<p>Santa Terezinha (47)</p>
+<p>Santa Terezinha do Progresso (49)</p>
+<p>Santiago do Sul (49)</p>
+<p>Santo Amaro da Imperatriz (48)</p>
+<p>São Bento do Sul (47)</p>
+<p>São Bernardino (49)</p>
+<p>São Bonifácio (48)</p>
+<p>São Carlos (49)</p>
+<p>São Cristóvão do Sul (49)</p>
+<p>São Domingos (49)</p>
+<p>São Francisco do Sul (47)</p>
+<p>São João Batista (48)</p>
+<p>São João do Itaperiú (47)</p>
+<p>São João do Oeste (49)</p>
+<p>São João do Sul (48)</p>
+<p>São Joaquim (49)</p>
+<p>São José (48)</p>
+<p>São José do Cedro (49)</p>
+<p>São José do Cerrito (49)</p>
+<p>São Lourenço do Oeste (49)</p>
+<p>São Ludgero (48)</p>
+<p>São Martinho (48)</p>
+<p>São Miguel da Boa Vista (49)</p>
+<p>São Miguel do Oeste (49)</p>
+<p>São Pedro de Alcântara (48)</p>
+<p>Saudades (49)</p>
+<p>Schroeder (47)</p>
+<p>Seara (49)</p>
+<p>Serra Alta (49)</p>
+<p>Siderópolis (48)</p>
+<p>Sombrio (48)</p>
+<p>Taió (47)</p>
+<p>Tangará (49)</p>
+<p>Tigrinhos (49)</p>
+<p>Tijucas (48)</p>
+<p>Timbé do Sul (48)</p>
+<p>Timbó (47)</p>
+<p>Timbó Grande (49)</p>
+<p>Três Barras (47)</p>
+<p>Treviso (48)</p>
+<p>Treze de Maio (48)</p>
+<p>Treze Tílias (49)</p>
+<p>Trombudo Central (47)</p>
+<p>Tubarão (48)</p>
+<p>Tunápolis (49)</p>
+<p>Turvo (48)</p>
+<p>União do Oeste (49)</p>
+<p>Urubici (49)</p>
+<p>Urupema (49)</p>
+<p>Urussanga (48)</p>
+<p>Vargeão (49)</p>
+<p>Vargem (49)</p>
+<p>Vargem Bonita (49)</p>
+<p>Vidal Ramos (47)</p>
+<p>Videira (49)</p>
+<p>Vitor Meireles (47)</p>
+<p>Witmarsum (47)</p>
+<p>Xanxerê (49)</p>
+<p>Xavantina (49)</p>
+<p>Xaxim (49)</p>
+<p>Zortéa (49)</p>
+    </div>
+  </div>
+    <div class="state-card" data-state="SP">
+    <h2>São Paulo<span class="arrow">▶</span></h2>
+    <div class="cities">
+      <p>Adamantina (18)</p>
+<p>Adolfo (17)</p>
+<p>Aguaí (19)</p>
+<p>Águas da Prata (19)</p>
+<p>Águas de Lindóia (19)</p>
+<p>Águas de Santa Bárbara (14)</p>
+<p>Águas de São Pedro (19)</p>
+<p>Agudos (14)</p>
+<p>Alambari (15)</p>
+<p>Alfredo Marcondes (18)</p>
+<p>Altair (17)</p>
+<p>Altinópolis (16)</p>
+<p>Alto Alegre (17)</p>
+<p>Alumínio (11)</p>
+<p>Álvares Florence (17)</p>
+<p>Álvares Machado (18)</p>
+<p>Álvaro de Carvalho (14)</p>
+<p>Alvinlândia (14)</p>
+<p>Americana (19)</p>
+<p>Américo Brasiliense (16)</p>
+<p>Américo de Campos (17)</p>
+<p>Amparo (19)</p>
+<p>Analândia (19)</p>
+<p>Anhembi (14)</p>
+<p>Anhumas (18)</p>
+<p>Aparecida (12)</p>
+<p>Aparecida d'Oeste (17)</p>
+<p>Apiaí (15)</p>
+<p>Araçariguama (11)</p>
+<p>Araçatuba (18)</p>
+<p>Araçoiaba da Serra (15)</p>
+<p>Aramina (16)</p>
+<p>Arandu (14)</p>
+<p>Arapeí (12)</p>
+<p>Araraquara (16)</p>
+<p>Araras (19)</p>
+<p>Arco-Íris (14)</p>
+<p>Arealva (14)</p>
+<p>Areias (12)</p>
+<p>Areiópolis (14)</p>
+<p>Ariranha (17)</p>
+<p>Artur Nogueira (19)</p>
+<p>Arujá (11)</p>
+<p>Aspásia (17)</p>
+<p>Assis (18)</p>
+<p>Atibaia (11)</p>
+<p>Auriflama (17)</p>
+<p>Avaí (14)</p>
+<p>Avanhandava (18)</p>
+<p>Avaré (14)</p>
+<p>Bady Bassitt (17)</p>
+<p>Balbinos (14)</p>
+<p>Bálsamo (17)</p>
+<p>Bananal (12)</p>
+<p>Barão de Antonina (15)</p>
+<p>Barbosa (18)</p>
+<p>Bariri (14)</p>
+<p>Barra Bonita (14)</p>
+<p>Barra do Chapéu (15)</p>
+<p>Barra do Turvo (15)</p>
+<p>Barretos (17)</p>
+<p>Barrinha (16)</p>
+<p>Barueri (11)</p>
+<p>Bastos (14)</p>
+<p>Batatais (16)</p>
+<p>Bauru (14)</p>
+<p>Bebedouro (17)</p>
+<p>Bento de Abreu (18)</p>
+<p>Bernardino de Campos (14)</p>
+<p>Bertioga (13)</p>
+<p>Bilac (18)</p>
+<p>Birigui (18)</p>
+<p>Biritiba Mirim (11)</p>
+<p>Boa Esperança do Sul (16)</p>
+<p>Bocaina (14)</p>
+<p>Bofete (14)</p>
+<p>Boituva (15)</p>
+<p>Bom Jesus dos Perdões (11)</p>
+<p>Bom Sucesso de Itararé (15)</p>
+<p>Borá (14)</p>
+<p>Boracéia (14)</p>
+<p>Borborema (16)</p>
+<p>Borebi (14)</p>
+<p>Botucatu (14)</p>
+<p>Bragança Paulista (11)</p>
+<p>Braúna (18)</p>
+<p>Brejo Alegre (18)</p>
+<p>Brodowski (16)</p>
+<p>Brotas (14)</p>
+<p>Buri (15)</p>
+<p>Buritama (18)</p>
+<p>Buritizal (16)</p>
+<p>Cabrália Paulista (14)</p>
+<p>Cabréuva (11)</p>
+<p>Caçapava (12)</p>
+<p>Cachoeira Paulista (12)</p>
+<p>Caconde (19)</p>
+<p>Cafelândia (14)</p>
+<p>Caiabu (18)</p>
+<p>Caieiras (11)</p>
+<p>Caiuá (18)</p>
+<p>Cajamar (11)</p>
+<p>Cajati (13)</p>
+<p>Cajobi (17)</p>
+<p>Cajuru (16)</p>
+<p>Campina do Monte Alegre (15)</p>
+<p>Campinas (19)</p>
+<p>Campo Limpo Paulista (11)</p>
+<p>Campos do Jordão (12)</p>
+<p>Campos Novos Paulista (14)</p>
+<p>Cananéia (13)</p>
+<p>Canas (12)</p>
+<p>Cândido Mota (18)</p>
+<p>Cândido Rodrigues (16)</p>
+<p>Canitar (14)</p>
+<p>Capão Bonito (15)</p>
+<p>Capela do Alto (15)</p>
+<p>Capivari (19)</p>
+<p>Caraguatatuba (12)</p>
+<p>Carapicuíba (11)</p>
+<p>Cardoso (17)</p>
+<p>Casa Branca (19)</p>
+<p>Cássia dos Coqueiros (16)</p>
+<p>Castilho (18)</p>
+<p>Catanduva (17)</p>
+<p>Catiguá (17)</p>
+<p>Cedral (17)</p>
+<p>Cerqueira César (14)</p>
+<p>Cerquilho (15)</p>
+<p>Cesário Lange (15)</p>
+<p>Charqueada (19)</p>
+<p>Chavantes (14)</p>
+<p>Clementina (18)</p>
+<p>Colina (17)</p>
+<p>Colômbia (17)</p>
+<p>Conchal (19)</p>
+<p>Conchas (14)</p>
+<p>Cordeirópolis (19)</p>
+<p>Coroados (18)</p>
+<p>Coronel Macedo (14)</p>
+<p>Corumbataí (19)</p>
+<p>Cosmópolis (19)</p>
+<p>Cosmorama (17)</p>
+<p>Cotia (11)</p>
+<p>Cravinhos (16)</p>
+<p>Cristais Paulista (16)</p>
+<p>Cruzália (18)</p>
+<p>Cruzeiro (12)</p>
+<p>Cubatão (13)</p>
+<p>Cunha (12)</p>
+<p>Descalvado (19)</p>
+<p>Diadema (11)</p>
+<p>Dirce Reis (17)</p>
+<p>Divinolândia (19)</p>
+<p>Dobrada (16)</p>
+<p>Dois Córregos (14)</p>
+<p>Dolcinópolis (17)</p>
+<p>Dourado (16)</p>
+<p>Dracena (18)</p>
+<p>Duartina (14)</p>
+<p>Dumont (16)</p>
+<p>Echaporã (14)</p>
+<p>Eldorado (13)</p>
+<p>Elias Fausto (19)</p>
+<p>Elisiário (17)</p>
+<p>Embaúba (17)</p>
+<p>Embu das Artes (11)</p>
+<p>Embu-Guaçu (11)</p>
+<p>Emilianópolis (18)</p>
+<p>Engenheiro Coelho (19)</p>
+<p>Espírito Santo do Pinhal (19)</p>
+<p>Espírito Santo do Turvo (14)</p>
+<p>Estiva Gerbi (19)</p>
+<p>Estrela d'Oeste (17)</p>
+<p>Estrela do Norte (18)</p>
+<p>Euclides da Cunha Paulista (18)</p>
+<p>Fartura (14)</p>
+<p>Fernando Prestes (16)</p>
+<p>Fernandópolis (17)</p>
+<p>Fernão (14)</p>
+<p>Ferraz de Vasconcelos (11)</p>
+<p>Flora Rica (18)</p>
+<p>Floreal (17)</p>
+<p>Flórida Paulista (18)</p>
+<p>Florínea (18)</p>
+<p>Franca (16)</p>
+<p>Francisco Morato (11)</p>
+<p>Franco da Rocha (11)</p>
+<p>Gabriel Monteiro (18)</p>
+<p>Gália (14)</p>
+<p>Garça (14)</p>
+<p>Gastão Vidigal (17)</p>
+<p>Gavião Peixoto (16)</p>
+<p>General Salgado (17)</p>
+<p>Getulina (14)</p>
+<p>Glicério (18)</p>
+<p>Guaiçara (14)</p>
+<p>Guaimbê (14)</p>
+<p>Guaíra (17)</p>
+<p>Guapiaçu (17)</p>
+<p>Guapiara (15)</p>
+<p>Guará (16)</p>
+<p>Guaraçaí (18)</p>
+<p>Guaraci (17)</p>
+<p>Guarani d'Oeste (17)</p>
+<p>Guarantã (14)</p>
+<p>Guararapes (18)</p>
+<p>Guararema (11)</p>
+<p>Guaratinguetá (12)</p>
+<p>Guareí (15)</p>
+<p>Guariba (16)</p>
+<p>Guarujá (13)</p>
+<p>Guarulhos (11)</p>
+<p>Guatapará (16)</p>
+<p>Guzolândia (17)</p>
+<p>Herculândia (14)</p>
+<p>Holambra (19)</p>
+<p>Hortolândia (19)</p>
+<p>Iacanga (14)</p>
+<p>Iacri (14)</p>
+<p>Iaras (14)</p>
+<p>Ibaté (16)</p>
+<p>Ibirá (17)</p>
+<p>Ibirarema (14)</p>
+<p>Ibitinga (16)</p>
+<p>Ibiúna (15)</p>
+<p>Icém (17)</p>
+<p>Iepê (18)</p>
+<p>Igaraçu do Tietê (14)</p>
+<p>Igarapava (16)</p>
+<p>Igaratá (12)</p>
+<p>Iguape (13)</p>
+<p>Ilha Comprida (13)</p>
+<p>Ilha Solteira (18)</p>
+<p>Ilhabela (12)</p>
+<p>Indaiatuba (19)</p>
+<p>Indiana (18)</p>
+<p>Indiaporã (17)</p>
+<p>Inúbia Paulista (18)</p>
+<p>Ipaussu (14)</p>
+<p>Iperó (15)</p>
+<p>Ipeúna (19)</p>
+<p>Ipiguá (17)</p>
+<p>Iporanga (15)</p>
+<p>Ipuã (16)</p>
+<p>Iracemápolis (19)</p>
+<p>Irapuã (17)</p>
+<p>Irapuru (18)</p>
+<p>Itaberá (15)</p>
+<p>Itaí (14)</p>
+<p>Itajobi (17)</p>
+<p>Itaju (14)</p>
+<p>Itanhaém (13)</p>
+<p>Itaoca (15)</p>
+<p>Itapecerica da Serra (11)</p>
+<p>Itapetininga (15)</p>
+<p>Itapeva (15)</p>
+<p>Itapevi (11)</p>
+<p>Itapira (19)</p>
+<p>Itapirapuã Paulista (18)</p>
+<p>Itápolis (16)</p>
+<p>Itaporanga (15)</p>
+<p>Itapuí (14)</p>
+<p>Itapura (18)</p>
+<p>Itaquaquecetuba (11)</p>
+<p>Itararé (15)</p>
+<p>Itariri (13)</p>
+<p>Itatiba (11)</p>
+<p>Itatinga (14)</p>
+<p>Itirapina (19)</p>
+<p>Itirapuã (16)</p>
+<p>Itobi (19)</p>
+<p>Itu (11)</p>
+<p>Itupeva (11)</p>
+<p>Ituverava (16)</p>
+<p>Jaborandi (17)</p>
+<p>Jaboticabal (16)</p>
+<p>Jacareí (12)</p>
+<p>Jaci (17)</p>
+<p>Jacupiranga (13)</p>
+<p>Jaguariúna (19)</p>
+<p>Jales (17)</p>
+<p>Jambeiro (12)</p>
+<p>Jandira (11)</p>
+<p>Jardinópolis (16)</p>
+<p>Jarinu (11)</p>
+<p>Jaú (14)</p>
+<p>Jeriquara (16)</p>
+<p>Joanópolis (11)</p>
+<p>João Ramalho (18)</p>
+<p>José Bonifácio (17)</p>
+<p>Júlio Mesquita (14)</p>
+<p>Jumirim (15)</p>
+<p>Jundiaí (11)</p>
+<p>Junqueirópolis (18)</p>
+<p>Juquiá (13)</p>
+<p>Juquitiba (11)</p>
+<p>Lagoinha (12)</p>
+<p>Laranjal Paulista (15)</p>
+<p>Lavínia (18)</p>
+<p>Lavrinhas (12)</p>
+<p>Leme (19)</p>
+<p>Lençóis Paulista (14)</p>
+<p>Limeira (19)</p>
+<p>Lindóia (19)</p>
+<p>Lins (14)</p>
+<p>Lorena (12)</p>
+<p>Lourdes (17)</p>
+<p>Louveira (19)</p>
+<p>Lucélia (18)</p>
+<p>Lucianópolis (14)</p>
+<p>Luís Antônio (16)</p>
+<p>Luiziânia (18)</p>
+<p>Lupércio (14)</p>
+<p>Lutécia (18)</p>
+<p>Macatuba (14)</p>
+<p>Macaubal (17)</p>
+<p>Macedônia (17)</p>
+<p>Magda (17)</p>
+<p>Mairinque (11)</p>
+<p>Mairiporã (11)</p>
+<p>Manduri (14)</p>
+<p>Marabá Paulista (18)</p>
+<p>Maracaí (18)</p>
+<p>Marapoama (17)</p>
+<p>Mariápolis (18)</p>
+<p>Marília (14)</p>
+<p>Marinópolis (17)</p>
+<p>Martinópolis (18)</p>
+<p>Matão (16)</p>
+<p>Mauá (11)</p>
+<p>Mendonça (17)</p>
+<p>Meridiano (17)</p>
+<p>Mesópolis (17)</p>
+<p>Miguelópolis (16)</p>
+<p>Mineiros do Tietê (14)</p>
+<p>Mira Estrela (17)</p>
+<p>Miracatu (13)</p>
+<p>Mirandópolis (18)</p>
+<p>Mirante do Paranapanema (18)</p>
+<p>Mirassol (17)</p>
+<p>Mirassolândia (17)</p>
+<p>Mococa (19)</p>
+<p>Mogi das Cruzes (11)</p>
+<p>Mogi Guaçu (19)</p>
+<p>Mogi Mirim (19)</p>
+<p>Mombuca (19)</p>
+<p>Monções (17)</p>
+<p>Mongaguá (13)</p>
+<p>Monte Alegre do Sul (19)</p>
+<p>Monte Alto (16)</p>
+<p>Monte Aprazível (17)</p>
+<p>Monte Azul Paulista (17)</p>
+<p>Monte Castelo (18)</p>
+<p>Monte Mor (19)</p>
+<p>Monteiro Lobato (12)</p>
+<p>Morro Agudo (16)</p>
+<p>Morungaba (11)</p>
+<p>Motuca (16)</p>
+<p>Murutinga do Sul (18)</p>
+<p>Nantes (18)</p>
+<p>Narandiba (18)</p>
+<p>Natividade da Serra (12)</p>
+<p>Nazaré Paulista (11)</p>
+<p>Neves Paulista (17)</p>
+<p>Nhandeara (17)</p>
+<p>Nipoã (17)</p>
+<p>Nova Aliança (17)</p>
+<p>Nova Campina (15)</p>
+<p>Nova Canaã Paulista (17)</p>
+<p>Nova Castilho (17)</p>
+<p>Nova Europa (16)</p>
+<p>Nova Granada (17)</p>
+<p>Nova Guataporanga (18)</p>
+<p>Nova Independência (18)</p>
+<p>Nova Luzitânia (17)</p>
+<p>Nova Odessa (19)</p>
+<p>Novais (17)</p>
+<p>Novo Horizonte (17)</p>
+<p>Nuporanga (16)</p>
+<p>Ocauçu (14)</p>
+<p>Óleo (14)</p>
+<p>Olímpia (17)</p>
+<p>Onda Verde (17)</p>
+<p>Oriente (14)</p>
+<p>Orindiúva (17)</p>
+<p>Orlândia (16)</p>
+<p>Osasco (11)</p>
+<p>Oscar Bressane (14)</p>
+<p>Osvaldo Cruz (18)</p>
+<p>Ourinhos (14)</p>
+<p>Ouro Verde (17)</p>
+<p>Ouroeste (17)</p>
+<p>Pacaembu (18)</p>
+<p>Palestina (17)</p>
+<p>Palmares Paulista (17)</p>
+<p>Palmeira d'Oeste (17)</p>
+<p>Palmital (18)</p>
+<p>Panorama (18)</p>
+<p>Paraguaçu Paulista (18)</p>
+<p>Paraibuna (12)</p>
+<p>Paraíso (17)</p>
+<p>Paranapanema (14)</p>
+<p>Paranapuã (17)</p>
+<p>Parapuã (18)</p>
+<p>Pardinho (14)</p>
+<p>Pariquera-Açu (13)</p>
+<p>Parisi (17)</p>
+<p>Patrocínio Paulista (16)</p>
+<p>Paulicéia (18)</p>
+<p>Paulínia (19)</p>
+<p>Paulistânia (14)</p>
+<p>Paulo de Faria (17)</p>
+<p>Pederneiras (14)</p>
+<p>Pedra Bela (11)</p>
+<p>Pedranópolis (17)</p>
+<p>Pedregulho (16)</p>
+<p>Pedreira (19)</p>
+<p>Pedrinhas Paulista (18)</p>
+<p>Pedro de Toledo (13)</p>
+<p>Penápolis (18)</p>
+<p>Pereira Barreto (18)</p>
+<p>Pereiras (15)</p>
+<p>Peruíbe (13)</p>
+<p>Piacatu (18)</p>
+<p>Piedade (15)</p>
+<p>Pilar do Sul (15)</p>
+<p>Pindamonhangaba (12)</p>
+<p>Pindorama (17)</p>
+<p>Pinhalzinho (15)</p>
+<p>Piquerobi (18)</p>
+<p>Piquete (12)</p>
+<p>Piracaia (11)</p>
+<p>Piracicaba (19)</p>
+<p>Piraju (14)</p>
+<p>Pirajuí (14)</p>
+<p>Pirangi (17)</p>
+<p>Pirapora do Bom Jesus (11)</p>
+<p>Pirapozinho (18)</p>
+<p>Pirassununga (19)</p>
+<p>Piratininga (14)</p>
+<p>Pitangueiras (16)</p>
+<p>Planalto (17)</p>
+<p>Platina (18)</p>
+<p>Poá (11)</p>
+<p>Poloni (17)</p>
+<p>Pompéia (14)</p>
+<p>Pongaí (14)</p>
+<p>Pontal (16)</p>
+<p>Pontalinda (18)</p>
+<p>Pontes Gestal (17)</p>
+<p>Populina (17)</p>
+<p>Porangaba (15)</p>
+<p>Porto Feliz (15)</p>
+<p>Porto Ferreira (19)</p>
+<p>Potim (12)</p>
+<p>Potirendaba (17)</p>
+<p>Pracinha (18)</p>
+<p>Pradópolis (16)</p>
+<p>Praia Grande (13)</p>
+<p>Pratânia (14)</p>
+<p>Presidente Alves (14)</p>
+<p>Presidente Bernardes (18)</p>
+<p>Presidente Epitácio (18)</p>
+<p>Presidente Prudente (18)</p>
+<p>Presidente Venceslau (18)</p>
+<p>Promissão (14)</p>
+<p>Quadra (15)</p>
+<p>Quatá (18)</p>
+<p>Queiroz (14)</p>
+<p>Queluz (12)</p>
+<p>Quintana (14)</p>
+<p>Rafard (19)</p>
+<p>Rancharia (18)</p>
+<p>Redenção da Serra (12)</p>
+<p>Regente Feijó (18)</p>
+<p>Reginópolis (14)</p>
+<p>Registro (13)</p>
+<p>Restinga (16)</p>
+<p>Ribeira (15)</p>
+<p>Ribeirão Bonito (16)</p>
+<p>Ribeirão Branco (15)</p>
+<p>Ribeirão Corrente (16)</p>
+<p>Ribeirão do Sul (14)</p>
+<p>Ribeirão dos Índios (18)</p>
+<p>Ribeirão Grande (15)</p>
+<p>Ribeirão Pires (11)</p>
+<p>Ribeirão Preto (16)</p>
+<p>Rifaina (16)</p>
+<p>Rincão (16)</p>
+<p>Rinópolis (18)</p>
+<p>Rio Claro (19)</p>
+<p>Rio das Pedras (19)</p>
+<p>Rio Grande da Serra (11)</p>
+<p>Riolândia (17)</p>
+<p>Riversul (15)</p>
+<p>Rosana (18)</p>
+<p>Roseira (12)</p>
+<p>Rubiácea (18)</p>
+<p>Rubinéia (17)</p>
+<p>Sabino (18)</p>
+<p>Sagres (18)</p>
+<p>Sales (17)</p>
+<p>Sales Oliveira (16)</p>
+<p>Salesópolis (11)</p>
+<p>Salmourão (18)</p>
+<p>Saltinho (19)</p>
+<p>Salto (11)</p>
+<p>Salto de Pirapora (15)</p>
+<p>Salto Grande (14)</p>
+<p>Sandovalina (18)</p>
+<p>Santa Adélia (17)</p>
+<p>Santa Albertina (17)</p>
+<p>Santa Bárbara d'Oeste (19)</p>
+<p>Santa Branca (12)</p>
+<p>Santa Clara d'Oeste (17)</p>
+<p>Santa Cruz da Conceição (19)</p>
+<p>Santa Cruz da Esperança (16)</p>
+<p>Santa Cruz das Palmeiras (19)</p>
+<p>Santa Cruz do Rio Pardo (14)</p>
+<p>Santa Ernestina (16)</p>
+<p>Santa Fé do Sul (17)</p>
+<p>Santa Gertrudes (19)</p>
+<p>Santa Isabel (11)</p>
+<p>Santa Lúcia (16)</p>
+<p>Santa Maria da Serra (19)</p>
+<p>Santa Mercedes (18)</p>
+<p>Santa Rita d'Oeste (17)</p>
+<p>Santa Rita do Passa Quatro (19)</p>
+<p>Santa Rosa de Viterbo (16)</p>
+<p>Santa Salete (17)</p>
+<p>Santana da Ponte Pensa (17)</p>
+<p>Santana de Parnaíba (11)</p>
+<p>Santo Anastácio (18)</p>
+<p>Santo André (11)</p>
+<p>Santo Antônio da Alegria (16)</p>
+<p>Santo Antônio de Posse (19)</p>
+<p>Santo Antônio do Aracanguá (18)</p>
+<p>Santo Antônio do Jardim (19)</p>
+<p>Santo Antônio do Pinhal (12)</p>
+<p>Santo Expedito (18)</p>
+<p>Santópolis do Aguapeí (18)</p>
+<p>Santos (13)</p>
+<p>São Bento do Sapucaí (12)</p>
+<p>São Bernardo do Campo (11)</p>
+<p>São Caetano do Sul (11)</p>
+<p>São Carlos (16)</p>
+<p>São Francisco (17)</p>
+<p>São João da Boa Vista (19)</p>
+<p>São João das Duas Pontes (17)</p>
+<p>São João de Iracema (17)</p>
+<p>São João do Pau d'Alho (18)</p>
+<p>São Joaquim da Barra (16)</p>
+<p>São José da Bela Vista (16)</p>
+<p>São José do Barreiro (12)</p>
+<p>São José do Rio Pardo (19)</p>
+<p>São José do Rio Preto (17)</p>
+<p>São José dos Campos (12)</p>
+<p>São Lourenço da Serra (11)</p>
+<p>São Luiz do Paraitinga (12)</p>
+<p>São Manuel (14)</p>
+<p>São Miguel Arcanjo (15)</p>
+<p>São Paulo (11) - Capital</p>
+<p>São Pedro (19)</p>
+<p>São Pedro do Turvo (14)</p>
+<p>São Roque (11)</p>
+<p>São Sebastião (12)</p>
+<p>São Sebastião da Grama (19)</p>
+<p>São Simão (16)</p>
+<p>São Vicente (13)</p>
+<p>Sarapuí (15)</p>
+<p>Sarutaiá (14)</p>
+<p>Sebastianópolis do Sul (17)</p>
+<p>Serra Azul (16)</p>
+<p>Serra Negra (19)</p>
+<p>Serrana (16)</p>
+<p>Sertãozinho (16)</p>
+<p>Sete Barras (13)</p>
+<p>Severínia (17)</p>
+<p>Silveiras (12)</p>
+<p>Socorro (19)</p>
+<p>Sorocaba (15)</p>
+<p>Sud Mennucci (18)</p>
+<p>Sumaré (19)</p>
+<p>Suzanápolis (18)</p>
+<p>Suzano (11)</p>
+<p>Tabapuã (17)</p>
+<p>Tabatinga (18)</p>
+<p>Taboão da Serra (11)</p>
+<p>Taciba (18)</p>
+<p>Taguaí (14)</p>
+<p>Taiaçu (16)</p>
+<p>Taiúva (16)</p>
+<p>Tambaú (19)</p>
+<p>Tanabi (17)</p>
+<p>Tapiraí (15)</p>
+<p>Tapiratiba (19)</p>
+<p>Taquaral (16)</p>
+<p>Taquaritinga (16)</p>
+<p>Taquarituba (14)</p>
+<p>Taquarivaí (15)</p>
+<p>Tarumã (18)</p>
+<p>Tatuí (15)</p>
+<p>Taubaté (12)</p>
+<p>Tejupá (14)</p>
+<p>Teodoro Sampaio (18)</p>
+<p>Terra Roxa (17)</p>
+<p>Tietê (15)</p>
+<p>Timburi (14)</p>
+<p>Torre de Pedra (15)</p>
+<p>Torrinha (19)</p>
+<p>Trabiju (16)</p>
+<p>Tremembé (12)</p>
+<p>Três Fronteiras (17)</p>
+<p>Tuiuti (11)</p>
+<p>Tupã (14)</p>
+<p>Tupi Paulista (18)</p>
+<p>Turiúba (18)</p>
+<p>Turmalina (17)</p>
+<p>Ubarana (17)</p>
+<p>Ubatuba (12)</p>
+<p>Ubirajara (14)</p>
+<p>Uchoa (17)</p>
+<p>União Paulista (17)</p>
+<p>Urânia (17)</p>
+<p>Uru (14)</p>
+<p>Urupês (17)</p>
+<p>Valentim Gentil (17)</p>
+<p>Valinhos (19)</p>
+<p>Valparaíso (18)</p>
+<p>Vargem (11)</p>
+<p>Vargem Grande do Sul (19)</p>
+<p>Vargem Grande Paulista (11)</p>
+<p>Várzea Paulista (11)</p>
+<p>Vera Cruz (14)</p>
+<p>Vinhedo (19)</p>
+<p>Viradouro (17)</p>
+<p>Vista Alegre do Alto (16)</p>
+<p>Vitória Brasil (17)</p>
+<p>Votorantim (15)</p>
+<p>Votuporanga (17)</p>
+<p>Zacarias (17)</p>
+    </div>
+  </div>
+    <div class="state-card" data-state="SE">
+    <h2>Sergipe <span class="arrow">▶</span></h2>
+    <div class="cities">
+      <p>Amparo de São Francisco (79)</p>
+<p>Aquidabã (79)</p>
+<p>Aracaju (79) - Capital</p>
+<p>Arauá (79)</p>
+<p>Areia Branca (79)</p>
+<p>Barra dos Coqueiros (79)</p>
+<p>Boquim (79)</p>
+<p>Brejo Grande (79)</p>
+<p>Campo do Brito (79)</p>
+<p>Canhoba (79)</p>
+<p>Canindé de São Francisco (79)</p>
+<p>Capela (79)</p>
+<p>Carira (79)</p>
+<p>Carmópolis (79)</p>
+<p>Cedro de São João (79)</p>
+<p>Cristinápolis (79)</p>
+<p>Cumbe (79)</p>
+<p>Divina Pastora (79)</p>
+<p>Estância (79)</p>
+<p>Feira Nova (79)</p>
+<p>Frei Paulo (79)</p>
+<p>Gararu (79)</p>
+<p>General Maynard (79)</p>
+<p>Gracho Cardoso (79)</p>
+<p>Ilha das Flores (79)</p>
+<p>Indiaroba (79)</p>
+<p>Itabaiana (79)</p>
+<p>Itabaianinha (79)</p>
+<p>Itabi (79)</p>
+<p>Itaporanga d'Ajuda (79)</p>
+<p>Japaratuba (79)</p>
+<p>Japoatã (79)</p>
+<p>Lagarto (79)</p>
+<p>Laranjeiras (79)</p>
+<p>Macambira (79)</p>
+<p>Malhada dos Bois (79)</p>
+<p>Malhador (79)</p>
+<p>Maruim (79)</p>
+<p>Moita Bonita (79)</p>
+<p>Monte Alegre de Sergipe (79)</p>
+<p>Muribeca (79)</p>
+<p>Neópolis (79)</p>
+<p>Nossa Senhora Aparecida (79)</p>
+<p>Nossa Senhora da Glória (79)</p>
+<p>Nossa Senhora das Dores (79)</p>
+<p>Nossa Senhora de Lourdes (79)</p>
+<p>Nossa Senhora do Socorro (79)</p>
+<p>Pacatuba (79)</p>
+<p>Pedra Mole (79)</p>
+<p>Pedrinhas (79)</p>
+<p>Pinhão (79)</p>
+<p>Pirambu (79)</p>
+<p>Poço Redondo (79)</p>
+<p>Poço Verde (79)</p>
+<p>Porto da Folha (79)</p>
+<p>Propriá (79)</p>
+<p>Riachão do Dantas (79)</p>
+<p>Riachuelo (79)</p>
+<p>Ribeirópolis (79)</p>
+<p>Rosário do Catete (79)</p>
+<p>Salgado (79)</p>
+<p>Santa Luzia do Itanhy (79)</p>
+<p>Santa Rosa de Lima (79)</p>
+<p>Santana do São Francisco (79)</p>
+<p>Santo Amaro das Brotas (79)</p>
+<p>São Cristóvão (79)</p>
+<p>São Domingos (79)</p>
+<p>São Francisco (79)</p>
+<p>São Miguel do Aleixo (79)</p>
+<p>Simão Dias (79)</p>
+<p>Siriri (79)</p>
+<p>Telha (79)</p>
+<p>Tobias Barreto (79)</p>
+<p>Tomar do Geru (79)</p>
+<p>Umbaúba (79)</p>
+    </div>
+  </div>
+    <div class="state-card" data-state="TO">
+    <h2>Tocantins<span class="arrow">▶</span></h2>
+    <div class="cities">
+      <p>Abreulândia (63)</p>
+<p>Aguiarnópolis (63)</p>
+<p>Almas (63)</p>
+<p>Alvorada (63)</p>
+<p>Ananás (63)</p>
+<p>Angico (63)</p>
+<p>Aparecida do Rio Negro (63)</p>
+<p>Aragominas (63)</p>
+<p>Araguacema (63)</p>
+<p>Araguaçu (63)</p>
+<p>Araguaína (63)</p>
+<p>Araguanã (63)</p>
+<p>Araguatins (63)</p>
+<p>Arapoema (63)</p>
+<p>Arraias (63)</p>
+<p>Augustinópolis (63)</p>
+<p>Aurora do Tocantins (63)</p>
+<p>Axixá do Tocantins (63)</p>
+<p>Babaçulândia (63)</p>
+<p>Bandeirantes do Tocantins (63)</p>
+<p>Barra do Ouro (63)</p>
+<p>Barrolândia (63)</p>
+<p>Bernardo Sayão (63)</p>
+<p>Bom Jesus do Tocantins (63)</p>
+<p>Brasilândia do Tocantins (63)</p>
+<p>Brejinho de Nazaré (63)</p>
+<p>Buriti do Tocantins (63)</p>
+<p>Cachoeirinha (63)</p>
+<p>Campos Lindos (63)</p>
+<p>Cariri do Tocantins (63)</p>
+<p>Carmolândia (63)</p>
+<p>Carrasco Bonito (63)</p>
+<p>Caseara (63)</p>
+<p>Centenário (63)</p>
+<p>Chapada da Natividade (63)</p>
+<p>Chapada de Areia (63)</p>
+<p>Colinas do Tocantins (63)</p>
+<p>Colméia (63)</p>
+<p>Combinado (63)</p>
+<p>Conceição do Tocantins (63)</p>
+<p>Couto Magalhães (63)</p>
+<p>Cristalândia (63)</p>
+<p>Crixás do Tocantins (63)</p>
+<p>Darcinópolis (63)</p>
+<p>Dianópolis (63)</p>
+<p>Divinópolis do Tocantins (63)</p>
+<p>Dois Irmãos do Tocantins (63)</p>
+<p>Dueré (63)</p>
+<p>Esperantina (63)</p>
+<p>Fátima (63)</p>
+<p>Figueirópolis (63)</p>
+<p>Filadélfia (63)</p>
+<p>Formoso do Araguaia (63)</p>
+<p>Fortaleza do Tabocão (63)</p>
+<p>Goianorte (63)</p>
+<p>Goiatins (63)</p>
+<p>Guaraí (63)</p>
+<p>Gurupi (63)</p>
+<p>Ipueiras (63)</p>
+<p>Itacajá (63)</p>
+<p>Itaguatins (63)</p>
+<p>Itapiratins (63)</p>
+<p>Itaporã do Tocantins (63)</p>
+<p>Jaú do Tocantins (63)</p>
+<p>Juarina (63)</p>
+<p>Lagoa da Confusão (63)</p>
+<p>Lagoa do Tocantins (63)</p>
+<p>Lajeado (63)</p>
+<p>Lavandeira (63)</p>
+<p>Lizarda (63)</p>
+<p>Luzinópolis (63)</p>
+<p>Marianópolis do Tocantins (63)</p>
+<p>Mateiros (63)</p>
+<p>Maurilândia do Tocantins (63)</p>
+<p>Miracema do Tocantins (63)</p>
+<p>Miranorte (63)</p>
+<p>Monte do Carmo (63)</p>
+<p>Monte Santo do Tocantins (63)</p>
+<p>Muricilândia (63)</p>
+<p>Natividade (63)</p>
+<p>Nazaré (63)</p>
+<p>Nova Olinda (63)</p>
+<p>Nova Rosalândia (63)</p>
+<p>Novo Acordo (63)</p>
+<p>Novo Alegre (63)</p>
+<p>Novo Jardim (63)</p>
+<p>Oliveira de Fátima (63)</p>
+<p>Palmas (63) - Capital</p>
+<p>Palmeirante (63)</p>
+<p>Palmeiras do Tocantins (63)</p>
+<p>Palmeirópolis (63)</p>
+<p>Paraíso do Tocantins (63)</p>
+<p>Paranã (63)</p>
+<p>Pau d'Arco (63)</p>
+<p>Pedro Afonso (63)</p>
+<p>Peixe (63)</p>
+<p>Pequizeiro (63)</p>
+<p>Pindorama do Tocantins (63)</p>
+<p>Piraquê (63)</p>
+<p>Pium (63)</p>
+<p>Ponte Alta do Bom Jesus (63)</p>
+<p>Ponte Alta do Tocantins (63)</p>
+<p>Porto Alegre do Tocantins (63)</p>
+<p>Porto Nacional (63)</p>
+<p>Praia Norte (63)</p>
+<p>Presidente Kennedy (63)</p>
+<p>Pugmil (63)</p>
+<p>Recursolândia (63)</p>
+<p>Riachinho (63)</p>
+<p>Rio da Conceição (63)</p>
+<p>Rio dos Bois (63)</p>
+<p>Rio Sono (63)</p>
+<p>Sampaio (63)</p>
+<p>Sandolândia (63)</p>
+<p>Santa Fé do Araguaia (63)</p>
+<p>Santa Maria do Tocantins (63)</p>
+<p>Santa Rita do Tocantins (63)</p>
+<p>Santa Rosa do Tocantins (63)</p>
+<p>Santa Tereza do Tocantins (63)</p>
+<p>Santa Terezinha do Tocantins (63)</p>
+<p>São Bento do Tocantins (63)</p>
+<p>São Félix do Tocantins (63)</p>
+<p>São Miguel do Tocantins (63)</p>
+<p>São Salvador do Tocantins (63)</p>
+<p>São Sebastião do Tocantins (63)</p>
+<p>São Valério da Natividade (63)</p>
+<p>Silvanópolis (63)</p>
+<p>Sítio Novo do Tocantins (63)</p>
+<p>Sucupira (63)</p>
+<p>Taguatinga (63)</p>
+<p>Taipas do Tocantins (63)</p>
+<p>Talismã (63)</p>
+<p>Tocantínia (63)</p>
+<p>Tocantinópolis (63)</p>
+<p>Tupirama (63)</p>
+<p>Tupiratins (63)</p>
+<p>Wanderlândia (63)</p>
+<p>Xambioá (63)</p>
+    </div>
+  </div>
+  <!-- Adicione os outros estados aqui da mesma forma -->
+</div>
+<script>
+ const searchInput = document.getElementById('searchInput');
+const stateSelect = document.getElementById('stateSelect');
+const stateCards = document.querySelectorAll('.state-card');
+const resultCount = document.getElementById("resultCount");
+
+// Toggle expand/collapse com clique no título
+stateCards.forEach(card => {
+  const header = card.querySelector('h2');
+  const cities = card.querySelector('.cities');
+
+  header.addEventListener('click', () => {
+    if (cities.style.maxHeight) {
+      cities.style.maxHeight = null;
+      card.classList.remove('expanded');
+    } else {
+      cities.style.maxHeight = cities.scrollHeight + "px";
+      card.classList.add('expanded');
+    }
+  });
+});
+
+// Normaliza texto para busca (ignora acentos e case)
+function normalizeText(text) {
+  return text.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+}
+
+// Destacar texto encontrado ignorando acentos e case
+function highlightText(text, query) {
+  if (!query) return text;
+
+  const normalizedText = normalizeText(text);
+  const normalizedQuery = normalizeText(query);
+
+  let result = "";
+  let i = 0;
+
+  while (i < text.length) {
+    if (normalizedText.substr(i, normalizedQuery.length) === normalizedQuery) {
+      result += `<mark>${text.substr(i, normalizedQuery.length)}</mark>`;
+      i += normalizedQuery.length;
+    } else {
+      result += text[i];
+      i++;
+    }
+  }
+
+  return result;
+}
+
+// Filtrar resultados
+function filterResults() {
+  const searchValue = normalizeText(searchInput.value);
+  const rawSearch = searchInput.value; // mantém o original para destacar
+  const stateValue = stateSelect.value;
+  let totalResults = 0;
+
+  stateCards.forEach(card => {
+    const cities = card.querySelector('.cities');
+    const stateMatch = !stateValue || card.dataset.state === stateValue;
+    let hasVisible = false;
+
+    cities.querySelectorAll('p').forEach(p => {
+      const text = p.dataset.original || p.textContent; 
+      p.dataset.original = text; // salva original para não acumular <mark>
+
+      const normalized = normalizeText(text);
+      const match = normalized.includes(searchValue);
+
+      if (match && stateMatch) {
+        p.classList.remove('hidden');
+        p.innerHTML = highlightText(text, rawSearch);
+        hasVisible = true;
+        totalResults++;
+      } else {
+        p.classList.add('hidden');
+        p.innerHTML = text; // resetar para sem <mark>
+      }
+    });
+
+    if (hasVisible || (!searchValue && stateMatch)) {
+      card.classList.remove('hidden');
+      if (searchValue) {
+        cities.style.maxHeight = cities.scrollHeight + "px";
+        card.classList.add('expanded');
+      } else {
+        cities.style.maxHeight = null;
+        card.classList.remove('expanded');
+      }
+    } else {
+      card.classList.add('hidden');
+      cities.style.maxHeight = null;
+      card.classList.remove('expanded');
+    }
+  });
+
+  resultCount.textContent = searchValue
+    ? `Encontrou ${totalResults} resultado${totalResults !== 1 ? "s" : ""}`
+    : "";
+}
+
+searchInput.addEventListener('input', filterResults);
+stateSelect.addEventListener('change', filterResults);
+
+function updateTotalCities() {
+  let total = 0;
+  stateCards.forEach(card => {
+    total += card.querySelectorAll('.cities p').length;
+  });
+  document.getElementById('totalCities').textContent = `Total de ${total} cidades Brasileiras`;
+}
+
+// Chama ao carregar a página
+updateTotalCities();
+async function pegarLocalizacao() {
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(async (pos) => {
+      const lat = pos.coords.latitude;
+      const lon = pos.coords.longitude;
+
+      // Usando a API Nominatim (OpenStreetMap)
+      const url = `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json&addressdetails=1`;
+
+      const resposta = await fetch(url);
+      const dados = await resposta.json();
+
+      const endereco = dados.address;
+      const ano = new Date().getFullYear();
+
+      const pais = endereco.country || "País";
+      const estado = endereco.state || "Estado";
+      const cidade = endereco.city || endereco.town || endereco.village || "Cidade";
+      const bairro = endereco.suburb || endereco.neighbourhood || "Bairro";
+      const cep = endereco.postcode || "CEP";
+
+      document.getElementById("localizacao").innerHTML =
+        `${pais} ${estado} ${cidade} ${bairro} - ${cep} ${ano}`;
+    });
+  } else {
+    document.getElementById("localizacao").innerText = "Geolocalização não suportada.";
+  }
+}
+
+pegarLocalizacao();
+  const btn = document.getElementById("toggleTheme");
+  const body = document.body;
+
+  // Verifica se já tem preferência salva
+  if (localStorage.getItem("theme") === "light") {
+    body.classList.add("light-mode");
+    btn.textContent = "🌙 Escuro";
+  }
+
+  btn.addEventListener("click", () => {
+    body.classList.toggle("light-mode");
+
+    if (body.classList.contains("light-mode")) {
+      btn.textContent = "🌙 Escuro";
+      localStorage.setItem("theme", "light");
+    } else {
+      btn.textContent = "☀️ Claro";
+      localStorage.setItem("theme", "dark");
+    }
+  });
+  // Função para pegar uma cidade aleatória
+function pegarCidadeAleatoria() {
+  const todasCidades = [];
+  
+  stateCards.forEach(card => {
+    card.querySelectorAll('.cities p').forEach(p => {
+      todasCidades.push(p.textContent);
+    });
+  });
+
+  if (todasCidades.length === 0) return;
+
+  const cidadeAleatoria = todasCidades[Math.floor(Math.random() * todasCidades.length)];
+  
+  // Coloca no searchInput e filtra
+  searchInput.value = cidadeAleatoria;
+  filterResults();
+}
+
+// Evento do botão
+document.getElementById('randomCityBtn').addEventListener('click', pegarCidadeAleatoria);
+
+
+
+
+const paragraphs = document.querySelectorAll('p');
+
+  paragraphs.forEach(p => {
+    p.style.cursor = 'pointer'; // indica que é clicável
+
+    p.addEventListener('click', () => {
+      // Pega só letras e espaços
+      const cityName = p.textContent.replace(/[^a-zA-ZÀ-ÿ\s]/g, '').trim();
+      if(cityName) {
+        const url = `https://www.google.com/maps/search/${encodeURIComponent(cityName)}`;
+        window.open(url, '_blank');
+      }
+    });
+  });
+
+  // Seleciona todos os <p>
+  const paragrafos = document.querySelectorAll('p');
+
+  // Adiciona o atributo title para cada <p>
+  paragrafos.forEach(p => {
+    p.title = "Ver no Google Maps";
+  });
+const CITY_P_SELECTOR = ".cities p";
+
+  const norm = s => (s || "")
+    .normalize("NFD").replace(/[\u0300-\u036f]/g,"")
+    .toLowerCase().trim();
+
+  function showBanner(city, state, bairro, ddd){
+    const el = document.getElementById("dddBanner");
+    el.innerHTML = `${state || "Estado não encontrado"} – ${city || "Cidade não encontrada"} – ${bairro || "Bairro não encontrado"} – DDD (${ddd || "??"})`;
+  }
+
+  function highlightByDDD(ddd){
+    if(!ddd) return false;
+    const ps = document.querySelectorAll(CITY_P_SELECTOR);
+    let hit = false;
+    const re = new RegExp(`\\(\\s*${ddd}\\s*\\)|\\bDDD\\s*${ddd}\\b`);
+    ps.forEach(p=>{
+      if(re.test(p.innerText)){
+        p.classList.add("highlight-ddd");
+        if(!hit){ p.scrollIntoView({behavior:"smooth", block:"center"}); }
+        hit = true;
+      }
+    });
+    return hit;
+  }
+
+  function tryHighlightByCity(city){
+    if(!city) return null;
+    const target = norm(city);
+    const ps = document.querySelectorAll(CITY_P_SELECTOR);
+    for(const p of ps){
+      const txt = norm(p.innerText);
+      if(txt.includes(target)){
+        p.classList.add("highlight-ddd");
+        const m = p.innerText.match(/\((\d{2})\)/) || p.innerText.match(/\bDDD\s*(\d{2})\b/);
+        return m ? m[1] : null;
+      }
+    }
+    return null;
+  }
+
+  navigator.geolocation.getCurrentPosition(async(pos)=>{
+    const lat = pos.coords.latitude;
+    const lon = pos.coords.longitude;
+
+    let city=null, state=null, cep=null, bairro=null, ddd=null;
+    try{
+      const url = `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json&accept-language=pt-BR&zoom=18&addressdetails=1`;
+      const r = await fetch(url);
+      const data = await r.json();
+      const addr = data.address || {};
+      city   = addr.city || addr.town || addr.village || addr.county || null;
+      state  = addr.state || null;
+      cep    = (addr.postcode || "").replace(/\D/g,"");
+      bairro = addr.suburb || addr.neighbourhood || addr.quarter || addr.residential || null;
+    }catch(e){ console.warn("Reverse geocode falhou:", e); }
+
+    if(cep && cep.length===8){
+      try{
+        const r = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
+        const data = await r.json();
+        ddd = data.ddd || null;
+      }catch(e){ console.warn("ViaCEP falhou:", e); }
+    }
+
+    if(!ddd){
+      ddd = tryHighlightByCity(city);
+    }
+
+    showBanner(city, state, bairro, ddd);
+    if(ddd) highlightByDDD(ddd);
+
+  }, (err)=>{
+    console.warn("Sem permissão de localização:", err);
+    const el = document.getElementById("dddBanner");
+    el.innerHTML = "⚠️ É necessária a permissão da localização para descobrir automaticamente seu ddd";
+  });
+</script>
+
+</body>
+</html>

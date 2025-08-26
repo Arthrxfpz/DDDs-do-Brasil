@@ -23,7 +23,7 @@ h1 {
   font-weight: 600;
   font-size: 2.5rem;
   margin-bottom: 30px;
-  color: #00ffe0;
+  color: white;
   
   text-align: center;
 }
@@ -65,7 +65,7 @@ select:focus, input:focus {
   background: #111;
   border-radius: 20px;
   overflow: hidden;
-  border-left: 6px solid #00ffe0;
+  border-left: 6px solid #0132e5;
   transition: 0.3s;
 }
 
@@ -74,11 +74,11 @@ select:focus, input:focus {
   padding: 15px 20px;
   cursor: pointer;
   user-select: none;
-  color: #00ffe0;
+  color: #0132e5;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: #111;
+  background: #181818;
   transition: background 0.3s;
 }
 
@@ -130,8 +130,8 @@ select:focus, input:focus {
   display: none !important;
 }
   mark {
-  background: #00ffe0;
-  color: #000;
+  background: #0132e5;
+  color: white;
   font-weight: bold;
   padding: 0 2px;
   border-radius: 3px;
@@ -210,30 +210,39 @@ body.light-mode #toggleTheme {
       color: #000;
       box-shadow: 0 4px 12px rgba(0,0,0,0.3);
     }
+
 </style>
 
 </head>
 <body>
-   <h5 id="dddBanner">Detectando sua localização...</h5>
-<button id="toggleTheme" style="
-    background-color: #007BFF;
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 8px;
-    cursor: pointer;
-    font-size: 16px;
-">Mudar Tema</button>
-<br>
-<button id="randomCityBtn" style="
-    background-color: #007BFF;
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 8px;
-    cursor: pointer;
-    font-size: 16px;
-">Cidade Aleatória</button>
+
+<div style="
+    position: absolute; 
+    top: 10px; 
+    right: 10px; 
+    display: flex; 
+    gap: 10px;
+">
+    <button id="toggleTheme" style="
+        background-color: #0132e5;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 16px;
+    ">Mudar Tema</button>
+
+    <button id="randomCityBtn" style="
+        background-color: #0132e5;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 16px;
+    ">Cidade Aleatória</button>
+</div>
 <h1>Consulta DDD Brasil</h1>
 <h2 id="totalCities">
   Total de 0 cidades Brasileiras
@@ -276,7 +285,7 @@ body.light-mode #toggleTheme {
 <div class="states-container">
   <!-- Modelo de card de estado -->
   <div class="state-card" data-state="AC">
-    <h2>Acre <span class="arrow">▶</span></h2>
+    <h2>Acre <span class="arrow">></span></h2>
     <div class="cities">
   <p>Acrelândia (68)</p>
 <p>Assis Brasil (68)</p>
@@ -303,7 +312,7 @@ body.light-mode #toggleTheme {
     </div>
   </div>
   <div class="state-card" data-state="AL">
-    <h2>Alagoas <span class="arrow">▶</span></h2>
+    <h2>Alagoas <span class="arrow">></span></h2>
     <div class="cities">
       <p>Água Branca (82)</p>
 <p>Anadia (82)</p>
@@ -412,7 +421,7 @@ body.light-mode #toggleTheme {
     </div>
   </div>
   <div class="state-card" data-state="AP">
-    <h2>Amapá <span class="arrow">▶</span></h2>
+    <h2>Amapá <span class="arrow">></span></h2>
     <div class="cities">
       <p>Amapá (96)</p>
 <p>Calçoene (96)</p>
@@ -433,7 +442,7 @@ body.light-mode #toggleTheme {
     </div>
   </div>
   <div class="state-card" data-state="AM">
-    <h2>Amazonas <span class="arrow">▶</span></h2>
+    <h2>Amazonas <span class="arrow">></span></h2>
     <div class="cities">
       <p>Alvarães (92)</p>
 <p>Amaturá (97)</p>
@@ -500,7 +509,7 @@ body.light-mode #toggleTheme {
     </div>
   </div>
   <div class="state-card" data-state="BA">
-    <h2>Bahia <span class="arrow">▶</span></h2>
+    <h2>Bahia <span class="arrow">></span></h2>
     <div class="cities">
 <p>Abaíra (77)</p>
 <p>Abaré (75)</p>
@@ -922,7 +931,7 @@ body.light-mode #toggleTheme {
     </div>
   </div>
   <div class="state-card" data-state="CE">
-    <h2>Ceará <span class="arrow">▶</span></h2>
+    <h2>Ceará <span class="arrow">></span></h2>
     <div class="cities">
       <p>Abaiara (88)</p>
 <p>Acarape (85)</p>
@@ -1111,7 +1120,7 @@ body.light-mode #toggleTheme {
     </div>
   </div>
   <div class="state-card" data-state="DF">
-    <h2>Distrito Federal<span class="arrow">▶</span></h2>
+    <h2>Distrito Federal<span class="arrow">></span></h2>
     <div class="cities">
       <p>Águas Claras (61)</p>
 <p>Arniqueiras (61)</p>
@@ -1150,7 +1159,7 @@ body.light-mode #toggleTheme {
     </div>
   </div>
   <div class="state-card" data-state="ES">
-    <h2>Espirito Santo <span class="arrow">▶</span></h2>
+    <h2>Espirito Santo <span class="arrow">></span></h2>
     <div class="cities">
       <p>Afonso Cláudio (27)</p>
 <p>Água Doce do Norte (27)</p>
@@ -1233,7 +1242,7 @@ body.light-mode #toggleTheme {
     </div>
   </div>
   <div class="state-card" data-state="GO">
-    <h2>Goiás <span class="arrow">▶</span></h2>
+    <h2>Goiás <span class="arrow">></span></h2>
     <div class="cities">
       <p>Abadia de Goiás (62)</p>
 <p>Abadiânia (62)</p>
@@ -1485,7 +1494,7 @@ body.light-mode #toggleTheme {
     </div>
   </div>
   <div class="state-card" data-state="MA">
-    <h2>Maranhão<span class="arrow">▶</span></h2>
+    <h2>Maranhão<span class="arrow">></span></h2>
     <div class="cities">
       <p>Açailândia (99)</p>
 <p>Água Doce do Maranhão (98)</p>
@@ -1706,7 +1715,7 @@ body.light-mode #toggleTheme {
     </div>
   </div>
   <div class="state-card" data-state="MT">
-    <h2>Mato Grosso <span class="arrow">▶</span></h2>
+    <h2>Mato Grosso <span class="arrow">></span></h2>
     <div class="cities">
       <p>Acorizal (65)</p>
 <p>Água Boa (66)</p>
@@ -1854,7 +1863,7 @@ body.light-mode #toggleTheme {
     </div>
   </div>
   <div class="state-card" data-state="MS">
-    <h2>Mato Grosso Do Sul <span class="arrow">▶</span></h2>
+    <h2>Mato Grosso Do Sul <span class="arrow">></span></h2>
     <div class="cities">
       <p>Água Clara (67)</p>
 <p>Alcinópolis (67)</p>
@@ -1938,7 +1947,7 @@ body.light-mode #toggleTheme {
     </div>
   </div>
   <div class="state-card" data-state="MG">
-    <h2>Minas Gerais <span class="arrow">▶</span></h2>
+    <h2>Minas Gerais <span class="arrow">></span></h2>
     <div class="cities">
       <p>Abaeté (37)</p>
 <p>Abre Campo (33)</p>
@@ -2795,7 +2804,7 @@ body.light-mode #toggleTheme {
     </div>
   </div>
   <div class="state-card" data-state="PA">
-    <h2>Pará <span class="arrow">▶</span></h2>
+    <h2>Pará <span class="arrow">></span></h2>
     <div class="cities">
       <p>Abaetetuba (91)</p>
 <p>Abel Figueiredo (94)</p>
@@ -2944,7 +2953,7 @@ body.light-mode #toggleTheme {
     </div>
   </div>
     <div class="state-card" data-state="PB">
-    <h2>Paraíba<span class="arrow">▶</span></h2>
+    <h2>Paraíba<span class="arrow">></span></h2>
     <div class="cities">
       <p>Água Branca (83)</p>
 <p>Aguiar (83)</p>
@@ -3172,7 +3181,7 @@ body.light-mode #toggleTheme {
     </div>
   </div>
     <div class="state-card" data-state="PR">
-    <h2>Paraná <span class="arrow">▶</span></h2>
+    <h2>Paraná <span class="arrow">></span></h2>
     <div class="cities">
       <p>Abatiá (43)</p>
 <p>Adrianópolis (41)</p>
@@ -3573,7 +3582,7 @@ body.light-mode #toggleTheme {
     </div>
   </div>
     <div class="state-card" data-state="PE">
-    <h2>Pernambuco<span class="arrow">▶</span></h2>
+    <h2>Pernambuco<span class="arrow">></span></h2>
     <div class="cities">
       <p>Abreu e Lima (81)</p>
 <p>Afogados da Ingazeira (87)</p>
@@ -3760,7 +3769,7 @@ body.light-mode #toggleTheme {
     </div>
   </div>
     <div class="state-card" data-state="PI">
-    <h2>Piauí<span class="arrow">▶</span></h2>
+    <h2>Piauí<span class="arrow">></span></h2>
     <div class="cities">
       <p>Acauã (89)</p>
 <p>Agricolândia (86)</p>
@@ -3983,7 +3992,7 @@ body.light-mode #toggleTheme {
     </div>
   </div>
     <div class="state-card" data-state="RJ">
-    <h2>Rio de Janeiro<span class="arrow">▶</span></h2>
+    <h2>Rio de Janeiro<span class="arrow">></span></h2>
     <div class="cities">
       <p>Angra dos Reis (24)</p>
 <p>Aperibé (22)</p>
@@ -4080,7 +4089,7 @@ body.light-mode #toggleTheme {
     </div>
   </div>
     <div class="state-card" data-state="RN">
-    <h2>Rio grande Do Norte<span class="arrow">▶</span></h2>
+    <h2>Rio grande Do Norte<span class="arrow">></span></h2>
     <div class="cities">
       <p>Acari (84)</p>
 <p>Afonso Bezerra (84)</p>
@@ -4252,7 +4261,7 @@ body.light-mode #toggleTheme {
     </div>
   </div>
     <div class="state-card" data-state="RS">
-    <h2>Rio Grande Do Sul<span class="arrow">▶</span></h2>
+    <h2>Rio Grande Do Sul<span class="arrow">></span></h2>
     <div class="cities">
       <p>Aceguá (53)</p>
 <p>Água Santa (54)</p>
@@ -4753,7 +4762,7 @@ body.light-mode #toggleTheme {
     </div>
   </div>
     <div class="state-card" data-state="RO">
-    <h2>Rondônia<span class="arrow">▶</span></h2>
+    <h2>Rondônia<span class="arrow">></span></h2>
     <div class="cities">
       <p>Alta Floresta d'Oeste (69)</p>
 <p>Alto Alegre dos Parecis (69)</p>
@@ -4810,7 +4819,7 @@ body.light-mode #toggleTheme {
     </div>
   </div>
     <div class="state-card" data-state="RR">
-    <h2>Roraima<span class="arrow">▶</span></h2>
+    <h2>Roraima<span class="arrow">></span></h2>
     <div class="cities">
       <p>Alto Alegre (95)</p>
 <p>Amajari (95)</p>
@@ -4830,7 +4839,7 @@ body.light-mode #toggleTheme {
     </div>
   </div>
     <div class="state-card" data-state="SC">
-    <h2>Santa Catarina<span class="arrow">▶</span></h2>
+    <h2>Santa Catarina<span class="arrow">></span></h2>
     <div class="cities">
       <p>Abdon Batista (49)</p>
 <p>Abelardo Luz (49)</p>
@@ -5127,7 +5136,7 @@ body.light-mode #toggleTheme {
     </div>
   </div>
     <div class="state-card" data-state="SP">
-    <h2>São Paulo<span class="arrow">▶</span></h2>
+    <h2>São Paulo<span class="arrow">></span></h2>
     <div class="cities">
       <p>Adamantina (18)</p>
 <p>Adolfo (17)</p>
@@ -5774,7 +5783,7 @@ body.light-mode #toggleTheme {
     </div>
   </div>
     <div class="state-card" data-state="SE">
-    <h2>Sergipe <span class="arrow">▶</span></h2>
+    <h2>Sergipe <span class="arrow">></span></h2>
     <div class="cities">
       <p>Amparo de São Francisco (79)</p>
 <p>Aquidabã (79)</p>
@@ -5854,7 +5863,7 @@ body.light-mode #toggleTheme {
     </div>
   </div>
     <div class="state-card" data-state="TO">
-    <h2>Tocantins<span class="arrow">▶</span></h2>
+    <h2>Tocantins<span class="arrow">></span></h2>
     <div class="cities">
       <p>Abreulândia (63)</p>
 <p>Aguiarnópolis (63)</p>
@@ -5996,6 +6005,7 @@ body.light-mode #toggleTheme {
 <p>Xambioá (63)</p>
     </div>
   </div>
+     <h5 id="dddBanner">Detectando sua localização...</h5>
   <!-- Adicione os outros estados aqui da mesma forma -->
 </div>
 <script>

@@ -6296,7 +6296,142 @@ const CITY_P_SELECTOR = ".cities p";
     el.innerHTML = "⚠️ É necessária a permissão da localização para descobrir automaticamente seu ddd";
   });
   
-  
+  document.addEventListener("DOMContentLoaded", () => {
+  const quizBtn = document.createElement("button");
+  quizBtn.textContent = "Iniciar Quiz";
+  quizBtn.style.cssText = `
+    margin: 20px; padding: 10px 20px;
+    border-radius: 8px; cursor: pointer;
+    background: #0132e5; color: #fff; font-size: 16px;
+  `;
+  document.body.prepend(quizBtn);
+
+  const quizBox = document.createElement("div");
+  quizBox.id = "quizBox";
+  quizBox.style.cssText = "margin-top:20px; max-width:600px; text-align:center;";
+  document.body.prepend(quizBox);
+
+  let jogando = false;
+  let acertos = 0;
+  let erros = 0;
+
+  function getAllStates() {
+    return [...document.querySelectorAll(".state-card")];
+  }
+
+  function getRandomElement(arr) {
+    return arr[Math.floor(Math.random() * arr.length)];
+  }
+
+  function atualizarPlacar() {
+    const total = acertos + erros;
+    const media = total > 0 ? ((acertos / total) * 100).toFixed(1) : 0;
+    return `
+      <div id="placar" style="margin-top:15px; font-size:1rem; font-weight:600; line-height:1.6;">
+        Acertos: ${acertos}<br>
+        Erros: ${erros}<br>
+        <span style="font-weight:normal;">
+          Da quantia de perguntas feitas até agora você tem uma média de ${media}% de acertos.
+        </span>
+      </div>
+    `;
+  }
+
+  function gerarPergunta() {
+    if (!jogando) return;
+    const estados = getAllStates();
+    const estadoEscolhido = getRandomElement(estados);
+    const nomeEstado = estadoEscolhido.querySelector("h2").childNodes[0].textContent.trim();
+    const cidadesEstado = [...estadoEscolhido.querySelectorAll(".cities p")];
+    if (cidadesEstado.length === 0) return gerarPergunta();
+
+    const cidadeCorreta = getRandomElement(cidadesEstado).innerText.split(" (")[0];
+
+    // alternativas erradas
+    let cidadesErradas = [];
+    while (cidadesErradas.length < 3) {
+      const outroEstado = getRandomElement(estados.filter(e => e !== estadoEscolhido));
+      const outrasCidades = [...outroEstado.querySelectorAll(".cities p")];
+      if (outrasCidades.length === 0) continue;
+      const cidadeErrada = getRandomElement(outrasCidades).innerText.split(" (")[0];
+      if (!cidadesErradas.includes(cidadeErrada) && cidadeErrada !== cidadeCorreta) {
+        cidadesErradas.push(cidadeErrada);
+      }
+    }
+
+    // montar opções
+    let opcoes = [cidadeCorreta, ...cidadesErradas].sort(() => Math.random() - 0.5);
+
+    quizBox.innerHTML = `
+      <h2>Qual cidade pertence a <mark>${nomeEstado}</mark>?</h2>
+      <div style="display:grid; gap:10px; margin-top:20px;">
+        ${opcoes.map(op => `<button class="opcao" style="
+          padding:10px; border-radius:8px; border:none;
+          background:#1a1a1a; color:white; cursor:pointer;
+          transition: 0.3s;
+        ">${op}</button>`).join("")}
+      </div>
+      <p id="feedback" style="margin-top:15px; font-weight:bold;"></p>
+      ${atualizarPlacar()}
+    `;
+
+    quizBox.querySelectorAll(".opcao").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const feedback = quizBox.querySelector("#feedback");
+
+        // trava todos os botões
+        quizBox.querySelectorAll(".opcao").forEach(b => b.disabled = true);
+
+        if (btn.textContent === cidadeCorreta) {
+          feedback.textContent = "✅ Correto!";
+          feedback.style.color = "lime";
+          btn.style.background = "green"; // verde
+          acertos++;
+        } else {
+          feedback.textContent = `❌ Errado! A resposta certa era: ${cidadeCorreta}`;
+          feedback.style.color = "red";
+          btn.style.background = "red"; // vermelho
+
+          // destacar também a resposta certa
+          quizBox.querySelectorAll(".opcao").forEach(b => {
+            if (b.textContent === cidadeCorreta) {
+              b.style.background = "green";
+            }
+          });
+
+          erros++;
+        }
+
+        // atualizar placar
+        quizBox.querySelector("#placar").outerHTML = atualizarPlacar();
+
+        setTimeout(gerarPergunta, 2000);
+      });
+    });
+  }
+
+  function iniciarQuiz() {
+    jogando = true;
+    acertos = 0;
+    erros = 0;
+    quizBtn.textContent = "Sair do Quiz";
+    gerarPergunta();
+  }
+
+  function sairQuiz() {
+    jogando = false;
+    quizBox.innerHTML = ""; // remove tudo
+    quizBtn.textContent = "Iniciar Quiz";
+  }
+
+  quizBtn.addEventListener("click", () => {
+    if (!jogando) {
+      iniciarQuiz();
+    } else {
+      sairQuiz();
+    }
+  });
+});
 </script>
 
 </body>

@@ -6295,7 +6295,6 @@ const CITY_P_SELECTOR = ".cities p";
     const el = document.getElementById("dddBanner");
     el.innerHTML = "⚠️ É necessária a permissão da localização para descobrir automaticamente seu ddd";
   });
-  
   document.addEventListener("DOMContentLoaded", () => {
   const quizBtn = document.createElement("button");
   quizBtn.textContent = "Iniciar Quiz";
@@ -6326,13 +6325,20 @@ const CITY_P_SELECTOR = ".cities p";
   function atualizarPlacar() {
     const total = acertos + erros;
     const media = total > 0 ? ((acertos / total) * 100).toFixed(1) : 0;
+
+    // cor conforme desempenho
+    let cor = "orange";
+    if (media < 50) cor = "red";
+    else if (media > 50) cor = "limegreen";
+
     return `
-      <div id="placar" style="margin-top:15px; font-size:1rem; font-weight:600; line-height:1.6;">
-        Acertos: ${acertos}<br>
-        Erros: ${erros}<br>
-        <span style="font-weight:normal;">
-          Da quantia de perguntas feitas até agora você tem uma média de ${media}% de acertos.
-        </span>
+      <div id="placar" style="margin-top:15px; font-size:1rem; font-weight:600; line-height:1.6; text-align:left; display:inline-block;">
+        <div>
+          Acertos: ${acertos} 
+          <span style="color:${cor};">(${media}%)</span>
+        </div>
+        <div>Erros: ${erros}</div>
+        <div>Perguntas feitas: ${total}</div>
       </div>
     `;
   }
@@ -6391,14 +6397,12 @@ const CITY_P_SELECTOR = ".cities p";
           feedback.textContent = `❌ Errado! A resposta certa era: ${cidadeCorreta}`;
           feedback.style.color = "red";
           btn.style.background = "red"; // vermelho
-
-          // destacar também a resposta certa
+          // destaca resposta certa
           quizBox.querySelectorAll(".opcao").forEach(b => {
             if (b.textContent === cidadeCorreta) {
               b.style.background = "green";
             }
           });
-
           erros++;
         }
 
@@ -6432,6 +6436,7 @@ const CITY_P_SELECTOR = ".cities p";
     }
   });
 });
+  
 </script>
 
 </body>

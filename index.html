@@ -6326,7 +6326,6 @@ const CITY_P_SELECTOR = ".cities p";
     const total = acertos + erros;
     const media = total > 0 ? ((acertos / total) * 100).toFixed(1) : 0;
 
-    // cor conforme desempenho
     let cor = "orange";
     if (media < 50) cor = "red";
     else if (media > 50) cor = "limegreen";
@@ -6353,7 +6352,6 @@ const CITY_P_SELECTOR = ".cities p";
 
     const cidadeCorreta = getRandomElement(cidadesEstado).innerText.split(" (")[0];
 
-    // alternativas erradas
     let cidadesErradas = [];
     while (cidadesErradas.length < 3) {
       const outroEstado = getRandomElement(estados.filter(e => e !== estadoEscolhido));
@@ -6365,7 +6363,6 @@ const CITY_P_SELECTOR = ".cities p";
       }
     }
 
-    // montar opções
     let opcoes = [cidadeCorreta, ...cidadesErradas].sort(() => Math.random() - 0.5);
 
     quizBox.innerHTML = `
@@ -6384,31 +6381,24 @@ const CITY_P_SELECTOR = ".cities p";
     quizBox.querySelectorAll(".opcao").forEach(btn => {
       btn.addEventListener("click", () => {
         const feedback = quizBox.querySelector("#feedback");
-
-        // trava todos os botões
         quizBox.querySelectorAll(".opcao").forEach(b => b.disabled = true);
 
         if (btn.textContent === cidadeCorreta) {
           feedback.textContent = "✅ Correto!";
           feedback.style.color = "lime";
-          btn.style.background = "green"; // verde
+          btn.style.background = "green";
           acertos++;
         } else {
           feedback.textContent = `❌ Errado! A resposta certa era: ${cidadeCorreta}`;
           feedback.style.color = "red";
-          btn.style.background = "red"; // vermelho
-          // destaca resposta certa
+          btn.style.background = "red";
           quizBox.querySelectorAll(".opcao").forEach(b => {
-            if (b.textContent === cidadeCorreta) {
-              b.style.background = "green";
-            }
+            if (b.textContent === cidadeCorreta) b.style.background = "green";
           });
           erros++;
         }
 
-        // atualizar placar
         quizBox.querySelector("#placar").outerHTML = atualizarPlacar();
-
         setTimeout(gerarPergunta, 2000);
       });
     });
@@ -6424,19 +6414,61 @@ const CITY_P_SELECTOR = ".cities p";
 
   function sairQuiz() {
     jogando = false;
-    quizBox.innerHTML = ""; // remove tudo
     quizBtn.textContent = "Iniciar Quiz";
+
+    const total = acertos + erros;
+    const media = total > 0 ? ((acertos / total) * 100).toFixed(1) : 0;
+    let segundos = 10;
+
+    quizBox.innerHTML = `
+      <div id="resultadoFinal" style="
+        padding:20px; border-radius:10px; background:#111; color:white; font-size:18px; font-weight:bold;
+        opacity:0; transform:scale(0.9); transition:all 0.5s ease;
+      ">
+        Você fez uma pontuação final de ${acertos} e errou ${erros}, 
+        portanto ${media}% das perguntas foram acertadas.
+        <br><br>
+        <a id="shareBtn" href="https://wa.me/?text=${encodeURIComponent(
+          `Eu acertei ${acertos} perguntas e tive uma média de ${media}% de acertos.\n\nParticipe do quiz sobre as cidades, e também descubra os DDDs e nomes de cidades Brasileiras em: https://arthrxfpz.github.io/DDDs-do-Brasil/`
+        )}" target="_blank" style="
+          display:inline-block; margin-top:15px; padding:10px 20px;
+          background:#25D366; color:white; border-radius:8px;
+          text-decoration:none; font-size:16px;
+        ">Compartilhar no WhatsApp</a>
+        <p id="contador" style="margin-top:15px; font-size:14px; color:#aaa;">
+          Fechando em ${segundos}s...
+        </p>
+      </div>
+    `;
+
+    // ativar transição suave
+    requestAnimationFrame(() => {
+      const box = document.getElementById("resultadoFinal");
+      box.style.opacity = "1";
+      box.style.transform = "scale(1)";
+    });
+
+    // contador regressivo
+    const intervalo = setInterval(() => {
+      segundos--;
+      const contador = document.getElementById("contador");
+      if (contador) contador.textContent = `Fechando em ${segundos}s...`;
+      if (segundos <= 0) {
+        clearInterval(intervalo);
+        if (!jogando) {
+          quizBox.style.transition = "opacity 0.5s ease";
+          quizBox.style.opacity = "0";
+          setTimeout(() => (quizBox.innerHTML = ""), 500);
+        }
+      }
+    }, 1000);
   }
 
   quizBtn.addEventListener("click", () => {
-    if (!jogando) {
-      iniciarQuiz();
-    } else {
-      sairQuiz();
-    }
+    if (!jogando) iniciarQuiz();
+    else sairQuiz();
   });
 });
-  
 </script>
 
 </body>

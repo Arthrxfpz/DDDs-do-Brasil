@@ -6,6 +6,7 @@
 <title>Consulta DDD Brasil - Acolhível</title>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
 <style>
+
 #localizacao {
   color: white;
 }
@@ -6005,9 +6006,33 @@ body.light-mode #toggleTheme {
     </div>
   </div>
      <h5 id="dddBanner">Detectando sua localização...</h5>
+     <h5 id="ipBanner">Detectando seu IP...</h5>
   <!-- Adicione os outros estados aqui da mesma forma -->
 </div>
 <script>
+  async function detectarLocalizacao() {
+    const el = document.getElementById("dddBanner");
+    const ipEl = document.getElementById("ipBanner");
+
+    try {
+        const response = await fetch("http://ip-api.com/json/?fields=status,message,city,regionName,country,query");
+        const data = await response.json();
+
+        if (data.status === "success") {
+            el.innerText = `${data.city || "Cidade não encontrada"}, ${data.regionName || "Estado não encontrado"}, ${data.country || "País não encontrado"}`;
+            ipEl.innerText = `IP: ${data.query || "IP não encontrado"}`;
+        } else {
+            el.innerText = `Não foi possível detectar a localização: ${data.message}`;
+            ipEl.innerText = "";
+        }
+    } catch (err) {
+        el.innerText = "Erro ao detectar a localização";
+        ipEl.innerText = "Erro ao detectar o IP";
+        console.error(err);
+    }
+}
+
+detectarLocalizacao();
  const searchInput = document.getElementById('searchInput');
 const stateSelect = document.getElementById('stateSelect');
 const stateCards = document.querySelectorAll('.state-card');
@@ -6224,77 +6249,8 @@ const CITY_P_SELECTOR = ".cities p";
     .normalize("NFD").replace(/[\u0300-\u036f]/g,"")
     .toLowerCase().trim();
 
-  function showBanner(city, state, bairro, ddd){
-    const el = document.getElementById("dddBanner");
-    el.innerHTML = `${state || "Estado não encontrado"} – ${city || "Cidade não encontrada"} – ${bairro || "Bairro não encontrado"} – DDD (${ddd || "??"})`;
-  }
-
-  function highlightByDDD(ddd){
-    if(!ddd) return false;
-    const ps = document.querySelectorAll(CITY_P_SELECTOR);
-    let hit = false;
-    const re = new RegExp(`\\(\\s*${ddd}\\s*\\)|\\bDDD\\s*${ddd}\\b`);
-    ps.forEach(p=>{
-      if(re.test(p.innerText)){
-        p.classList.add("highlight-ddd");
-        if(!hit){ p.scrollIntoView({behavior:"smooth", block:"center"}); }
-        hit = true;
-      }
-    });
-    return hit;
-  }
-
-  function tryHighlightByCity(city){
-    if(!city) return null;
-    const target = norm(city);
-    const ps = document.querySelectorAll(CITY_P_SELECTOR);
-    for(const p of ps){
-      const txt = norm(p.innerText);
-      if(txt.includes(target)){
-        p.classList.add("highlight-ddd");
-        const m = p.innerText.match(/\((\d{2})\)/) || p.innerText.match(/\bDDD\s*(\d{2})\b/);
-        return m ? m[1] : null;
-      }
-    }
-    return null;
-  }
-
-  navigator.geolocation.getCurrentPosition(async(pos)=>{
-    const lat = pos.coords.latitude;
-    const lon = pos.coords.longitude;
-
-    let city=null, state=null, cep=null, bairro=null, ddd=null;
-    try{
-      const url = `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json&accept-language=pt-BR&zoom=18&addressdetails=1`;
-      const r = await fetch(url);
-      const data = await r.json();
-      const addr = data.address || {};
-      city   = addr.city || addr.town || addr.village || addr.county || null;
-      state  = addr.state || null;
-      cep    = (addr.postcode || "").replace(/\D/g,"");
-      bairro = addr.suburb || addr.neighbourhood || addr.quarter || addr.residential || null;
-    }catch(e){ console.warn("Reverse geocode falhou:", e); }
-
-    if(cep && cep.length===8){
-      try{
-        const r = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
-        const data = await r.json();
-        ddd = data.ddd || null;
-      }catch(e){ console.warn("ViaCEP falhou:", e); }
-    }
-
-    if(!ddd){
-      ddd = tryHighlightByCity(city);
-    }
-
-    showBanner(city, state, bairro, ddd);
-    if(ddd) highlightByDDD(ddd);
-
-  }, (err)=>{
-    console.warn("Sem permissão de localização:", err);
-    const el = document.getElementById("dddBanner");
-    el.innerHTML = "⚠️ É necessária a permissão da localização para descobrir automaticamente seu ddd";
-  });
+ 
+  
   document.addEventListener("DOMContentLoaded", () => {
   const quizBtn = document.createElement("button");
   quizBtn.textContent = "Iniciar Quiz";
